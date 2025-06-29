@@ -1,18 +1,9 @@
-  [build]
-  # Comando que Netlify ejecutará para construir tu aplicación React.
-  # `npm run build` es el comando estándar para Create React App y Vite.
-  command = "npm run build"
-  
-  # Directorio donde se encontrarán los archivos optimizados después del comando 'build'.
-  # Create React App usa 'build', Vite usa 'dist'. Si usas Vite, cámbialo a "dist".
-  publish = "build" 
+      [build]
+      command = "npm run build"
+      publish = "dist" # ¡Cambia a 'dist' si tu bundler (ej. Vite) genera esta carpeta!
+      functions = "netlify/functions"
 
-  # CORREGIDO: La propiedad 'functions' debe ir bajo [build], no bajo [functions].
-  # Esto le dice a Netlify dónde buscar las funciones serverless.
-  functions = "netlify/functions" 
-
-[functions]
-  # Estas son configuraciones para TODAS las funciones.
-  # La ruta a la carpeta de funciones ya se definió arriba en [build].
-  node_bundler = "esbuild"
-  
+    [functions]
+      node_bundler = "esbuild"
+     
+    
