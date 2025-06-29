@@ -106,7 +106,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Función para obtener todos los productos para la página principal
     async function fetchAllProducts() {
         try {
-            const response = await fetch('/.netlify/functions/getProducts');
+            const response = await fetch('/.netlify/functions/getProducts');  
             if (!response.ok) {
                 // Si la respuesta no es OK (ej. 404, 500), lanzar un error
                 const errorData = await response.json(); // Intentar leer el mensaje de error del backend
