@@ -1,9 +1,15 @@
-      [build]
-      command = "npm run build"
-      publish = "dist" # ¡Cambia a 'dist' si tu bundler (ej. Vite) genera esta carpeta!
-      functions = "netlify/functions"
+[build]
+  # Publica desde la raíz del repositorio.
+  # Netlify buscará index.html y otros archivos directamente aquí.
+  publish = "." 
+  
+  # La carpeta donde Netlify buscará tus funciones serverless.
+  # Asegúrate de que tu carpeta de funciones se llame EXACTAMENTE 'netlify/functions'
+  functions = "netlify/functions" 
 
-    [functions]
-      node_bundler = "esbuild"
-     
+[functions]
+  # Estas son configuraciones para todas las funciones.
+  node_bundler = "esbuild"
+ 
+
     
