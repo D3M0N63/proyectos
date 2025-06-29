@@ -15,4 +15,4 @@
   # Estas son configuraciones para TODAS las funciones.
   # La ruta a la carpeta de funciones ya se definió arriba en [build].
   node_bundler = "esbuild"
-  timeout = 30
+  
