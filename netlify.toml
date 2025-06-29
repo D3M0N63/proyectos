@@ -1,8 +1,17 @@
     [build]
-      publish = "."
-      functions = "netlify/functions"
+      # Comando que Netlify ejecutará para construir tu aplicación React.
+      # `npm run build` es el comando estándar para Create React App y Vite.
+      command = "npm run build"
+      
+      # Directorio donde se encontrarán los archivos optimizados después del comando 'build'.
+      # Create React App usa 'build', Vite usa 'dist'. Si usas Vite, cámbialo a "dist".
+      publish = "build" 
 
     [functions]
+      # Si aún tienes una función de Netlify (como getProducts.js) en tu proyecto,
+      # configúrala aquí. Si ya no la necesitas (porque usas Supabase directo),
+      # asegúrate de que la carpeta 'netlify/functions' NO exista en tu proyecto.
+      # Si existe y está vacía, no causará problemas.
+      functions = "netlify/functions"
       node_bundler = "esbuild"
-     
-   
+      timeout = 30
