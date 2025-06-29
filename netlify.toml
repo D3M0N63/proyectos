@@ -4,5 +4,5 @@
 
     [functions]
       node_bundler = "esbuild"
-      timeout = 30
+     
    
