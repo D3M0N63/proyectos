@@ -4,6 +4,6 @@
 
     [functions]
       node_bundler = "esbuild" # Se recomienda para funciones Node.js
-      # Añadido: Timeout para funciones, si toman tiempo en arrancar o responder
-      # timeout = 10 # segundos (por defecto es 10, puedes subirlo a 30 si tienes muchas operaciones)
+      # Añadido un tiempo de espera más largo por si la función tarda en arrancar o en conectar a la BD
+      timeout = 30 # segundos (el valor predeterminado es 10, 30 suele ser más seguro para DBs)
     
