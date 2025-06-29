@@ -1,8 +1,9 @@
-[build]
- 
-  publish = "Joel" 
-  functions = "netlify/functions" 
+    [build]
+      publish = "Joel" # La carpeta donde Netlify encontrará tu index.html y otros archivos estáticos
+      functions = "netlify/functions" # La carpeta donde Netlify buscará tus funciones serverless
 
-[functions]
-
-  node_bundler = "esbuild"
+    [functions]
+      node_bundler = "esbuild" # Se recomienda para funciones Node.js
+      # Añadido: Timeout para funciones, si toman tiempo en arrancar o responder
+      # timeout = 10 # segundos (por defecto es 10, puedes subirlo a 30 si tienes muchas operaciones)
+    
