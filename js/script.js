@@ -64,6 +64,8 @@ document.addEventListener('DOMContentLoaded', () => {
         swiperWrapper.innerHTML = ''; // Limpiar productos estáticos existentes
 
         products.forEach(product => {
+            // ¡Importante! Asegúrate de que los nombres de las propiedades (ej. product.quickspecs.brand)
+            // coincidan con los nombres de columna en minúsculas que devuelve la base de datos PostgreSQL.
             const productCardHtml = `
                 <div class="swiper-slide product-card">
                     <img src="${product.images[0]}" alt="Neumático ${product.name}">
@@ -83,18 +85,22 @@ document.addEventListener('DOMContentLoaded', () => {
         if (mySwiperInstance) {
             mySwiperInstance.destroy(true, true); // Destruir para recrear limpiamente
         }
-        mySwiperInstance = new Swiper(".mySwiper", {
-            slidesPerView: 1,
-            spaceBetween: 10,
-            loop: true,
-            pagination: { el: ".swiper-pagination", clickable: true },
-            navigation: { nextEl: ".swiper-button-next", prevEl: ".swiper-button-prev" },
-            breakpoints: {
-                640: { slidesPerView: 2, spaceBetween: 20 },
-                768: { slidesPerView: 3, spaceBetween: 30 },
-                1024: { slidesPerView: 4, spaceBetween: 30 },
-            },
-        });
+        // Solo inicializar si el contenedor .mySwiper existe y es visible (podría no estar en product-detail.html)
+        const swiperContainer = document.querySelector(".mySwiper");
+        if (swiperContainer) {
+            mySwiperInstance = new Swiper(swiperContainer, {
+                slidesPerView: 1,
+                spaceBetween: 10,
+                loop: true,
+                pagination: { el: ".swiper-pagination", clickable: true },
+                navigation: { nextEl: ".swiper-button-next", prevEl: ".swiper-button-prev" },
+                breakpoints: {
+                    640: { slidesPerView: 2, spaceBetween: 20 },
+                    768: { slidesPerView: 3, spaceBetween: 30 },
+                    1024: { slidesPerView: 4, spaceBetween: 30 },
+                },
+            });
+        }
     }
 
     // Función para obtener todos los productos para la página principal
@@ -102,19 +108,21 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             const response = await fetch('/.netlify/functions/getProducts');
             if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
+                // Si la respuesta no es OK (ej. 404, 500), lanzar un error
+                const errorData = await response.json(); // Intentar leer el mensaje de error del backend
+                throw new Error(`HTTP error! status: ${response.status} - ${errorData.error || response.statusText}`);
             }
             const products = await response.json();
             console.log('Productos obtenidos del backend:', products);
-            renderProductsCarousel(products);
-            return products;
+            renderProductsCarousel(products); // Renderiza los productos en el carrusel
+            return products; // Devuelve los productos para otras funciones (ej. relacionados)
         } catch (error) {
             console.error('Error fetching all products:', error);
             const carouselContainer = document.querySelector('.mySwiper .swiper-wrapper');
             if (carouselContainer) {
                 carouselContainer.innerHTML = '<p style="text-align:center; color: red;">Error al cargar los productos. Por favor, intente de nuevo más tarde.</p>';
             }
-            return [];
+            return []; // Devuelve un array vacío en caso de error
         }
     }
 
@@ -123,13 +131,14 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             const response = await fetch(`/.netlify/functions/getProducts?id=${id}`);
             if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
+                const errorData = await response.json();
+                throw new Error(`HTTP error! status: ${response.status} - ${errorData.error || response.statusText}`);
             }
             const products = await response.json();
             if (products.length > 0) {
-                return products[0];
+                return products[0]; // La función devuelve un array, tomamos el primer (y único) elemento
             } else {
-                return null;
+                return null; // Producto no encontrado
             }
         } catch (error) {
             console.error(`Error fetching product with ID ${id}:`, error);
@@ -140,8 +149,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Lógica principal al cargar la página
     const mainProductImage = document.getElementById('main-product-image'); // Se usa solo en product-detail.html
-    // Nota: 'thumbnails' y 'tabButtons/tabContents' se declaran fuera del if para ser globales si se necesitan en loadProductDetail
-    
     const urlParams = new URLSearchParams(window.location.search);
     const productId = urlParams.get('product');
 
@@ -151,6 +158,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (productId) {
             loadProductDetail(productId);
         } else {
+            // Mensaje de error si no hay ID de producto en la URL
             const productDetailContainer = document.querySelector('.product-detail-container');
             if (productDetailContainer) {
                 productDetailContainer.innerHTML = `
@@ -171,9 +179,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Función que carga los detalles de un producto específico en product-detail.html
     async function loadProductDetail(id) {
-        const product = await fetchProductById(id);
+        const product = await fetchProductById(id); // Obtiene el producto del backend
         if (product) {
             // Actualizar información principal
+            // ¡Importante! Accede a las propiedades JSONB de la base de datos en minúsculas (ej. product.quickspecs)
             const productNameElement = document.getElementById('product-name');
             if (productNameElement) productNameElement.textContent = product.name;
 
@@ -186,7 +195,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const stockStatusElement = document.getElementById('stock-status');
             if (stockStatusElement) {
                 stockStatusElement.textContent = product.stockstatus;
-                stockStatusElement.className = 'out-of-stock';
+                stockStatusElement.className = 'out-of-stock'; // Resetear clases
                 if (product.stockstatus === 'En stock') {
                     stockStatusElement.classList.add('in-stock');
                 } else if (product.stockstatus === 'Últimas unidades') {
@@ -203,7 +212,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const productTagsElement = document.getElementById('product-tags');
             if (productTagsElement) productTagsElement.textContent = product.tags;
 
-            // Actualizar Quick Specs
+            // Actualizar Quick Specs (accediendo a propiedades del JSONB en minúsculas)
             const productBrandElement = document.getElementById('product-brand');
             if (productBrandElement) productBrandElement.textContent = product.quickspecs.brand;
             
@@ -266,6 +275,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const moreInfoLettersElement = document.getElementById('more-info-letters');
             if (moreInfoLettersElement) moreInfoLettersElement.textContent = product.moreinfo.letters;
             
+            // Ocultar el contenedor de la etiqueta de eficiencia si ya no es necesario
             const efficiencyLabelDiv = document.querySelector('.efficiency-label');
             if (efficiencyLabelDiv) {
                 efficiencyLabelDiv.style.display = 'none';
@@ -273,7 +283,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
             // Actualizar galería de imágenes
-            // Asegurarse de que mainProductImage y thumbnailGalleryDiv existan antes de manipularlos
             if (mainProductImage) {
                 mainProductImage.src = product.images[0];
             }
@@ -306,11 +315,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 whatsappBtn.href = `https://wa.me/595XXXXXXXXX?text=${whatsappMessage}`;
             }
 
-            // Cargar productos relacionados después de cargar el producto principal
-            loadRelatedProducts(id);
-
         } else {
-            // Este else se activará si fetchProductById devuelve null (producto no encontrado)
             console.error('Producto no encontrado después de la obtención del backend.');
             const productDetailContainer = document.querySelector('.product-detail-container');
             if (productDetailContainer) {
@@ -334,7 +339,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         relatedProductsContainer.innerHTML = '';
 
-        const allProducts = await fetchAllProducts();
+        const allProducts = await fetchAllProducts(); // Obtiene todos los productos del backend
         if (!allProducts || allProducts.length === 0) {
             const relatedSection = document.querySelector('.related-products');
             if (relatedSection) relatedSection.style.display = 'none';
@@ -343,6 +348,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         let relatedProductsToShow = [];
 
+        // Filtra el producto actual por su ID y mezcla los demás
         const availableProducts = allProducts.filter(p => p.id !== currentProductId);
         
         availableProducts.sort(() => 0.5 - Math.random());
