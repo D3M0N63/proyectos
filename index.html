@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SALTO PNEUS  - Tu Tienda de Neumáticos en Paraguay</title>
+    <link rel="stylesheet" href="./css/style.css">
+    <!-- Swiper CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+    <!-- Iconos de Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+
+    <header class="main-header">
+        <div class="top-bar">
+            <!-- Sección de redes sociales activa para que coincida con la página de detalle -->
+            <div class="social-media">
+                <a href="#" target="_blank"><i class="fab fa-facebook-f"></i></a>
+                <a href="#" target="_blank"><i class="fab fa-instagram"></i></a>
+            </div>
+            <div class="logo">
+                <!-- El logo ahora es un enlace a la página principal -->
+                <a href="index.html"><img src="./imagenes/logo.jpg" alt="Logo NEUPAR Cubiertas"></a>
+            </div>
+            <div class="header-right-nav">
+                <div class="search-bar">
+                    <input type="text" placeholder="Buscar marca o medida">
+                    <button><i class="fas fa-search"></i></button>
+                </div>
+                <nav class="user-nav">
+                    <ul>
+                        <li><a href="#"><i class="fas fa-download"></i> Descargar productos</a></li>
+                        <li><a href="#"><i class="fas fa-envelope"></i> Contacto</a></li>
+                        <li><a href="#"><i class="fas fa-user"></i> Mi cuenta</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+        <nav class="categories-nav">
+            <ul>
+                <li><a href="#">Autos</a></li>
+                <li><a href="#">Pickup-Suv</a></li>
+                <li><a href="#">Camiones</a></li>
+                <li><a href="#">Agrícolas</a></li>
+                <li><a href="#">Llantas</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section class="hero-banner">
+            <div class="promo-content">
+                <h1>PROMOCIÓN IMPERDIBLE</h1>
+                <p>PROMOCIÓN VÁLIDA HASTA EL 30 DE JUNIO DE 2025</p>
+                <div class="discount">
+                    <span>25%</span> OFF
+                </div>
+                <div class="benefits">
+                    <span><i class="fas fa-wrench"></i> MONTAJE GRATIS</span>
+                    <span><i class="fas fa-pump-medical"></i> PICOS GRATIS</span>
+                </div>
+            </div>
+            <div class="hero-image">
+                <img src="./imagenes/banner-promo.jpg" alt="Neumáticos en promoción">
+            </div>
+        </section>
+
+        <section class="tire-search-by-size">
+            <h2>Buscar neumático por medidas</h2>
+            <div class="search-container">
+                <div class="explanation-image">
+                    <img src="./imagenes/medidas-neumatico.jpg" alt="Cómo saber la medida del neumático">
+                    <div class="labels">
+                        <span class="label ancho">205 ANCHURA DEL NEUMÁTICO</span>
+                        <span class="label perfil">55 PERFIL DEL NEUMÁTICO</span>
+                        <span class="label diametro">16 DIÁMETRO DEL NEUMÁTICO</span>
+                    </div>
+                </div>
+                <div class="search-form">
+                    <div class="form-group">
+                        <label for="ancho">Ancho</label>
+                        <select id="ancho">
+                            <option value="todos">Todos</option>
+                            <option value="185">185</option>
+                            <option value="195">195</option>
+                            <option value="205">205</option>
+                            <option value="215">215</option>
+                            <option value="225">225</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="perfil">Perfil</label>
+                        <select id="perfil">
+                            <option value="todos">Todos</option>
+                            <option value="55">55</option>
+                            <option value="60">60</option>
+                            <option value="65">65</option>
+                            <option value="70">70</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="aro">Aro</label>
+                        <select id="aro">
+                            <option value="todos">Todos</option>
+                            <option value="R15">R15</option>
+                            <option value="R16">R16</option>
+                            <option value="R17">R17</option>
+                            <option value="R18">R18</option>
+                        </select>
+                    </div>
+                    <button class="btn-search">BUSCAR</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Sección Más Destacados - Implementado con Swiper.js -->
+        <section class="featured-products">
+            <h2>Más destacados</h2>
+            <div class="swiper mySwiper">
+                <div class="swiper-wrapper">
+                    <!-- Producto 1 -->
+                    <div class="swiper-slide product-card">
+                        <img src="./imagenes/CUBIERTAS/np307/neupar-np307-1.jpg" alt="Neumático ROADWING 185/60R15">
+                        <div class="product-info">
+                            <p class="brand">NEUPAR</p>
+                            <p class="model">ROADWING 185/60R15 ROADWING RW-581</p>
+                            <p class="price">$ 29,00</p>
+                            <p class="price-local">(G$ 229.100 / R$ 163.85 / P$ 43.500)</p>
+                            <!-- Corregido: Ahora es un enlace <a> -->
+                            <a href="product-detail.html?product=np307" class="btn-view-product">Ver producto</a>
+                        </div>
+                    </div>
+                    <!-- Producto 2 -->
+                    <div class="swiper-slide product-card">
+                        <img src="./imagenes/CUBIERTAS/roadwing-rw/roadwing-rw-581.jpg" alt="Neumático ROADWING 195/65R15">
+                        <div class="product-info">
+                            <p class="brand">NEUPAR</p>
+                            <p class="model">ROADWING 195/65R15 ROADWING RW-581</p>
+                            <p class="price">$ 35,00</p>
+                            <p class="price-local">(G$ 276.500 / R$ 197.75 / P$ 52.500)</p>
+                            <!-- Corregido: Ahora es un enlace <a> -->
+                            <a href="product-detail.html?product=roadwing581" class="btn-view-product">Ver producto</a>
+                        </div>
+                    </div>
+                    <!-- Producto 3 -->
+                    <div class="swiper-slide product-card">
+                        <img src="./imagenes/CUBIERTAS/802-fsr/802-fsr.jpg" alt="Neumático FORTUNE FSR-802">
+                        <div class="product-info">
+                            <p class="brand">FORTUNE TIRES</p>
+                            <p class="model">195/50R15 FORTUNE FSR-802</p>
+                            <p class="price">$ 30,00</p>
+                            <p class="price-local">(G$ 237.000 / R$ 169.50 / P$ 45.000)</p>
+                            <!-- Corregido: Ahora es un enlace <a> -->
+                            <a href="product-detail.html?product=fortune802" class="btn-view-product">Ver producto</a>
+                        </div>
+                    </div>
+                    <!-- Producto 4 -->
+                    <div class="swiper-slide product-card">
+                        <img src="./imagenes/CUBIERTAS/kynergy/neupar-kinergy-eco.jpg" alt="Neumático NEUPAR KINERGY ECO">
+                        <div class="product-info">
+                            <p class="brand">NEUPAR</p>
+                            <p class="model">195/55R15 NEUPAR KINERGY ECO</p>
+                            <p class="price">$ 36,00</p>
+                            <p class="price-local">(G$ 284.400 / R$ 203.40 / P$ 54.000)</p>
+                            <!-- Corregido: Ahora es un enlace <a> -->
+                            <a href="product-detail.html?product=kinergyeco" class="btn-view-product">Ver producto</a>
+                        </div>
+                    </div>
+                    <!-- Producto Adicional -->
+                    <div class="swiper-slide product-card">
+                        <img src="./imagenes/CUBIERTAS/np307/neupar-np307-1.jpg" alt="Neumático Adicional">
+                        <div class="product-info">
+                            <p class="brand">ADICIONAL</p>
+                            <p class="model">MODELO EXTRA 205/55R16</p>
+                            <p class="price">$ 32,00</p>
+                            <p class="price-local">(G$ 253.000 / R$ 181.00 / P$ 48.000)</p>
+                            <!-- Corregido: Ahora es un enlace <a> -->
+                            <a href="product-detail.html?product=modeloextra" class="btn-view-product">Ver producto</a>
+                        </div>
+                    </div>
+                </div>
+                <!-- Paginación (los puntos de abajo) -->
+                <div class="swiper-pagination"></div>
+
+                <!-- Navegación (las flechas) -->
+                <div class="swiper-button-next"></div>
+                <div class="swiper-button-prev"></div>
+            </div>
+        </section>
+
+        <!-- Sección de Servicios -->
+        <section class="services-section">
+            <div class="services-content">
+                <div class="service-image">
+                    <img src="./imagenes/service-tire-mounting.jpg" alt="Montaje y desmontaje de cubiertas">
+                </div>
+                <div class="service-details">
+                    <h3>Montaje y desmontaje de cubiertas</h3>
+                    <p>Un montaje correcto de las cubiertas es un aspecto fundamental de cara a garantizar un nivel óptimo de seguridad en la circulación de cualquier tipo de vehículo.</p>
+                    <p>En NEUPAR CUBIERTAS contamos con un equipo de profesionales altamente capacitados que se especializan en el montaje y desmontaje de cubiertas, garantizamos su seguridad y satisfacción con un servicio profesional.</p>
+
+                    <div class="accordion-item">
+                        <button class="accordion-header">
+                            Alineación <i class="fas fa-chevron-down"></i>
+                        </button>
+                        <div class="accordion-content">
+                            <p>La alineación de las ruedas es crucial para la seguridad, el rendimiento y la durabilidad de los neumáticos de su vehículo. Un servicio de alineación adecuado garantiza que las ruedas de su coche estén correctamente orientadas entre sí y con la superficie de la carretera, reduciendo el desgaste desigual de los neumáticos y mejorando la estabilidad de la dirección. Nuestros técnicos expertos utilizan equipos de última generación para realizar alineaciones de precisión, ayudando a su vehículo a rodar recto y verdadero, ahorrando combustible y prolongando la vida útil de sus neumáticos.</p>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <button class="accordion-header">
+                            Balanceo <i class="fas fa-chevron-down"></i>
+                        </button>
+                        <div class="accordion-content">
+                            <p>El balanceo de los neumáticos es esencial para una conducción suave y segura. Los neumáticos desequilibrados pueden causar vibraciones en el volante o el asiento, lo que no solo es incómodo sino que también puede acelerar el desgaste de los neumáticos, la suspensión y los componentes de dirección. En NEUPAR CUBIERTAS, realizamos el balanceo dinámico de sus neumáticos, distribuyendo el peso de manera uniforme alrededor de la rueda y el conjunto del neumático. Esto no solo mejora el confort de conducción, sino que también contribuye a la longevidad de sus neumáticos y a la seguridad general del vehículo.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="main-footer">
+        <div class="footer-attention">
+            <i class="fas fa-exclamation-triangle"></i>
+            <p>ATENCIÓN: Precios exclusivos para el sitio web. Retiro en cualquiera de nuestras sucursales, no hacemos envíos por transportadora.</p>
+        </div>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>EL MEJOR PRECIO DEL PARAGUAY</h3>
+                <div class="contact-info">
+                    <p><i class="fas fa-phone-alt"></i> Tenés alguna consulta? Llámanos!</p>
+                    <p><span>(061) 512 113</span> - <span>0800 11 63 87</span></p>
+                    <p>Horario de atención:</p>
+                    <ul>
+                        <li><i class="fas fa-map-marker-alt"></i> Av. San Blas km 1.5, Ciudad del Este.
+                            <br> Lun. a Vie.: <span>06:00 a 18hs</span> - Sáb.: <span>06:00 a 13:00hs</span>
+                        </li>
+                        <li><i class="fas fa-map-marker-alt"></i> Av. Eusebio Ayala esq. Pitiantuta Asunción.
+                            <br> Lun. a Vie.: <span>07:00 a 18hs</span> - Sáb.: <span>07:00 a 13:00hs</span>
+                        </li>
+                        <li><i class="fas fa-map-marker-alt"></i> Av. Madame Elisa A. Lynch, Asunción.
+                            <br> Lun. a Vie.: <span>07:00 a 18hs</span> - Sáb.: <span>07:00 a 13:00hs</span>
+                        </li>
+                        <li><i class="fas fa-map-marker-alt"></i> Calle Guaraníes y Charrua, Limpio.
+                            <br> Lun. a Vie.: <span>07:00 a 18hs</span> - Sáb.: <span>07:00 a 13:00hs</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-section">
+                <h3>CATEGORIAS</h3>
+                <ul>
+                    <li><a href="#">Autos</a></li>
+                    <li><a href="#">Pickup-Suv</a></li>
+                    <li><a href="#">Camiones</a></li>
+                    <li><a href="#">Agrícolas</a></li>
+                    <li><a href="#">Llantas</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>ENLACES RAPIDOS</h3>
+                <ul>
+                    <li><a href="#">Inicio</a></li>
+                    <li><a href="#">Contacto</a></li>
+                    <li><a href="#">Tienda</a></li>
+                    <li><a href="#">Preguntas Frecuentes</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>LA EMPRESA</h3>
+                <ul>
+                    <li><a href="#">Trabaja con Nosotros</a></li>
+                    <li><a href="#">Contáctenos</a></li>
+                    <li><a href="#">Conózcanos</a></li>
+                    <li><a href="#">Términos y condiciones</a></li>
+                    <li><a href="#">Políticas de privacidad</a></li>
+                </ul>
+            </div>
+            <div class="footer-section footer-newsletter">
+                <h3>Recibe las mejores ofertas en Cubiertas, ¡suscríbete ahora!</h3>
+                <form>
+                    <input type="email" placeholder="Correo electrónico" required>
+                    <button type="submit" class="btn-subscribe">SUSCRIBIRSE</button>
+                </form>
+            </div>
+        </div>
+        <div class="footer-disclaimer">
+            <p>Precios y condiciones de pago exclusivos para tienda online. Ventas sujetas a análisis y confirmación de datos. Valores, informaciones y stock con posibilidad de alteración sin previo aviso. Imágenes meramente ilustrativas.</p>
+        </div>
+    </footer>
+
+    <a href="https://wa.me/595XXXXXXXXX" class="whatsapp-float" target="_blank">
+        <i class="fab fa-whatsapp"></i>
+    </a>
+
+    <div id="newsletter-popup" class="newsletter-popup">
+        <div class="popup-content">
+            <span class="close-btn">&times;</span>
+            <h3>Recibe las mejores ofertas en Cubiertas, ¡suscríbete ahora!</h3>
+            <form>
+                <input type="email" placeholder="Correo electrónico" required>
+                <button type="submit" class="btn-subscribe">SUSCRIBIRSE</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+    <script src="./js/script.js"></script>
+    
+</body>
+</html>

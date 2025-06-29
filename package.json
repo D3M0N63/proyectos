@@ -1,0 +1,22 @@
+{
+      "name": "neupar-website",
+      "version": "1.0.0",
+      "description": "Website for NEUPAR Cubiertas with Neon DB integration via Netlify Functions",
+      "main": "index.js",
+      "scripts": {
+            "start": "netlify dev",
+            "build": "echo 'No build script needed for static site. Functions build separately.'"
+      },
+      "keywords": [
+            "netlify",
+            "serverless",
+            "neon",
+            "postgresql",
+            "ecommerce"
+      ],
+      "author": "Your Name/Company Name",
+      "license": "ISC",
+      "dependencies": {
+            "pg": "^8.16.3"
+      }
+}
