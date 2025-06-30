@@ -129,7 +129,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const swiperPrev = document.querySelector(".swiper-button-prev");
 
         if (!swiperWrapper || !swiperContainer || !swiperPagination || !swiperNext || !swiperPrev) {
-            console.warn("renderProductsCarousel: Elementos clave de Swiper no encontrados en HomePage. Puede que no estemos en la HomePage o el HTML está incompleto.");
+            console.warn("renderProductsCarousel: Elementos clave de Swiper no encontrados en HomePage. Asegúrate de que el HTML del carrusel está completo y visible.");
             return;
         }
 
