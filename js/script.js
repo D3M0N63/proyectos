@@ -21,80 +21,80 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // ********** Lógica de Búsqueda por Medidas (Real) **********
     const searchButton = document.querySelector('.tire-search-by-size .btn-search');
-    if (searchButton) {
-        searchButton.addEventListener('click', async () => { // Hacemos la función async
+    const searchResultsSection = document.getElementById('search-results-section'); // La nueva sección de resultados
+    const searchResultsGrid = document.getElementById('search-results-grid'); // El grid para las tarjetas
+    const noSearchResultsMessage = document.getElementById('no-search-results'); // Mensaje de no resultados
+    const featuredProductsSection = document.querySelector('.featured-products'); // Sección "Más destacados"
+
+    if (searchButton && searchResultsSection && searchResultsGrid && noSearchResultsMessage && featuredProductsSection) {
+        searchButton.addEventListener('click', async () => {
             const ancho = document.getElementById('ancho') ? document.getElementById('ancho').value : '';
             const perfil = document.getElementById('perfil') ? document.getElementById('perfil').value : '';
             const aro = document.getElementById('aro') ? document.getElementById('aro').value : '';
 
             console.log(`Iniciando búsqueda con: Ancho=${ancho}, Perfil=${perfil}, Aro=${aro}`);
 
-            const searchResultsSection = document.getElementById('search-results-section');
-            const searchResultsGrid = document.getElementById('search-results-grid');
-            const noSearchResultsMessage = document.getElementById('no-search-results');
-            const featuredProductsSection = document.querySelector('.featured-products');
+            // Ocultar la sección de productos destacados temporalmente
+            featuredProductsSection.style.display = 'none';
 
-            if (searchResultsSection && searchResultsGrid && noSearchResultsMessage && featuredProductsSection) {
-                // Ocultar la sección de productos destacados temporalmente
-                featuredProductsSection.style.display = 'none';
+            // Mostrar la sección de resultados de búsqueda y limpiar contenido previo
+            searchResultsSection.style.display = 'block';
+            searchResultsGrid.innerHTML = '<p style="text-align:center; color: gray; width: 100%;">Cargando resultados...</p>';
+            noSearchResultsMessage.style.display = 'none';
 
-                // Mostrar la sección de resultados de búsqueda y limpiar contenido previo
-                searchResultsSection.style.display = 'block';
-                searchResultsGrid.innerHTML = '<p style="text-align:center; color: gray; width: 100%;">Cargando resultados...</p>';
-                noSearchResultsMessage.style.display = 'none';
+            try {
+                // Construir la URL de la función con los parámetros de búsqueda
+                const params = new URLSearchParams();
+                if (ancho && ancho !== 'todos') params.append('ancho', ancho);
+                if (perfil && perfil !== 'todos') params.append('perfil', perfil);
+                if (aro && aro !== 'todos') params.append('aro', aro);
 
-                try {
-                    const params = new URLSearchParams();
-                    if (ancho !== 'todos') params.append('ancho', ancho);
-                    if (perfil !== 'todos') params.append('perfil', perfil);
-                    if (aro !== 'todos') params.append('aro', aro);
-
-                    const queryString = params.toString();
-                    const response = await fetch(`/.netlify/functions/getProducts${queryString ? `?${queryString}` : ''}`);
-                    
-                    if (!response.ok) {
-                        const errorData = await response.json();
-                        throw new Error(`HTTP error! status: ${response.status} - ${errorData.error || response.statusText}`);
-                    }
-
-                    const results = await response.json();
-                    console.log('Resultados de búsqueda obtenidos:', results);
-
-                    searchResultsGrid.innerHTML = ''; // Limpiar el mensaje de carga
-
-                    if (results.length > 0) {
-                        results.forEach(product => {
-                            const productCardHtml = `
-                                <div class="product-card">
-                                    <img src="${product.images[0]}" alt="${product.name}">
-                                    <div class="product-info">
-                                        <p class="brand">${product.quickspecs.brand}</p>
-                                        <p class="model">${product.name}</p>
-                                        <p class="price">${product.price}</p>
-                                        <p class="price-local">(${product.pricelocal.split(' / ')[0]})</p>
-                                        <a href="product-detail.html?product=${product.id}" class="btn-view-product">Ver producto</a>
-                                    </div>
-                                </div>
-                            `;
-                            searchResultsGrid.insertAdjacentHTML('beforeend', productCardHtml);
-                        });
-                        // Ajustar la altura mínima de las tarjetas después de cargarlas
-                        const cards = searchResultsGrid.querySelectorAll('.product-card');
-                        if (cards.length > 0) {
-                            let maxHeight = 0;
-                            cards.forEach(card => { card.style.minHeight = 'auto'; });
-                            cards.forEach(card => { if (card.offsetHeight > maxHeight) { maxHeight = card.offsetHeight; } });
-                            cards.forEach(card => { card.style.minHeight = `${maxHeight}px`; });
-                        }
-
-                    } else {
-                        noSearchResultsMessage.style.display = 'block';
-                    }
-                } catch (error) {
-                    console.error('Error durante la búsqueda de neumáticos:', error);
-                    searchResultsGrid.innerHTML = '<p style="text-align:center; color: red;">Error al realizar la búsqueda. Por favor, intente de nuevo.</p>';
+                const queryString = params.toString();
+                const response = await fetch(`/.netlify/functions/getProducts${queryString ? `?${queryString}` : ''}`);
+                
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(`HTTP error! status: ${response.status} - ${errorData.error || response.statusText}`);
                 }
+
+                const results = await response.json();
+                console.log('Resultados de búsqueda obtenidos:', results);
+
+                searchResultsGrid.innerHTML = ''; // Limpiar el mensaje de carga
+
+                if (results.length > 0) {
+                    results.forEach(product => {
+                        const productCardHtml = `
+                            <div class="product-card">
+                                <img src="${product.images[0]}" alt="${product.name}">
+                                <div class="product-info">
+                                    <p class="brand">${product.quickspecs.brand}</p>
+                                    <p class="model">${product.name}</p>
+                                    <p class="price">${product.price}</p>
+                                    <p class="price-local">(${product.pricelocal.split(' / ')[0]})</p>
+                                    <a href="product-detail.html?product=${product.id}" class="btn-view-product">Ver producto</a>
+                                </div>
+                            </div>
+                        `;
+                        searchResultsGrid.insertAdjacentHTML('beforeend', productCardHtml);
+                    });
+                    // Ajustar la altura mínima de las tarjetas después de cargarlas
+                    const cards = searchResultsGrid.querySelectorAll('.product-card');
+                    if (cards.length > 0) {
+                        let maxHeight = 0;
+                        cards.forEach(card => { card.style.minHeight = 'auto'; });
+                        cards.forEach(card => { if (card.offsetHeight > maxHeight) { maxHeight = card.offsetHeight; } });
+                        cards.forEach(card => { card.style.minHeight = `${maxHeight}px`; });
+                    }
+
+                } else {
+                    noSearchResultsMessage.style.display = 'block';
+                }
+            } catch (error) {
+                console.error('Error durante la búsqueda de neumáticos:', error);
+                searchResultsGrid.innerHTML = '<p style="text-align:center; color: red;">Error al realizar la búsqueda. Por favor, intente de nuevo.</p>';
             }
         });
     }
@@ -131,7 +131,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const swiperNext = document.querySelector(".swiper-button-next");
         const swiperPrev = document.querySelector(".swiper-button-prev");
 
-        if (!swiperWrapper || !swiperContainer) {
+        // Asegúrate de que los elementos HTML del carrusel existen
+        if (!swiperWrapper || !swiperContainer || !swiperPagination || !swiperNext || !swiperPrev) {
             console.warn("renderProductsCarousel: Elementos clave de Swiper no encontrados en HomePage. Puede que no estemos en la HomePage o el HTML está incompleto.");
             return;
         }
@@ -139,23 +140,24 @@ document.addEventListener('DOMContentLoaded', () => {
         // Destruir la instancia existente de Swiper si la hay para evitar duplicados y limpiar DOM
         if (mySwiperInstance) {
             console.log("renderProductsCarousel: Destruyendo instancia existente de Swiper.");
-            mySwiperInstance.destroy(true, true);
-            mySwiperInstance = null;
+            mySwiperInstance.destroy(true, true); // `true, true` también limpia los slides del DOM
+            mySwiperInstance = null; // Resetear la instancia
         }
         
         swiperWrapper.innerHTML = ''; // Asegurar que el contenedor está vacío para los nuevos slides
 
         if (products.length === 0) {
             swiperWrapper.innerHTML = '<p style="text-align:center; color: gray; width: 100%;">No hay productos destacados disponibles.</p>';
-            if(swiperPagination) swiperPagination.style.display = 'none';
-            if(swiperNext) swiperNext.style.display = 'none';
-            if(swiperPrev) swiperPrev.style.display = 'none';
+            swiperPagination.style.display = 'none';
+            swiperNext.style.display = 'none';
+            swiperPrev.style.display = 'none';
             console.log("renderProductsCarousel: No hay productos para renderizar. Carrusel vacío.");
             return;
         } else {
-            if(swiperPagination) swiperPagination.style.display = 'block';
-            if(swiperNext) swiperNext.style.display = 'block';
-            if(swiperPrev) swiperPrev.style.display = 'block';
+            // Asegurarse de que los controles sean visibles si hay productos
+            swiperPagination.style.display = 'block';
+            swiperNext.style.display = 'block';
+            swiperPrev.style.display = 'block';
         }
 
         products.forEach(product => {
@@ -167,7 +169,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         <p class="model font-bold text-gray-800 text-base mb-2">${product.name}</p>
                         <p class="price text-red-600 text-2xl font-bold mb-1">${product.price}</p>
                         <p class="price-local text-xs text-gray-600 mb-4">(${product.pricelocal.split(' / ')[0]})</p>
-                        <a href="product-detail.html?product=${product.id}" class="btn-view-product bg-red-600 text-white font-semibold py-2 rounded-md hover:bg-red-700 transition-colors duration-200 text-center w-full mt-auto">Ver producto</a>
+                        <a href="product-detail.html?product=${product.id}" class="btn-view-product">Ver producto</a>
                     </div>
                 </div>
             `;
@@ -175,8 +177,7 @@ document.addEventListener('DOMContentLoaded', () => {
             console.log(`renderProductsCarousel: Añadido slide para producto ${product.id}`);
         });
 
-        // Solo inicializar Swiper si hay productos para mostrar, de lo contrario, no tiene sentido
-        // Se añade un setTimeout para asegurar que el DOM se haya actualizado
+        // Inicializar Swiper
         setTimeout(() => {
             if (products.length > 0 && swiperContainer && typeof Swiper !== 'undefined') {
                 console.log("renderProductsCarousel: Intentando inicializar Swiper...");
@@ -195,12 +196,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 mySwiperInstance.update();
                 console.log("renderProductsCarousel: Swiper inicializado y actualizado.");
             } else {
-                console.log("renderProductsCarousel: Swiper no se inicializa (0 productos o contenedor no encontrado/Swiper no definido).");
+                console.warn("renderProductsCarousel: Swiper no se inicializa (0 productos, contenedor no encontrado, o Swiper no definido).");
             }
-        }, 100); // Pequeño retraso para asegurar que el DOM se actualice
+        }, 100); // Retraso de 100ms
     }
 
-    // Función para obtener todos los productos para la página principal
+    // Función para obtener todos los productos para la página principal o para relacionados
     async function fetchAllProducts() {
         console.log("fetchAllProducts: Iniciando fetch de todos los productos.");
         try {
@@ -211,7 +212,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             const products = await response.json();
             console.log('fetchAllProducts: Productos obtenidos del backend:', products);
-            // Si la llamada es desde HomePage, renderiza el carrusel
+            // Solo renderizar el carrusel si estamos en la página principal
             if (!window.location.pathname.includes('product-detail.html')) {
                  renderProductsCarousel(products);
             }
@@ -219,7 +220,8 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (error) {
             console.error('fetchAllProducts: Error fetching all products:', error);
             const carouselContainer = document.querySelector('.mySwiper .swiper-wrapper');
-            if (carouselContainer && !window.location.pathname.includes('product-detail.html')) { // Solo en HomePage
+            // Solo muestra el mensaje de error en la HomePage
+            if (carouselContainer && !window.location.pathname.includes('product-detail.html')) {
                 carouselContainer.innerHTML = '<p style="text-align:center; color: red;">Error al cargar los productos. Por favor, intente de nuevo más tarde.</p>';
             }
             return [];
@@ -251,7 +253,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     // Lógica principal al cargar la página
-    const mainProductImage = document.getElementById('main-product-image');
+    const mainProductImage = document.getElementById('main-product-image'); // Se usará dentro de loadProductDetail
     const urlParams = new URLSearchParams(window.location.search);
     const productId = urlParams.get('product');
 
@@ -527,5 +529,4 @@ document.addEventListener('DOMContentLoaded', () => {
             });
             console.log(`loadRelatedProducts: Altura de tarjetas relacionadas ajustada a ${maxHeight}px.`);
         }
-    }
-});
+    };

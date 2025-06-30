@@ -29,22 +29,26 @@ exports.handler = async (event) => {
         // Verifica si se proporcionaron parámetros de búsqueda por medidas
         const { ancho, perfil, aro } = event.queryStringParameters || {};
 
+        // Acceso a la propiedad 'largura' dentro del JSONB 'quickspecs' (minúsculas)
+        // Asegúrate de que los valores en tu DB para quickspecs->>'largura' etc.
+        // estén como cadenas de texto (ej. '185', '60', '15')
         if (ancho && ancho !== 'todos') {
-            // Acceso a la propiedad 'largura' dentro del JSONB 'quickSpecs'
             queryText += ` AND quickspecs->>'largura' = $${paramIndex}`;
-            queryParams.push(ancho);
+            queryParams.push(String(ancho)); // Asegura que el parámetro sea una cadena
             paramIndex++;
         }
         if (perfil && perfil !== 'todos') {
-            // Acceso a la propiedad 'perfil' dentro del JSONB 'quickSpecs'
             queryText += ` AND quickspecs->>'perfil' = $${paramIndex}`;
-            queryParams.push(perfil);
+            queryParams.push(String(perfil)); // Asegura que el parámetro sea una cadena
             paramIndex++;
         }
         if (aro && aro !== 'todos') {
-            // Acceso a la propiedad 'aro' dentro del JSONB 'quickSpecs'
+            // Asumiendo que el 'aro' en la DB es solo el número, ej. '15' o '16'
+            // Y que el frontend envía 'R15', 'R16', etc.
+            // Necesitamos extraer el número del 'aro' del frontend si es el caso.
+            const aroValue = aro.startsWith('R') ? aro.substring(1) : aro;
             queryText += ` AND quickspecs->>'aro' = $${paramIndex}`;
-            queryParams.push(aro);
+            queryParams.push(String(aroValue)); // Asegura que el parámetro sea una cadena
             paramIndex++;
         }
         
