@@ -21,83 +21,122 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // ********** Lógica de Búsqueda por Medidas (Real) **********
-    const searchButton = document.querySelector('.tire-search-by-size .btn-search');
-    const searchResultsSection = document.getElementById('search-results-section'); // La nueva sección de resultados
-    const searchResultsGrid = document.getElementById('search-results-grid'); // El grid para las tarjetas
-    const noSearchResultsMessage = document.getElementById('no-search-results'); // Mensaje de no resultados
-    const featuredProductsSection = document.querySelector('.featured-products'); // Sección "Más destacados"
+    // ********** Lógica de Búsqueda por Medidas y Encabezado **********
+    const searchBySizeButton = document.querySelector('.tire-search-by-size .btn-search');
+    const headerSearchInput = document.getElementById('header-search-input'); // Input de búsqueda del encabezado
+    const headerSearchButton = document.getElementById('header-search-button'); // Botón de búsqueda del encabezado
 
-    if (searchButton && searchResultsSection && searchResultsGrid && noSearchResultsMessage && featuredProductsSection) {
-        searchButton.addEventListener('click', async () => {
+    const searchResultsSection = document.getElementById('search-results-section');
+    const searchResultsGrid = document.getElementById('search-results-grid');
+    const noSearchResultsMessage = document.getElementById('no-search-results');
+    const featuredProductsSection = document.querySelector('.featured-products');
+
+    // Función unificada para ejecutar la búsqueda
+    async function executeSearch(params) {
+        console.log(`executeSearch: Iniciando búsqueda con parámetros:`, params);
+
+        // Ocultar la sección de productos destacados temporalmente
+        if (featuredProductsSection) {
+            featuredProductsSection.style.display = 'none';
+        }
+
+        // Mostrar la sección de resultados de búsqueda y limpiar contenido previo
+        if (searchResultsSection && searchResultsGrid && noSearchResultsMessage) {
+            searchResultsSection.style.display = 'block';
+            searchResultsGrid.innerHTML = '<p style="text-align:center; color: gray; width: 100%;">Cargando resultados...</p>';
+            noSearchResultsMessage.style.display = 'none';
+        } else {
+            console.error("executeSearch: Elementos de resultados de búsqueda no encontrados en el DOM.");
+            return;
+        }
+
+        try {
+            const queryString = new URLSearchParams(params).toString();
+            const response = await fetch(`/.netlify/functions/getProducts${queryString ? `?${queryString}` : ''}`);
+            
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(`HTTP error! status: ${response.status} - ${errorData.error || response.statusText}`);
+            }
+
+            const results = await response.json();
+            console.log('executeSearch: Resultados de búsqueda obtenidos:', results);
+
+            searchResultsGrid.innerHTML = ''; // Limpiar el mensaje de carga
+
+            if (results.length > 0) {
+                results.forEach(product => {
+                    const productCardHtml = `
+                        <div class="product-card">
+                            <img src="${product.images[0]}" alt="${product.name}">
+                            <div class="product-info">
+                                <p class="brand">${product.quickspecs.brand}</p>
+                                <p class="model">${product.name}</p>
+                                <p class="price">${product.price}</p>
+                                <p class="price-local">(${product.pricelocal.split(' / ')[0]})</p>
+                                <a href="product-detail.html?product=${product.id}" class="btn-view-product">Ver producto</a>
+                            </div>
+                        </div>
+                    `;
+                    searchResultsGrid.insertAdjacentHTML('beforeend', productCardHtml);
+                });
+                // Ajustar la altura mínima de las tarjetas después de cargarlas
+                const cards = searchResultsGrid.querySelectorAll('.product-card');
+                if (cards.length > 0) {
+                    let maxHeight = 0;
+                    cards.forEach(card => { card.style.minHeight = 'auto'; });
+                    cards.forEach(card => { if (card.offsetHeight > maxHeight) { maxHeight = card.offsetHeight; } });
+                    cards.forEach(card => { card.style.minHeight = `${maxHeight}px`; });
+                }
+
+            } else {
+                noSearchResultsMessage.style.display = 'block';
+            }
+        } catch (error) {
+            console.error('executeSearch: Error durante la búsqueda de neumáticos:', error);
+            searchResultsGrid.innerHTML = '<p style="text-align:center; color: red;">Error al realizar la búsqueda. Por favor, intente de nuevo.</p>';
+        }
+    }
+
+    // Event Listener para el botón de búsqueda por medidas
+    if (searchBySizeButton) {
+        searchBySizeButton.addEventListener('click', () => {
             const ancho = document.getElementById('ancho') ? document.getElementById('ancho').value : '';
             const perfil = document.getElementById('perfil') ? document.getElementById('perfil').value : '';
             const aro = document.getElementById('aro') ? document.getElementById('aro').value : '';
 
-            console.log(`Iniciando búsqueda con: Ancho=${ancho}, Perfil=${perfil}, Aro=${aro}`);
+            const searchParams = {};
+            if (ancho && ancho !== 'todos') searchParams.ancho = ancho;
+            if (perfil && perfil !== 'todos') searchParams.perfil = perfil;
+            if (aro && aro !== 'todos') searchParams.aro = aro;
 
-            // Ocultar la sección de productos destacados temporalmente
-            featuredProductsSection.style.display = 'none';
+            executeSearch(searchParams);
+        });
+    }
 
-            // Mostrar la sección de resultados de búsqueda y limpiar contenido previo
-            searchResultsSection.style.display = 'block';
-            searchResultsGrid.innerHTML = '<p style="text-align:center; color: gray; width: 100%;">Cargando resultados...</p>';
-            noSearchResultsMessage.style.display = 'none';
-
-            try {
-                // Construir la URL de la función con los parámetros de búsqueda
-                const params = new URLSearchParams();
-                if (ancho && ancho !== 'todos') params.append('ancho', ancho);
-                if (perfil && perfil !== 'todos') params.append('perfil', perfil);
-                if (aro && aro !== 'todos') params.append('aro', aro);
-
-                const queryString = params.toString();
-                const response = await fetch(`/.netlify/functions/getProducts${queryString ? `?${queryString}` : ''}`);
-                
-                if (!response.ok) {
-                    const errorData = await response.json();
-                    throw new Error(`HTTP error! status: ${response.status} - ${errorData.error || response.statusText}`);
-                }
-
-                const results = await response.json();
-                console.log('Resultados de búsqueda obtenidos:', results);
-
-                searchResultsGrid.innerHTML = ''; // Limpiar el mensaje de carga
-
-                if (results.length > 0) {
-                    results.forEach(product => {
-                        const productCardHtml = `
-                            <div class="product-card">
-                                <img src="${product.images[0]}" alt="${product.name}">
-                                <div class="product-info">
-                                    <p class="brand">${product.quickspecs.brand}</p>
-                                    <p class="model">${product.name}</p>
-                                    <p class="price">${product.price}</p>
-                                    <p class="price-local">(${product.pricelocal.split(' / ')[0]})</p>
-                                    <a href="product-detail.html?product=${product.id}" class="btn-view-product">Ver producto</a>
-                                </div>
-                            </div>
-                        `;
-                        searchResultsGrid.insertAdjacentHTML('beforeend', productCardHtml);
-                    });
-                    // Ajustar la altura mínima de las tarjetas después de cargarlas
-                    const cards = searchResultsGrid.querySelectorAll('.product-card');
-                    if (cards.length > 0) {
-                        let maxHeight = 0;
-                        cards.forEach(card => { card.style.minHeight = 'auto'; });
-                        cards.forEach(card => { if (card.offsetHeight > maxHeight) { maxHeight = card.offsetHeight; } });
-                        cards.forEach(card => { card.style.minHeight = `${maxHeight}px`; });
-                    }
-
-                } else {
-                    noSearchResultsMessage.style.display = 'block';
-                }
-            } catch (error) {
-                console.error('Error durante la búsqueda de neumáticos:', error);
-                searchResultsGrid.innerHTML = '<p style="text-align:center; color: red;">Error al realizar la búsqueda. Por favor, intente de nuevo.</p>';
+    // Event Listener para el botón de búsqueda del encabezado
+    if (headerSearchButton && headerSearchInput) {
+        headerSearchButton.addEventListener('click', () => {
+            const queryText = headerSearchInput.value.trim();
+            if (queryText) {
+                executeSearch({ q: queryText }); // Pasar el término de búsqueda genérico
+            } else {
+                // Si la búsqueda está vacía, puedes mostrar los productos destacados de nuevo
+                if (featuredProductsSection) featuredProductsSection.style.display = 'block';
+                if (searchResultsSection) searchResultsSection.style.display = 'none';
+                searchResultsGrid.innerHTML = '';
+                noSearchResultsMessage.style.display = 'none';
+            }
+        });
+        // Opcional: Permitir búsqueda al presionar Enter en el input del encabezado
+        headerSearchInput.addEventListener('keypress', (event) => {
+            if (event.key === 'Enter') {
+                event.preventDefault(); // Evitar el envío de formulario por defecto
+                headerSearchButton.click(); // Simular clic en el botón
             }
         });
     }
+
 
     const accordionHeaders = document.querySelectorAll('.accordion-header');
     accordionHeaders.forEach(header => {
@@ -131,20 +170,18 @@ document.addEventListener('DOMContentLoaded', () => {
         const swiperNext = document.querySelector(".swiper-button-next");
         const swiperPrev = document.querySelector(".swiper-button-prev");
 
-        // Asegúrate de que los elementos HTML del carrusel existen
         if (!swiperWrapper || !swiperContainer || !swiperPagination || !swiperNext || !swiperPrev) {
             console.warn("renderProductsCarousel: Elementos clave de Swiper no encontrados en HomePage. Puede que no estemos en la HomePage o el HTML está incompleto.");
             return;
         }
 
-        // Destruir la instancia existente de Swiper si la hay para evitar duplicados y limpiar DOM
         if (mySwiperInstance) {
             console.log("renderProductsCarousel: Destruyendo instancia existente de Swiper.");
-            mySwiperInstance.destroy(true, true); // `true, true` también limpia los slides del DOM
-            mySwiperInstance = null; // Resetear la instancia
+            mySwiperInstance.destroy(true, true);
+            mySwiperInstance = null;
         }
         
-        swiperWrapper.innerHTML = ''; // Asegurar que el contenedor está vacío para los nuevos slides
+        swiperWrapper.innerHTML = '';
 
         if (products.length === 0) {
             swiperWrapper.innerHTML = '<p style="text-align:center; color: gray; width: 100%;">No hay productos destacados disponibles.</p>';
@@ -154,7 +191,6 @@ document.addEventListener('DOMContentLoaded', () => {
             console.log("renderProductsCarousel: No hay productos para renderizar. Carrusel vacío.");
             return;
         } else {
-            // Asegurarse de que los controles sean visibles si hay productos
             swiperPagination.style.display = 'block';
             swiperNext.style.display = 'block';
             swiperPrev.style.display = 'block';
@@ -177,7 +213,6 @@ document.addEventListener('DOMContentLoaded', () => {
             console.log(`renderProductsCarousel: Añadido slide para producto ${product.id}`);
         });
 
-        // Inicializar Swiper
         setTimeout(() => {
             if (products.length > 0 && swiperContainer && typeof Swiper !== 'undefined') {
                 console.log("renderProductsCarousel: Intentando inicializar Swiper...");
@@ -198,10 +233,9 @@ document.addEventListener('DOMContentLoaded', () => {
             } else {
                 console.warn("renderProductsCarousel: Swiper no se inicializa (0 productos, contenedor no encontrado, o Swiper no definido).");
             }
-        }, 100); // Retraso de 100ms
+        }, 100);
     }
 
-    // Función para obtener todos los productos para la página principal o para relacionados
     async function fetchAllProducts() {
         console.log("fetchAllProducts: Iniciando fetch de todos los productos.");
         try {
@@ -212,7 +246,6 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             const products = await response.json();
             console.log('fetchAllProducts: Productos obtenidos del backend:', products);
-            // Solo renderizar el carrusel si estamos en la página principal
             if (!window.location.pathname.includes('product-detail.html')) {
                  renderProductsCarousel(products);
             }
@@ -220,7 +253,6 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (error) {
             console.error('fetchAllProducts: Error fetching all products:', error);
             const carouselContainer = document.querySelector('.mySwiper .swiper-wrapper');
-            // Solo muestra el mensaje de error en la HomePage
             if (carouselContainer && !window.location.pathname.includes('product-detail.html')) {
                 carouselContainer.innerHTML = '<p style="text-align:center; color: red;">Error al cargar los productos. Por favor, intente de nuevo más tarde.</p>';
             }
@@ -228,7 +260,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Función para obtener un producto específico por ID para la página de detalle
     async function fetchProductById(id) {
         console.log(`fetchProductById: Iniciando fetch para el ID: ${id}`);
         try {
@@ -253,7 +284,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     // Lógica principal al cargar la página
-    const mainProductImage = document.getElementById('main-product-image'); // Se usará dentro de loadProductDetail
+    const mainProductImage = document.getElementById('main-product-image');
     const urlParams = new URLSearchParams(window.location.search);
     const productId = urlParams.get('product');
 
@@ -495,7 +526,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         relatedProductsToShow.forEach(product => {
             if (product) {
-                // Acceso a propiedades en minúsculas
                 const productCard = `
                     <div class="product-card">
                         <img src="${product.images[0]}" alt="Neumático ${product.name}">

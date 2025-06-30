@@ -27,36 +27,37 @@ exports.handler = async (event) => {
         }
 
         // Verifica si se proporcionaron parámetros de búsqueda por medidas
-        const { ancho, perfil, aro } = event.queryStringParameters || {};
+        const { ancho, perfil, aro, q } = event.queryStringParameters || {}; // Añadido 'q' para búsqueda genérica
 
-        // Acceso a la propiedad 'largura' dentro del JSONB 'quickspecs' (minúsculas)
-        // Asegúrate de que los valores en tu DB para quickspecs->>'largura' etc.
-        // estén como cadenas de texto (ej. '185', '60', '15')
         if (ancho && ancho !== 'todos') {
             queryText += ` AND quickspecs->>'largura' = $${paramIndex}`;
-            queryParams.push(String(ancho)); // Asegura que el parámetro sea una cadena
+            queryParams.push(String(ancho));
             paramIndex++;
         }
         if (perfil && perfil !== 'todos') {
             queryText += ` AND quickspecs->>'perfil' = $${paramIndex}`;
-            queryParams.push(String(perfil)); // Asegura que el parámetro sea una cadena
+            queryParams.push(String(perfil));
             paramIndex++;
         }
         if (aro && aro !== 'todos') {
-            // Asumiendo que el 'aro' en la DB es solo el número, ej. '15' o '16'
-            // Y que el frontend envía 'R15', 'R16', etc.
-            // Necesitamos extraer el número del 'aro' del frontend si es el caso.
             const aroValue = aro.startsWith('R') ? aro.substring(1) : aro;
             queryText += ` AND quickspecs->>'aro' = $${paramIndex}`;
-            queryParams.push(String(aroValue)); // Asegura que el parámetro sea una cadena
+            queryParams.push(String(aroValue));
+            paramIndex++;
+        }
+
+        // Filtrado por texto genérico (q)
+        if (q) {
+            const searchTerm = `%${q.toLowerCase()}%`; // Búsqueda insensible a mayúsculas/minúsculas
+            queryText += ` AND (LOWER(name) LIKE $${paramIndex} OR LOWER(quickspecs->>'brand') LIKE $${paramIndex})`;
+            queryParams.push(searchTerm);
             paramIndex++;
         }
         
-        console.log("Executing query:", queryText, queryParams); // Log para depuración en Netlify
+        console.log("Executing query:", queryText, queryParams);
 
-        const res = await client.query(queryText, queryParams); // Ejecuta la consulta SQL
+        const res = await client.query(queryText, queryParams);
 
-        // Devuelve una respuesta HTTP 200 (OK) con los datos en formato JSON.
         return {
             statusCode: 200,
             headers: {
