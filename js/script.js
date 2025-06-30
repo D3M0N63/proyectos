@@ -128,20 +128,18 @@ document.addEventListener('DOMContentLoaded', () => {
         const swiperNext = document.querySelector(".swiper-button-next");
         const swiperPrev = document.querySelector(".swiper-button-prev");
 
-        // Asegúrate de que los elementos HTML del carrusel existen
         if (!swiperWrapper || !swiperContainer || !swiperPagination || !swiperNext || !swiperPrev) {
             console.warn("renderProductsCarousel: Elementos clave de Swiper no encontrados en HomePage. Puede que no estemos en la HomePage o el HTML está incompleto.");
             return;
         }
 
-        // Destruir la instancia existente de Swiper si la hay para evitar duplicados y limpiar DOM
         if (mySwiperInstance) {
             console.log("renderProductsCarousel: Destruyendo instancia existente de Swiper.");
-            mySwiperInstance.destroy(true, true); // `true, true` también limpia los slides del DOM
-            mySwiperInstance = null; // Resetear la instancia
+            mySwiperInstance.destroy(true, true);
+            mySwiperInstance = null;
         }
         
-        swiperWrapper.innerHTML = ''; // Asegurar que el contenedor está vacío para los nuevos slides
+        swiperWrapper.innerHTML = '';
 
         if (products.length === 0) {
             swiperWrapper.innerHTML = '<p style="text-align:center; color: gray; width: 100%;">No hay productos destacados disponibles.</p>';
@@ -151,7 +149,6 @@ document.addEventListener('DOMContentLoaded', () => {
             console.log("renderProductsCarousel: No hay productos para renderizar. Carrusel vacío.");
             return;
         } else {
-            // Asegurarse de que los controles sean visibles si hay productos
             swiperPagination.style.display = 'block';
             swiperNext.style.display = 'block';
             swiperPrev.style.display = 'block';
