@@ -8,42 +8,61 @@ exports.handler = async (event) => {
     const client = new Client({
         connectionString: process.env.DATABASE_URL, // Netlify inyectará esta variable de entorno
         ssl: {
-            // 'rejectUnauthorized: false' es a menudo necesario para conexiones SSL
-            // con bases de datos como Neon desde entornos serverless.
-            rejectUnauthorized: false 
+            rejectUnauthorized: false // Necesario para conexiones SSL con Neon en algunos entornos
         }
     });
 
     try {
         await client.connect(); // Establece la conexión a la base de datos
 
-        let queryText = 'SELECT * FROM products'; // Consulta para obtener todos los productos por defecto
-        let queryParams = []; // Parámetros para la consulta (vacío por defecto)
+        let queryText = 'SELECT * FROM products WHERE 1=1'; // Empezar con una cláusula WHERE siempre verdadera
+        let queryParams = [];
+        let paramIndex = 1;
 
-        // Verifica si se proporcionó un ID de producto en la URL de la función.
-        // Ejemplo: /.netlify/functions/getProducts?id=np307
+        // Verifica si se proporcionó un ID de producto para un producto específico
         if (event.queryStringParameters && event.queryStringParameters.id) {
-            queryText = 'SELECT * FROM products WHERE id = $1'; // Consulta para un producto específico
-            queryParams = [event.queryStringParameters.id]; // El ID del producto se pasa como parámetro
+            queryText += ` AND id = $${paramIndex}`;
+            queryParams.push(event.queryStringParameters.id);
+            paramIndex++;
         }
+
+        // Verifica si se proporcionaron parámetros de búsqueda por medidas
+        const { ancho, perfil, aro } = event.queryStringParameters || {};
+
+        if (ancho && ancho !== 'todos') {
+            // Acceso a la propiedad 'largura' dentro del JSONB 'quickSpecs'
+            queryText += ` AND quickspecs->>'largura' = $${paramIndex}`;
+            queryParams.push(ancho);
+            paramIndex++;
+        }
+        if (perfil && perfil !== 'todos') {
+            // Acceso a la propiedad 'perfil' dentro del JSONB 'quickSpecs'
+            queryText += ` AND quickspecs->>'perfil' = $${paramIndex}`;
+            queryParams.push(perfil);
+            paramIndex++;
+        }
+        if (aro && aro !== 'todos') {
+            // Acceso a la propiedad 'aro' dentro del JSONB 'quickSpecs'
+            queryText += ` AND quickspecs->>'aro' = $${paramIndex}`;
+            queryParams.push(aro);
+            paramIndex++;
+        }
+        
+        console.log("Executing query:", queryText, queryParams); // Log para depuración en Netlify
 
         const res = await client.query(queryText, queryParams); // Ejecuta la consulta SQL
 
         // Devuelve una respuesta HTTP 200 (OK) con los datos en formato JSON.
-        // Los headers son importantes para CORS (Cross-Origin Resource Sharing)
-        // para permitir que tu frontend (que está en un "origen" diferente a la función)
-        // pueda acceder a ella.
         return {
             statusCode: 200,
             headers: {
-                "Access-Control-Allow-Origin": "*", // Permite solicitudes desde cualquier dominio
-                "Access-Control-Allow-Methods": "GET", // Permite el método GET
-                "Content-Type": "application/json" // Indica que la respuesta es JSON
+                "Access-Control-Allow-Origin": "*",
+                "Access-Control-Allow-Methods": "GET",
+                "Content-Type": "application/json"
             },
-            body: JSON.stringify(res.rows) // Convierte los resultados de la base de datos a una cadena JSON
+            body: JSON.stringify(res.rows)
         };
     } catch (error) {
-        // En caso de error, registra el error y devuelve una respuesta HTTP 500 (Error Interno del Servidor).
         console.error('Error al conectar o consultar la base de datos:', error);
         return {
             statusCode: 500,
@@ -55,7 +74,6 @@ exports.handler = async (event) => {
             body: JSON.stringify({ error: 'Error al obtener los datos de los productos.' })
         };
     } finally {
-        // Asegúrate de cerrar la conexión a la base de datos, incluso si ocurre un error.
         await client.end();
     }
 };

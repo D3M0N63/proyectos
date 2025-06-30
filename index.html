@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SALTO PNEUS  - Tu Tienda de Neumáticos en Paraguay</title>
+    <title>NEUPAR Cubiertas - Tu Tienda de Neumáticos en Paraguay</title>
     <link rel="stylesheet" href="./css/style.css">
     <!-- Swiper CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
@@ -14,13 +14,11 @@
 
     <header class="main-header">
         <div class="top-bar">
-            <!-- Sección de redes sociales activa para que coincida con la página de detalle -->
-            <!--<div class="social-media">
+            <div class="social-media">
                 <a href="#" target="_blank"><i class="fab fa-facebook-f"></i></a>
                 <a href="#" target="_blank"><i class="fab fa-instagram"></i></a>
-            </div>-->
+            </div>
             <div class="logo">
-                <!-- El logo ahora es un enlace a la página principal -->
                 <a href="index.html"><img src="./imagenes/logo.jpg" alt="Logo NEUPAR Cubiertas"></a>
             </div>
             <div class="header-right-nav">
@@ -49,21 +47,21 @@
     </header>
 
     <main>
-       <!--<section class="hero-banner">
-           <div class="promo-content">
+        <section class="hero-banner">
+            <div class="promo-content">
                 <h1>PROMOCIÓN IMPERDIBLE</h1>
                 <p>PROMOCIÓN VÁLIDA HASTA EL 30 DE JUNIO DE 2025</p>
                 <div class="discount">
                     <span>25%</span> OFF
-                </div>-->
+                </div>
                 <div class="benefits">
                     <span><i class="fas fa-wrench"></i> MONTAJE GRATIS</span>
                     <span><i class="fas fa-pump-medical"></i> PICOS GRATIS</span>
                 </div>
             </div>
-           <!--<div class="hero-image">
+            <div class="hero-image">
                 <img src="./imagenes/banner-promo.jpg" alt="Neumáticos en promoción">
-            </div>-->
+            </div>
         </section>
 
         <section class="tire-search-by-size">
@@ -114,71 +112,21 @@
             </div>
         </section>
 
+        <!-- Nueva Sección de Resultados de Búsqueda -->
+        <section id="search-results-section" class="search-results-section featured-products" style="display: none;">
+            <h2>Resultados de Búsqueda</h2>
+            <div id="search-results-grid" class="products-grid">
+                <!-- Los resultados de la búsqueda se insertarán aquí -->
+            </div>
+            <p id="no-search-results" style="display: none; color: gray; margin-top: 20px;">No se encontraron neumáticos con las medidas seleccionadas.</p>
+        </section>
+
         <!-- Sección Más Destacados - Implementado con Swiper.js -->
         <section class="featured-products">
             <h2>Más destacados</h2>
             <div class="swiper mySwiper">
                 <div class="swiper-wrapper">
-                    <!-- Producto 1 -->
-                    <div class="swiper-slide product-card">
-                        <img src="./imagenes/CUBIERTAS/np307/neupar-np307-1.jpg" alt="Neumático ROADWING 185/60R15">
-                        <div class="product-info">
-                            <p class="brand">NEUPAR</p>
-                            <p class="model">ROADWING 185/60R15 ROADWING RW-581</p>
-                            <p class="price">$ 29,00</p>
-                            <p class="price-local">(G$ 229.100 / R$ 163.85 / P$ 43.500)</p>
-                            <!-- Corregido: Ahora es un enlace <a> -->
-                            <a href="product-detail.html?product=np307" class="btn-view-product">Ver producto</a>
-                        </div>
-                    </div>
-                    <!-- Producto 2 -->
-                    <div class="swiper-slide product-card">
-                        <img src="./imagenes/CUBIERTAS/roadwing-rw/roadwing-rw-581.jpg" alt="Neumático ROADWING 195/65R15">
-                        <div class="product-info">
-                            <p class="brand">NEUPAR</p>
-                            <p class="model">ROADWING 195/65R15 ROADWING RW-581</p>
-                            <p class="price">$ 35,00</p>
-                            <p class="price-local">(G$ 276.500 / R$ 197.75 / P$ 52.500)</p>
-                            <!-- Corregido: Ahora es un enlace <a> -->
-                            <a href="product-detail.html?product=roadwing581" class="btn-view-product">Ver producto</a>
-                        </div>
-                    </div>
-                    <!-- Producto 3 -->
-                    <div class="swiper-slide product-card">
-                        <img src="./imagenes/CUBIERTAS/802-fsr/802-fsr.jpg" alt="Neumático FORTUNE FSR-802">
-                        <div class="product-info">
-                            <p class="brand">FORTUNE TIRES</p>
-                            <p class="model">195/50R15 FORTUNE FSR-802</p>
-                            <p class="price">$ 30,00</p>
-                            <p class="price-local">(G$ 237.000 / R$ 169.50 / P$ 45.000)</p>
-                            <!-- Corregido: Ahora es un enlace <a> -->
-                            <a href="product-detail.html?product=fortune802" class="btn-view-product">Ver producto</a>
-                        </div>
-                    </div>
-                    <!-- Producto 4 -->
-                    <div class="swiper-slide product-card">
-                        <img src="./imagenes/CUBIERTAS/kynergy/neupar-kinergy-eco.jpg" alt="Neumático NEUPAR KINERGY ECO">
-                        <div class="product-info">
-                            <p class="brand">NEUPAR</p>
-                            <p class="model">195/55R15 NEUPAR KINERGY ECO</p>
-                            <p class="price">$ 36,00</p>
-                            <p class="price-local">(G$ 284.400 / R$ 203.40 / P$ 54.000)</p>
-                            <!-- Corregido: Ahora es un enlace <a> -->
-                            <a href="product-detail.html?product=kinergyeco" class="btn-view-product">Ver producto</a>
-                        </div>
-                    </div>
-                    <!-- Producto Adicional -->
-                    <div class="swiper-slide product-card">
-                        <img src="./imagenes/CUBIERTAS/np307/neupar-np307-1.jpg" alt="Neumático Adicional">
-                        <div class="product-info">
-                            <p class="brand">ADICIONAL</p>
-                            <p class="model">MODELO EXTRA 205/55R16</p>
-                            <p class="price">$ 32,00</p>
-                            <p class="price-local">(G$ 253.000 / R$ 181.00 / P$ 48.000)</p>
-                            <!-- Corregido: Ahora es un enlace <a> -->
-                            <a href="product-detail.html?product=modeloextra" class="btn-view-product">Ver producto</a>
-                        </div>
-                    </div>
+                    <!-- Productos se llenarán dinámicamente por script.js -->
                 </div>
                 <!-- Paginación (los puntos de abajo) -->
                 <div class="swiper-pagination"></div>
@@ -227,7 +175,7 @@
             <i class="fas fa-exclamation-triangle"></i>
             <p>ATENCIÓN: Precios exclusivos para el sitio web. Retiro en cualquiera de nuestras sucursales, no hacemos envíos por transportadora.</p>
         </div>
-        <!--<div class="footer-content">
+        <div class="footer-content">
             <div class="footer-section">
                 <h3>EL MEJOR PRECIO DEL PARAGUAY</h3>
                 <div class="contact-info">
@@ -249,7 +197,7 @@
                         </li>
                     </ul>
                 </div>
-            </div>-->
+            </div>
             <div class="footer-section">
                 <h3>CATEGORIAS</h3>
                 <ul>
@@ -267,8 +215,8 @@
                     <li><a href="#">Contacto</a></li>
                     <li><a href="#">Tienda</a></li>
                     <li><a href="#">Preguntas Frecuentes</a></li>
-                </ul>
-            </div>
+                    </ul>
+                </div>
             <div class="footer-section">
                 <h3>LA EMPRESA</h3>
                 <ul>
@@ -307,6 +255,7 @@
         </div>
     </div>
 
+    <!-- Swiper JS -->
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     <script src="./js/script.js"></script>
     
