@@ -20,15 +20,10 @@
                 <a href="index.html"><img src="./imagenes/logo.jpg" alt="Logo NEUPAR Cubiertas"></a>
             </div>
             <div class="header-right-nav">
-                <div class="search-bar">
-                    <input type="text" placeholder="Buscar marca o medida">
-                    <button><i class="fas fa-search"></i></button>
-                </div>
+                {/* Barra de búsqueda eliminada */}
                 <nav class="user-nav">
                     <ul>
-                        <li><a href="#"><i class="fas fa-download"></i> Descargar productos</a></li>
-                        <li><a href="#"><i class="fas fa-envelope"></i> Contacto</a></li>
-                        <li><a href="#"><i class="fas fa-user"></i> Mi cuenta</a></li>
+                        {/* Enlaces "Descargar productos", "Contacto", "Mi cuenta" eliminados */}
                     </ul>
                 </nav>
             </div>
@@ -48,9 +43,9 @@
         <section class="product-detail-section">
             <div class="product-detail-container">
                 <div class="product-gallery">
-                    <img id="main-product-image" src="./imagenes/CUBIERTAS/np307/neupar-np307-1.jpg" alt="Neumático ROADWING 185/60R15" class="main-image">
+                    <img id="main-product-image" src="./imagenes/CUBIERTAS/np307/neupar-np307-1.jpg" alt="Neumático ROADWING 185/60R15" class="main-image" loading="eager">
                     <div class="thumbnail-gallery">
-                        <img src="./imagenes/CUBIERTAS/np307/neupar-np307-1.jpg" alt="Thumbnail 1" class="thumbnail active" data-full-src="./imagenes/CUBIERTAS/np307/neupar-np307-1.jpg">
+                        {/* Las miniaturas se cargarán dinámicamente con lazy load */}
                     </div>
                 </div>
                 <div class="product-info-detail">
@@ -90,7 +85,7 @@
                 <button class="tab-button" data-tab="ratings">CALIFICACIÓN</button>
             </div>
             <div class="tab-content-container">
-                <div id="details" class="tab-content active">
+                <div id="details" class="tab-content">
                     <h3>Detalles del Producto</h3>
                     <p class="product-description"></p>
                     <div class="specs">
@@ -148,9 +143,8 @@
 
         <section class="related-products">
             <h2>Productos Relacionados</h2>
-            <!-- Este div será llenado dinámicamente por JavaScript -->
             <div class="products-grid-related">
-                 <!-- Contenido dinámico aquí -->
+                {/* Contenido dinámico aquí */}
             </div>
         </section>
     </main>
@@ -162,8 +156,8 @@
         </div>
         <div class="footer-content">
             <div class="footer-section">
-                <!--<h3>EL MEJOR PRECIO DEL PARAGUAY</h3>
-                   <div class="contact-info">
+                <h3>EL MEJOR PRECIO DEL PARAGUAY</h3>
+                <div class="contact-info">
                     <p><i class="fas fa-phone-alt"></i> Tenés alguna consulta? Llámanos!</p>
                     <p><span>(061) 512 113</span> - <span>0800 11 63 87</span></p>
                     <p>Horario de atención:</p>
@@ -182,7 +176,7 @@
                         </li>
                     </ul>
                 </div>
-            </div>-->
+            </div>
             <div class="footer-section">
                 <h3>CATEGORIAS</h3>
                 <ul>
@@ -200,8 +194,8 @@
                     <li><a href="#">Contacto</a></li>
                     <li><a href="#">Tienda</a></li>
                     <li><a href="#">Preguntas Frecuentes</a></li>
-                </ul>
-            </div>
+                    </ul>
+                </div>
             <div class="footer-section">
                 <h3>LA EMPRESA</h3>
                 <ul>
@@ -229,6 +223,20 @@
         <i class="fab fa-whatsapp"></i>
     </a>
 
+    <div id="newsletter-popup" class="newsletter-popup">
+        <div class="popup-content">
+            <span class="close-btn">&times;</span>
+            <h3>Recibe las mejores ofertas en Cubiertas, ¡suscríbete ahora!</h3>
+            <form>
+                <input type="email" placeholder="Correo electrónico" required>
+                <button type="submit" class="btn-subscribe">SUSCRIBIRSE</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Swiper JS -->
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     <script src="./js/script.js"></script>
+    
 </body>
 </html>

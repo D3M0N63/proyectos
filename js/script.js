@@ -21,17 +21,18 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // ********** Lógica de Búsqueda por Medidas y Encabezado **********
+    // ********** Lógica de Búsqueda por Medidas (Real) - Mantenida **********
     const searchBySizeButton = document.querySelector('.tire-search-by-size .btn-search');
-    const headerSearchInput = document.getElementById('header-search-input'); // Input de búsqueda del encabezado
-    const headerSearchButton = document.getElementById('header-search-button'); // Botón de búsqueda del encabezado
+    // headerSearchInput y headerSearchButton ya no son necesarios
+    // const headerSearchInput = document.getElementById('header-search-input');
+    // const headerSearchButton = document.getElementById('header-search-button');
 
     const searchResultsSection = document.getElementById('search-results-section');
     const searchResultsGrid = document.getElementById('search-results-grid');
     const noSearchResultsMessage = document.getElementById('no-search-results');
     const featuredProductsSection = document.querySelector('.featured-products');
 
-    // Función unificada para ejecutar la búsqueda
+    // Función unificada para ejecutar la búsqueda (ahora solo por medidas)
     async function executeSearch(params) {
         console.log(`executeSearch: Iniciando búsqueda con parámetros:`, params);
 
@@ -98,7 +99,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Event Listener para el botón de búsqueda por medidas
+    // Event Listener para el botón de búsqueda por medidas (Mantenido)
     if (searchBySizeButton) {
         searchBySizeButton.addEventListener('click', () => {
             const ancho = document.getElementById('ancho') ? document.getElementById('ancho').value : '';
@@ -114,28 +115,26 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Event Listener para el botón de búsqueda del encabezado
-    if (headerSearchButton && headerSearchInput) {
-        headerSearchButton.addEventListener('click', () => {
-            const queryText = headerSearchInput.value.trim();
-            if (queryText) {
-                executeSearch({ q: queryText }); // Pasar el término de búsqueda genérico
-            } else {
-                // Si la búsqueda está vacía, puedes mostrar los productos destacados de nuevo
-                if (featuredProductsSection) featuredProductsSection.style.display = 'block';
-                if (searchResultsSection) searchResultsSection.style.display = 'none';
-                searchResultsGrid.innerHTML = '';
-                noSearchResultsMessage.style.display = 'none';
-            }
-        });
-        // Opcional: Permitir búsqueda al presionar Enter en el input del encabezado
-        headerSearchInput.addEventListener('keypress', (event) => {
-            if (event.key === 'Enter') {
-                event.preventDefault(); // Evitar el envío de formulario por defecto
-                headerSearchButton.click(); // Simular clic en el botón
-            }
-        });
-    }
+    // Event Listener para el botón de búsqueda del encabezado - ELIMINADO
+    // if (headerSearchButton && headerSearchInput) {
+    //     headerSearchButton.addEventListener('click', () => {
+    //         const queryText = headerSearchInput.value.trim();
+    //         if (queryText) {
+    //             executeSearch({ q: queryText });
+    //         } else {
+    //             if (featuredProductsSection) featuredProductsSection.style.display = 'block';
+    //             if (searchResultsSection) searchResultsSection.style.display = 'none';
+    //             searchResultsGrid.innerHTML = '';
+    //             noSearchResultsMessage.style.display = 'none';
+    //         }
+    //     });
+    //     headerSearchInput.addEventListener('keypress', (event) => {
+    //         if (event.key === 'Enter') {
+    //             event.preventDefault();
+    //             headerSearchButton.click();
+    //         }
+    //     });
+    // }
 
 
     const accordionHeaders = document.querySelectorAll('.accordion-header');
