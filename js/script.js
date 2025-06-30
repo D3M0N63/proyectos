@@ -91,7 +91,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         products.forEach(product => {
-            // Acceso a propiedades en minúsculas
+            // Acceso a propiedades en minúsculas (quickspecs, pricelocal)
             const productCardHtml = `
                 <div class="swiper-slide product-card flex flex-col justify-between p-5 bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-all duration-200 ease-in-out transform hover:-translate-y-1 min-h-[450px] max-w-xs mx-auto">
                     <img src="${product.images[0]}" alt="${product.name}" class="h-48 object-contain mx-auto mb-4 rounded-md">
@@ -210,6 +210,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const productPriceElement = document.getElementById('product-price');
             if (productPriceElement) productPriceElement.textContent = product.price;
 
+            // Acceso a propiedades en minúsculas
             const productPriceLocalElement = document.getElementById('product-price-local');
             if (productPriceLocalElement) productPriceLocalElement.textContent = product.pricelocal; // Acceso en minúsculas
             
@@ -301,6 +302,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 efficiencyLabelDiv.style.display = 'none';
             }
 
+
             const mainProductImageElement = document.getElementById('main-product-image');
             if (mainProductImageElement) {
                 mainProductImageElement.src = product.images[0];
@@ -310,7 +312,6 @@ document.addEventListener('DOMContentLoaded', () => {
             if (thumbnailGalleryDiv) {
                 thumbnailGalleryDiv.innerHTML = '';
 
-                // Asegúrate de que product.images es un array y contiene al menos una URL válida
                 if (Array.isArray(product.images) && product.images.length > 0) {
                     product.images.forEach((imgSrc, index) => {
                         const img = document.createElement('img');
@@ -323,16 +324,19 @@ document.addEventListener('DOMContentLoaded', () => {
                         img.addEventListener('click', () => {
                             document.querySelectorAll('.thumbnail-gallery .thumbnail').forEach(t => t.classList.remove('active'));
                             img.classList.add('active');
-                            if (mainProductImageElement) { // Comprobación adicional por seguridad
+                            if (mainProductImageElement) {
                                 mainProductImageElement.src = img.dataset.fullSrc;
                             }
                         });
                         thumbnailGalleryDiv.appendChild(img);
                     });
                 } else {
-                    console.warn("loadProductDetail: product.images no es un array válido o está vacío.");
-                    // Si no hay imágenes, mostrar un placeholder o mensaje
-                    thumbnailGalleryDiv.innerHTML = '<p>No hay imágenes para este producto.</p>';
+                    console.warn("loadProductDetail: product.images no es un array válido o está vacío. Mostrando placeholder.");
+                    const placeholderImg = document.createElement('img');
+                    placeholderImg.src = "https://placehold.co/80x80/e0e0e0/white?text=No+Img";
+                    placeholderImg.alt = "No image available";
+                    placeholderImg.classList.add('thumbnail', 'active');
+                    thumbnailGalleryDiv.appendChild(placeholderImg);
                 }
             }
             
@@ -391,7 +395,7 @@ document.addEventListener('DOMContentLoaded', () => {
         relatedProductsToShow = availableProducts.slice(0, 3);
         console.log("loadRelatedProducts: Productos relacionados iniciales (hasta 3):", relatedProductsToShow);
 
-        while (relatedProductsToShow.length < 3 && availableProducts.length > relatedProductsToShow.length) {
+        while (relatedProductsToShow.length < 3 && availableProducts.length > relatedProductsToShow.length && relatedProductsToShow.length < availableProducts.length) {
             const randomProduct = availableProducts[Math.floor(Math.random() * availableProducts.length)];
             if (!relatedProductsToShow.some(p => p.id === randomProduct.id)) {
                 relatedProductsToShow.push(randomProduct);
@@ -449,4 +453,3 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 });
-
