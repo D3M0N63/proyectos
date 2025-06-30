@@ -60,7 +60,7 @@
                 </div>
             </div>
             <div class="hero-image">
-                <img src="./imagenes/banner-promo.jpg" alt="Neumáticos en promoción">
+                <img src="./imagenes/banner-promo.jpg" alt="Neumáticos en promoción" loading="eager"> {/* Carga 'eager' porque es la imagen principal */}
             </div>
         </section>
 
@@ -68,7 +68,7 @@
             <h2>Buscar neumático por medidas</h2>
             <div class="search-container">
                 <div class="explanation-image">
-                    <img src="./imagenes/medidas-neumatico.jpg" alt="Cómo saber la medida del neumático">
+                    <img src="./imagenes/medidas-neumatico.jpg" alt="Cómo saber la medida del neumático" loading="lazy"> {/* Lazy load */}
                     <div class="labels">
                         <span class="label ancho">205 ANCHURA DEL NEUMÁTICO</span>
                         <span class="label perfil">55 PERFIL DEL NEUMÁTICO</span>
@@ -126,7 +126,7 @@
             <h2>Más destacados</h2>
             <div class="swiper mySwiper">
                 <div class="swiper-wrapper">
-                    <!-- Productos se llenarán dinámicamente por script.js -->
+                    {/* Productos se llenarán dinámicamente por script.js */}
                 </div>
                 <!-- Paginación (los puntos de abajo) -->
                 <div class="swiper-pagination"></div>
@@ -141,7 +141,7 @@
         <section class="services-section">
             <div class="services-content">
                 <div class="service-image">
-                    <img src="./imagenes/service-tire-mounting.jpg" alt="Servicio de neumáticos">
+                    <img src="./imagenes/service-tire-mounting.jpg" alt="Servicio de neumáticos" loading="lazy"> {/* Lazy load */}
                 </div>
                 <div class="service-details">
                     <!-- Montaje y desmontaje de cubiertas como un ítem de acordeón -->
