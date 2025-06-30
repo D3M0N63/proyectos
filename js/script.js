@@ -135,11 +135,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (mySwiperInstance) {
             console.log("renderProductsCarousel: Destruyendo instancia existente de Swiper.");
-            mySwiperInstance.destroy(true, true);
-            mySwiperInstance = null;
+            mySwiperInstance.destroy(true, true); // `true, true` también limpia los slides del DOM
+            mySwiperInstance = null; // Resetear la instancia
         }
         
-        swiperWrapper.innerHTML = '';
+        swiperWrapper.innerHTML = ''; // Asegurar que el contenedor está vacío para los nuevos slides
 
         if (products.length === 0) {
             swiperWrapper.innerHTML = '<p style="text-align:center; color: gray; width: 100%;">No hay productos destacados disponibles.</p>';
@@ -149,6 +149,7 @@ document.addEventListener('DOMContentLoaded', () => {
             console.log("renderProductsCarousel: No hay productos para renderizar. Carrusel vacío.");
             return;
         } else {
+            // Asegurarse de que los controles sean visibles si hay productos
             swiperPagination.style.display = 'block';
             swiperNext.style.display = 'block';
             swiperPrev.style.display = 'block';
