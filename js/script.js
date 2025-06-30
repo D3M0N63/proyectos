@@ -91,14 +91,15 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         products.forEach(product => {
+            // Acceso a propiedades en minúsculas
             const productCardHtml = `
                 <div class="swiper-slide product-card flex flex-col justify-between p-5 bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-all duration-200 ease-in-out transform hover:-translate-y-1 min-h-[450px] max-w-xs mx-auto">
                     <img src="${product.images[0]}" alt="${product.name}" class="h-48 object-contain mx-auto mb-4 rounded-md">
                     <div class="product-info flex flex-col flex-grow text-left">
-                        <p class="brand">${product.quickspecs.brand}</p>
-                        <p class="model">${product.name}</p>
-                        <p class="price">${product.price}</p>
-                        <p class="price-local">(${product.pricelocal.split(' / ')[0]})</p>
+                        <p class="brand text-sm text-gray-500 uppercase mb-1">${product.quickspecs.brand}</p>
+                        <p class="model font-bold text-gray-800 text-base mb-2">${product.name}</p>
+                        <p class="price text-red-600 text-2xl font-bold mb-1">${product.price}</p>
+                        <p class="price-local text-xs text-gray-600 mb-4">(${product.pricelocal.split(' / ')[0]})</p>
                         <a href="product-detail.html?product=${product.id}" class="btn-view-product bg-red-600 text-white font-semibold py-2 rounded-md hover:bg-red-700 transition-colors duration-200 text-center w-full mt-auto">Ver producto</a>
                     </div>
                 </div>
@@ -124,7 +125,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Función para obtener todos los productos para la página principal
     async function fetchAllProducts() {
-        console.log("fetchAllProducts: Iniciando fetch de todos los productos."); // LOG
+        console.log("fetchAllProducts: Iniciando fetch de todos los productos.");
         try {
             const response = await fetch('/.netlify/functions/getProducts');  
             if (!response.ok) {
@@ -132,10 +133,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 throw new Error(`HTTP error! status: ${response.status} - ${errorData.error || response.statusText}`);
             }
             const products = await response.json();
-            console.log('fetchAllProducts: Productos obtenidos del backend:', products); // LOG
+            console.log('fetchAllProducts: Productos obtenidos del backend:', products);
             return products;
         } catch (error) {
-            console.error('fetchAllProducts: Error fetching all products:', error); // LOG
+            console.error('fetchAllProducts: Error fetching all products:', error);
             const carouselContainer = document.querySelector('.mySwiper .swiper-wrapper');
             if (carouselContainer) {
                 carouselContainer.innerHTML = '<p style="text-align:center; color: red;">Error al cargar los productos. Por favor, intente de nuevo más tarde.</p>';
@@ -146,7 +147,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Función para obtener un producto específico por ID para la página de detalle
     async function fetchProductById(id) {
-        console.log(`fetchProductById: Iniciando fetch para el ID: ${id}`); // LOG
+        console.log(`fetchProductById: Iniciando fetch para el ID: ${id}`);
         try {
             const response = await fetch(`/.netlify/functions/getProducts?id=${id}`);
             if (!response.ok) {
@@ -155,14 +156,14 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             const products = await response.json();
             if (products.length > 0) {
-                console.log('fetchProductById: Producto obtenido:', products[0]); // LOG
+                console.log('fetchProductById: Producto obtenido:', products[0]);
                 return products[0];
             } else {
-                console.log('fetchProductById: Producto no encontrado con ID:', id); // LOG
+                console.log('fetchProductById: Producto no encontrado con ID:', id);
                 return null;
             }
         } catch (error) {
-            console.error(`fetchProductById: Error fetching product with ID ${id}:`, error); // LOG
+            console.error(`fetchProductById: Error fetching product with ID ${id}:`, error);
             return null;
         }
     }
@@ -175,10 +176,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (window.location.pathname.includes('product-detail.html')) {
         if (productId) {
-            console.log("ProductDetailPage: Intentando cargar producto con ID de URL:", productId); // LOG
+            console.log("ProductDetailPage: Intentando cargar producto con ID de URL:", productId);
             loadProductDetail(productId);
         } else {
-            console.log("ProductDetailPage: No se encontró ID de producto en la URL."); // LOG
+            console.log("ProductDetailPage: No se encontró ID de producto en la URL.");
             const productDetailContainer = document.querySelector('.product-detail-container');
             if (productDetailContainer) {
                 productDetailContainer.innerHTML = `
@@ -192,17 +193,17 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
     } else {
-        console.log("HomePage: Cargando todos los productos para el carrusel."); // LOG
+        console.log("HomePage: Cargando todos los productos para el carrusel.");
         fetchAllProducts();
     }
 
 
     // Función que carga los detalles de un producto específico en product-detail.html
     async function loadProductDetail(id) {
-        console.log(`loadProductDetail: Llamando fetchProductById para ${id}`); // LOG
+        console.log(`loadProductDetail: Llamando fetchProductById para ${id}`);
         const product = await fetchProductById(id);
         if (product) {
-            console.log("loadProductDetail: Producto cargado. Actualizando UI."); // LOG
+            console.log("loadProductDetail: Producto cargado. Actualizando UI.", product); // LOG adicional del objeto product
             const productNameElement = document.getElementById('product-name');
             if (productNameElement) productNameElement.textContent = product.name;
 
@@ -210,15 +211,15 @@ document.addEventListener('DOMContentLoaded', () => {
             if (productPriceElement) productPriceElement.textContent = product.price;
 
             const productPriceLocalElement = document.getElementById('product-price-local');
-            if (productPriceLocalElement) productPriceLocalElement.textContent = product.pricelocal;
+            if (productPriceLocalElement) productPriceLocalElement.textContent = product.pricelocal; // Acceso en minúsculas
             
             const stockStatusElement = document.getElementById('stock-status');
             if (stockStatusElement) {
-                stockStatusElement.textContent = product.stockstatus;
+                stockStatusElement.textContent = product.stockstatus; // Acceso en minúsculas
                 stockStatusElement.className = 'out-of-stock';
-                if (product.stockstatus === 'En stock') {
+                if (product.stockstatus === 'En stock') { // Acceso en minúsculas
                     stockStatusElement.classList.add('in-stock');
-                } else if (product.stockstatus === 'Últimas unidades') {
+                } else if (product.stockstatus === 'Últimas unidades') { // Acceso en minúsculas
                     stockStatusElement.classList.add('low-stock');
                 }
             }
@@ -232,24 +233,26 @@ document.addEventListener('DOMContentLoaded', () => {
             const productTagsElement = document.getElementById('product-tags');
             if (productTagsElement) productTagsElement.textContent = product.tags;
 
+            // Actualizar Quick Specs (accediendo a propiedades del JSONB en minúsculas)
             const productBrandElement = document.getElementById('product-brand');
-            if (productBrandElement) productBrandElement.textContent = product.quickspecs.brand;
+            if (productBrandElement) productBrandElement.textContent = product.quickspecs.brand; // Acceso en minúsculas
             
             const productLarguraElement = document.getElementById('product-largura');
-            if (productLarguraElement) productLarguraElement.textContent = product.quickspecs.largura;
+            if (productLarguraElement) productLarguraElement.textContent = product.quickspecs.largura; // Acceso en minúsculas
             
             const productPerfilElement = document.getElementById('product-perfil');
-            if (productPerfilElement) productPerfilElement.textContent = product.quickspecs.perfil;
+            if (productPerfilElement) productPerfilElement.textContent = product.quickspecs.perfil; // Acceso en minúsculas
             
             const productAroElement = document.getElementById('product-aro');
-            if (productAroElement) productAroElement.textContent = product.quickspecs.aro;
+            if (productAroElement) productAroElement.textContent = product.quickspecs.aro; // Acceso en minúsculas
             
             const productLoadIndexElement = document.getElementById('product-load-index');
-            if (productLoadIndexElement) productLoadIndexElement.textContent = product.quickspecs.loadIndex;
+            if (productLoadIndexElement) productLoadIndexElement.textContent = product.quickspecs.loadIndex; // Acceso en minúsculas
             
             const productSpeedIndexElement = document.getElementById('product-speed-index');
-            if (productSpeedIndexElement) productSpeedIndexElement.textContent = product.quickspecs.speedIndex;
+            if (productSpeedIndexElement) productSpeedIndexElement.textContent = product.quickspecs.speedIndex; // Acceso en minúsculas
 
+            // Actualizar Detalles (pestaña DETALLES)
             const detailsTabHeading = document.querySelector('#details h3');
             if (detailsTabHeading) detailsTabHeading.textContent = `Detalles del ${product.name}`;
             
@@ -257,40 +260,41 @@ document.addEventListener('DOMContentLoaded', () => {
             if (productDescriptionElement) productDescriptionElement.textContent = product.description;
             
             const detailMeasureElement = document.getElementById('detail-measure');
-            if (detailMeasureElement) detailMeasureElement.textContent = product.detailspecs.measure;
+            if (detailMeasureElement) detailMeasureElement.textContent = product.detailspecs.measure; // Acceso en minúsculas
             
             const detailLoadIndexElement = document.getElementById('detail-load-index');
-            if (detailLoadIndexElement) detailLoadIndexElement.textContent = product.detailspecs.loadIndex;
+            if (detailLoadIndexElement) detailLoadIndexElement.textContent = product.detailspecs.loadIndex; // Acceso en minúsculas
             
             const detailSpeedIndexElement = document.getElementById('detail-speed-index');
-            if (detailSpeedIndexElement) detailSpeedIndexElement.textContent = product.detailspecs.speedIndex;
+            if (detailSpeedIndexElement) detailSpeedIndexElement.textContent = product.detailspecs.speedIndex; // Acceso en minúsculas
             
             const detailVehicleTypeElement = document.getElementById('detail-vehicle-type');
-            if (detailVehicleTypeElement) detailVehicleTypeElement.textContent = product.detailspecs.vehicleType;
+            if (detailVehicleTypeElement) detailVehicleTypeElement.textContent = product.detailspecs.vehicleType; // Acceso en minúsculas
             
             const detailTreadDesignElement = document.getElementById('detail-tread-design');
-            if (detailTreadDesignElement) detailTreadDesignElement.textContent = product.detailspecs.treadDesign;
+            if (detailTreadDesignElement) detailTreadDesignElement.textContent = product.detailspecs.treadDesign; // Acceso en minúsculas
             
             const detailWarrantyElement = document.getElementById('detail-warranty');
-            if (detailWarrantyElement) detailWarrantyElement.textContent = product.detailspecs.warranty;
+            if (detailWarrantyElement) detailWarrantyElement.textContent = product.detailspecs.warranty; // Acceso en minúsculas
 
+            // Actualizar Más Información (pestaña MAS INFORMACIÓN)
             const moreInfoLoadIndexElement = document.getElementById('more-info-load-index');
-            if (moreInfoLoadIndexElement) moreInfoLoadIndexElement.textContent = product.moreinfo.loadIndex;
+            if (moreInfoLoadIndexElement) moreInfoLoadIndexElement.textContent = product.moreinfo.loadIndex; // Acceso en minúsculas
             
             const moreInfoSpeedIndexElement = document.getElementById('more-info-speed-index');
-            if (moreInfoSpeedIndexElement) moreInfoSpeedIndexElement.textContent = product.moreinfo.speedIndex;
+            if (moreInfoSpeedIndexElement) moreInfoSpeedIndexElement.textContent = product.moreinfo.speedIndex; // Acceso en minúsculas
             
             const moreInfoTypeElement = document.getElementById('more-info-type');
-            if (moreInfoTypeElement) moreInfoTypeElement.textContent = product.moreinfo.type;
+            if (moreInfoTypeElement) moreInfoTypeElement.textContent = product.moreinfo.type; // Acceso en minúsculas
             
             const moreInfoConstructionElement = document.getElementById('more-info-construction');
-            if (moreInfoConstructionElement) moreInfoConstructionElement.textContent = product.moreinfo.construction;
+            if (moreInfoConstructionElement) moreInfoConstructionElement.textContent = product.moreinfo.construction; // Acceso en minúsculas
             
             const moreInfoApplicationElement = document.getElementById('more-info-application');
-            if (moreInfoApplicationElement) moreInfoApplicationElement.textContent = product.moreinfo.application;
+            if (moreInfoApplicationElement) moreInfoApplicationElement.textContent = product.moreinfo.application; // Acceso en minúsculas
             
             const moreInfoLettersElement = document.getElementById('more-info-letters');
-            if (moreInfoLettersElement) moreInfoLettersElement.textContent = product.moreinfo.letters;
+            if (moreInfoLettersElement) moreInfoLettersElement.textContent = product.moreinfo.letters; // Acceso en minúsculas
             
             const efficiencyLabelDiv = document.querySelector('.efficiency-label');
             if (efficiencyLabelDiv) {
@@ -306,20 +310,30 @@ document.addEventListener('DOMContentLoaded', () => {
             if (thumbnailGalleryDiv) {
                 thumbnailGalleryDiv.innerHTML = '';
 
-                product.images.forEach((imgSrc, index) => {
-                    const img = document.createElement('img');
-                    img.src = imgSrc;
-                    img.alt = `Thumbnail ${index + 1} de ${product.name}`;
-                    img.classList.add('thumbnail');
-                    if (index === 0) img.classList.add('active');
-                    img.dataset.fullSrc = imgSrc;
-                    img.addEventListener('click', () => {
-                        document.querySelectorAll('.thumbnail-gallery .thumbnail').forEach(t => t.classList.remove('active'));
-                        img.classList.add('active');
-                        mainProductImageElement.src = img.dataset.fullSrc;
+                // Asegúrate de que product.images es un array y contiene al menos una URL válida
+                if (Array.isArray(product.images) && product.images.length > 0) {
+                    product.images.forEach((imgSrc, index) => {
+                        const img = document.createElement('img');
+                        img.src = imgSrc;
+                        img.alt = `Thumbnail ${index + 1} de ${product.name}`;
+                        img.classList.add('thumbnail');
+                        if (index === 0) img.classList.add('active');
+                        img.dataset.fullSrc = imgSrc;
+                        // Usar mainProductImageElement para el cambio de src
+                        img.addEventListener('click', () => {
+                            document.querySelectorAll('.thumbnail-gallery .thumbnail').forEach(t => t.classList.remove('active'));
+                            img.classList.add('active');
+                            if (mainProductImageElement) { // Comprobación adicional por seguridad
+                                mainProductImageElement.src = img.dataset.fullSrc;
+                            }
+                        });
+                        thumbnailGalleryDiv.appendChild(img);
                     });
-                    thumbnailGalleryDiv.appendChild(img);
-                });
+                } else {
+                    console.warn("loadProductDetail: product.images no es un array válido o está vacío.");
+                    // Si no hay imágenes, mostrar un placeholder o mensaje
+                    thumbnailGalleryDiv.innerHTML = '<p>No hay imágenes para este producto.</p>';
+                }
             }
             
             const whatsappBtn = document.querySelector('.btn-pedir-informacion');
@@ -328,11 +342,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 whatsappBtn.href = `https://wa.me/595XXXXXXXXX?text=${whatsappMessage}`;
             }
 
-            console.log("loadProductDetail: Llamando a loadRelatedProducts."); // LOG
+            console.log("loadProductDetail: Llamando a loadRelatedProducts.");
             loadRelatedProducts(id);
 
         } else {
-            console.error('loadProductDetail: Producto no encontrado después de la obtención del backend.'); // LOG
+            console.error('loadProductDetail: Producto no encontrado después de la obtención del backend.');
             const productDetailContainer = document.querySelector('.product-detail-container');
             if (productDetailContainer) {
                 productDetailContainer.innerHTML = `
@@ -348,61 +362,58 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Nueva función para cargar productos relacionados
     async function loadRelatedProducts(currentProductId) {
-        console.log(`loadRelatedProducts: Iniciando carga de productos relacionados para ${currentProductId}.`); // LOG
+        console.log(`loadRelatedProducts: Iniciando carga de productos relacionados para ${currentProductId}.`);
         const relatedProductsContainer = document.querySelector('.products-grid-related');
         if (!relatedProductsContainer) {
-            console.warn("loadRelatedProducts: Contenedor de productos relacionados no encontrado."); // LOG
+            console.warn("loadRelatedProducts: Contenedor de productos relacionados no encontrado.");
             return;
         }
 
-        relatedProductsContainer.innerHTML = ''; // Limpiar productos estáticos existentes
+        relatedProductsContainer.innerHTML = '';
 
-        const allProducts = await fetchAllProducts(); // Obtiene todos los productos del backend
-        console.log("loadRelatedProducts: Todos los productos obtenidos:", allProducts); // LOG
+        const allProducts = await fetchAllProducts();
+        console.log("loadRelatedProducts: Todos los productos obtenidos:", allProducts);
         if (!allProducts || allProducts.length === 0) {
             const relatedSection = document.querySelector('.related-products');
             if (relatedSection) relatedSection.style.display = 'none';
-            console.log("loadRelatedProducts: No hay productos en total para mostrar relacionados."); // LOG
+            console.log("loadRelatedProducts: No hay productos en total para mostrar relacionados.");
             return;
         }
 
         let relatedProductsToShow = [];
 
-        // Filtra el producto actual por su ID y mezcla los demás
         const availableProducts = allProducts.filter(p => p.id !== currentProductId);
-        console.log("loadRelatedProducts: Productos disponibles (excluyendo el actual):", availableProducts); // LOG
+        console.log("loadRelatedProducts: Productos disponibles (excluyendo el actual):", availableProducts);
         
-        availableProducts.sort(() => 0.5 - Math.random()); // Mezcla aleatoriamente
+        availableProducts.sort(() => 0.5 - Math.random());
 
-        relatedProductsToShow = availableProducts.slice(0, 3); // Tomar los primeros 3 (o los que quieras)
-        console.log("loadRelatedProducts: Productos relacionados iniciales (hasta 3):", relatedProductsToShow); // LOG
+        relatedProductsToShow = availableProducts.slice(0, 3);
+        console.log("loadRelatedProducts: Productos relacionados iniciales (hasta 3):", relatedProductsToShow);
 
-        // Si hay menos de 3 relacionados y hay más productos disponibles para rellenar
         while (relatedProductsToShow.length < 3 && availableProducts.length > relatedProductsToShow.length) {
             const randomProduct = availableProducts[Math.floor(Math.random() * availableProducts.length)];
-            // Asegurarse de no añadir duplicados si la mezcla no es perfecta y hay pocos productos
             if (!relatedProductsToShow.some(p => p.id === randomProduct.id)) {
                 relatedProductsToShow.push(randomProduct);
-                console.log("loadRelatedProducts: Rellenando con producto extra:", randomProduct.id); // LOG
+                console.log("loadRelatedProducts: Rellenando con producto extra:", randomProduct.id);
             }
         }
-        console.log("loadRelatedProducts: Productos relacionados finales a mostrar:", relatedProductsToShow); // LOG
+        console.log("loadRelatedProducts: Productos relacionados finales a mostrar:", relatedProductsToShow);
 
 
         const relatedSection = document.querySelector('.related-products');
         if (relatedProductsToShow.length === 0 && relatedSection) {
             relatedSection.style.display = 'none';
-            console.log("loadRelatedProducts: Ocultando sección de relacionados (no hay productos)."); // LOG
+            console.log("loadRelatedProducts: Ocultando sección de relacionados (no hay productos).");
         } else if (relatedSection) {
             relatedSection.style.display = 'block';
-            console.log("loadRelatedProducts: Mostrando sección de relacionados."); // LOG
+            console.log("loadRelatedProducts: Mostrando sección de relacionados.");
         }
 
 
         relatedProductsToShow.forEach(product => {
             if (product) {
+                // Acceso a propiedades en minúsculas
                 const productCard = `
                     <div class="product-card">
                         <img src="${product.images[0]}" alt="Neumático ${product.name}">
@@ -416,16 +427,15 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                 `;
                 relatedProductsContainer.insertAdjacentHTML('beforeend', productCard);
-                console.log(`loadRelatedProducts: Añadido producto ${product.id} a la UI.`); // LOG
+                console.log(`loadRelatedProducts: Añadido producto ${product.id} a la UI.`);
             }
         });
         
-        // Ajustar la altura mínima de las tarjetas relacionadas después de cargarlas
         const relatedCards = relatedProductsContainer.querySelectorAll('.product-card');
         if (relatedCards.length > 0) {
             let maxHeight = 0;
             relatedCards.forEach(card => {
-                card.style.minHeight = 'auto'; // Resetear para recalcular
+                card.style.minHeight = 'auto';
             });
             relatedCards.forEach(card => {
                 if (card.offsetHeight > maxHeight) {
@@ -435,7 +445,7 @@ document.addEventListener('DOMContentLoaded', () => {
             relatedCards.forEach(card => {
                 card.style.minHeight = `${maxHeight}px`;
             });
-            console.log(`loadRelatedProducts: Altura de tarjetas relacionadas ajustada a ${maxHeight}px.`); // LOG
+            console.log(`loadRelatedProducts: Altura de tarjetas relacionadas ajustada a ${maxHeight}px.`);
         }
     }
 });
