@@ -58,40 +58,41 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Función para renderizar los productos en el carrusel de index.html
     function renderProductsCarousel(products) {
+        console.log("renderProductsCarousel: Iniciando renderizado del carrusel con productos:", products); // LOG
         const swiperWrapper = document.querySelector('.mySwiper .swiper-wrapper');
         const swiperContainer = document.querySelector(".mySwiper");
+        const swiperPagination = document.querySelector(".swiper-pagination");
+        const swiperNext = document.querySelector(".swiper-button-next");
+        const swiperPrev = document.querySelector(".swiper-button-prev");
 
         if (!swiperWrapper || !swiperContainer) {
-            console.warn("Contenedor de Swiper no encontrado en HomePage, no se puede renderizar el carrusel.");
+            console.error("renderProductsCarousel: Elementos clave de Swiper no encontrados. Asegúrate de que el HTML del carrusel está correcto."); // ERROR LOG
             return;
         }
 
+        // Destruir la instancia existente de Swiper si la hay para evitar duplicados y limpiar DOM
         if (mySwiperInstance) {
+            console.log("renderProductsCarousel: Destruyendo instancia existente de Swiper."); // LOG
             mySwiperInstance.destroy(true, true);
             mySwiperInstance = null;
         }
-        swiperWrapper.innerHTML = '';
+        
+        swiperWrapper.innerHTML = ''; // Asegurar que el contenedor está vacío para los nuevos slides
 
         if (products.length === 0) {
             swiperWrapper.innerHTML = '<p style="text-align:center; color: gray; width: 100%;">No hay productos disponibles.</p>';
-            const swiperPagination = document.querySelector(".swiper-pagination");
-            const swiperNext = document.querySelector(".swiper-button-next");
-            const swiperPrev = document.querySelector(".swiper-button-prev");
             if(swiperPagination) swiperPagination.style.display = 'none';
             if(swiperNext) swiperNext.style.display = 'none';
             if(swiperPrev) swiperPrev.style.display = 'none';
+            console.log("renderProductsCarousel: No hay productos para renderizar. Carrusel vacío."); // LOG
             return;
         } else {
-            const swiperPagination = document.querySelector(".swiper-pagination");
-            const swiperNext = document.querySelector(".swiper-button-next");
-            const swiperPrev = document.querySelector(".swiper-button-prev");
             if(swiperPagination) swiperPagination.style.display = 'block';
             if(swiperNext) swiperNext.style.display = 'block';
             if(swiperPrev) swiperPrev.style.display = 'block';
         }
 
         products.forEach(product => {
-            // Acceso a propiedades en minúsculas (quickspecs, pricelocal)
             const productCardHtml = `
                 <div class="swiper-slide product-card flex flex-col justify-between p-5 bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-all duration-200 ease-in-out transform hover:-translate-y-1 min-h-[450px] max-w-xs mx-auto">
                     <img src="${product.images[0]}" alt="${product.name}" class="h-48 object-contain mx-auto mb-4 rounded-md">
@@ -105,22 +106,32 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
             `;
             swiperWrapper.insertAdjacentHTML('beforeend', productCardHtml);
+            console.log(`renderProductsCarousel: Añadido slide para producto ${product.id}`); // LOG
         });
 
-        if (swiperContainer) {
-            swiperContainer.swiper = new Swiper(swiperContainer, {
-                slidesPerView: 1,
-                spaceBetween: 10,
-                loop: true,
-                pagination: { el: ".swiper-pagination", clickable: true },
-                navigation: { nextEl: ".swiper-button-next", prevEl: ".swiper-button-prev" },
-                breakpoints: {
-                    640: { slidesPerView: 2, spaceBetween: 20 },
-                    768: { slidesPerView: 3, spaceBetween: 30 },
-                    1024: { slidesPerView: 4, spaceBetween: 30 },
-                },
-            });
-        }
+        // Inicializar Swiper
+        // Espera un momento para que el navegador termine de renderizar el innerHTML
+        setTimeout(() => {
+            console.log("renderProductsCarousel: Intentando inicializar Swiper..."); // LOG
+            if (typeof Swiper !== 'undefined' && swiperContainer) {
+                 mySwiperInstance = new Swiper(swiperContainer, {
+                    slidesPerView: 1,
+                    spaceBetween: 10,
+                    loop: true,
+                    pagination: { el: ".swiper-pagination", clickable: true },
+                    navigation: { nextEl: ".swiper-button-next", prevEl: ".swiper-button-prev" },
+                    breakpoints: {
+                        640: { slidesPerView: 2, spaceBetween: 20 },
+                        768: { slidesPerView: 3, spaceBetween: 30 },
+                        1024: { slidesPerView: 4, spaceBetween: 30 },
+                    },
+                });
+                mySwiperInstance.update();
+                console.log("renderProductsCarousel: Swiper inicializado y actualizado."); // LOG
+            } else {
+                console.error("renderProductsCarousel: Swiper no está definido o el contenedor no existe. No se pudo inicializar."); // ERROR LOG
+            }
+        }, 100); // Pequeño retraso para asegurar que el DOM se actualice
     }
 
     // Función para obtener todos los productos para la página principal
@@ -134,6 +145,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             const products = await response.json();
             console.log('fetchAllProducts: Productos obtenidos del backend:', products);
+            renderProductsCarousel(products); // Renderiza los productos en el carrusel
             return products;
         } catch (error) {
             console.error('fetchAllProducts: Error fetching all products:', error);
@@ -203,24 +215,23 @@ document.addEventListener('DOMContentLoaded', () => {
         console.log(`loadProductDetail: Llamando fetchProductById para ${id}`);
         const product = await fetchProductById(id);
         if (product) {
-            console.log("loadProductDetail: Producto cargado. Actualizando UI.", product); // LOG adicional del objeto product
+            console.log("loadProductDetail: Producto cargado. Actualizando UI.", product);
             const productNameElement = document.getElementById('product-name');
             if (productNameElement) productNameElement.textContent = product.name;
 
             const productPriceElement = document.getElementById('product-price');
             if (productPriceElement) productPriceElement.textContent = product.price;
 
-            // Acceso a propiedades en minúsculas
             const productPriceLocalElement = document.getElementById('product-price-local');
-            if (productPriceLocalElement) productPriceLocalElement.textContent = product.pricelocal; // Acceso en minúsculas
+            if (productPriceLocalElement) productPriceLocalElement.textContent = product.pricelocal;
             
             const stockStatusElement = document.getElementById('stock-status');
             if (stockStatusElement) {
-                stockStatusElement.textContent = product.stockstatus; // Acceso en minúsculas
+                stockStatusElement.textContent = product.stockstatus;
                 stockStatusElement.className = 'out-of-stock';
-                if (product.stockstatus === 'En stock') { // Acceso en minúsculas
+                if (product.stockstatus === 'En stock') {
                     stockStatusElement.classList.add('in-stock');
-                } else if (product.stockstatus === 'Últimas unidades') { // Acceso en minúsculas
+                } else if (product.stockstatus === 'Últimas unidades') {
                     stockStatusElement.classList.add('low-stock');
                 }
             }
@@ -234,26 +245,24 @@ document.addEventListener('DOMContentLoaded', () => {
             const productTagsElement = document.getElementById('product-tags');
             if (productTagsElement) productTagsElement.textContent = product.tags;
 
-            // Actualizar Quick Specs (accediendo a propiedades del JSONB en minúsculas)
             const productBrandElement = document.getElementById('product-brand');
-            if (productBrandElement) productBrandElement.textContent = product.quickspecs.brand; // Acceso en minúsculas
+            if (productBrandElement) productBrandElement.textContent = product.quickspecs.brand;
             
             const productLarguraElement = document.getElementById('product-largura');
-            if (productLarguraElement) productLarguraElement.textContent = product.quickspecs.largura; // Acceso en minúsculas
+            if (productLarguraElement) productLarguraElement.textContent = product.quickspecs.largura;
             
             const productPerfilElement = document.getElementById('product-perfil');
-            if (productPerfilElement) productPerfilElement.textContent = product.quickspecs.perfil; // Acceso en minúsculas
+            if (productPerfilElement) productPerfilElement.textContent = product.quickspecs.perfil;
             
             const productAroElement = document.getElementById('product-aro');
-            if (productAroElement) productAroElement.textContent = product.quickspecs.aro; // Acceso en minúsculas
+            if (productAroElement) productAroElement.textContent = product.quickspecs.aro;
             
             const productLoadIndexElement = document.getElementById('product-load-index');
-            if (productLoadIndexElement) productLoadIndexElement.textContent = product.quickspecs.loadIndex; // Acceso en minúsculas
+            if (productLoadIndexElement) productLoadIndexElement.textContent = product.quickspecs.loadIndex;
             
             const productSpeedIndexElement = document.getElementById('product-speed-index');
-            if (productSpeedIndexElement) productSpeedIndexElement.textContent = product.quickspecs.speedIndex; // Acceso en minúsculas
+            if (productSpeedIndexElement) productSpeedIndexElement.textContent = product.quickspecs.speedIndex;
 
-            // Actualizar Detalles (pestaña DETALLES)
             const detailsTabHeading = document.querySelector('#details h3');
             if (detailsTabHeading) detailsTabHeading.textContent = `Detalles del ${product.name}`;
             
@@ -261,41 +270,40 @@ document.addEventListener('DOMContentLoaded', () => {
             if (productDescriptionElement) productDescriptionElement.textContent = product.description;
             
             const detailMeasureElement = document.getElementById('detail-measure');
-            if (detailMeasureElement) detailMeasureElement.textContent = product.detailspecs.measure; // Acceso en minúsculas
+            if (detailMeasureElement) detailMeasureElement.textContent = product.detailspecs.measure;
             
             const detailLoadIndexElement = document.getElementById('detail-load-index');
-            if (detailLoadIndexElement) detailLoadIndexElement.textContent = product.detailspecs.loadIndex; // Acceso en minúsculas
+            if (detailLoadIndexElement) detailLoadIndexElement.textContent = product.detailspecs.loadIndex;
             
             const detailSpeedIndexElement = document.getElementById('detail-speed-index');
-            if (detailSpeedIndexElement) detailSpeedIndexElement.textContent = product.detailspecs.speedIndex; // Acceso en minúsculas
+            if (detailSpeedIndexElement) detailSpeedIndexElement.textContent = product.detailspecs.speedIndex;
             
             const detailVehicleTypeElement = document.getElementById('detail-vehicle-type');
-            if (detailVehicleTypeElement) detailVehicleTypeElement.textContent = product.detailspecs.vehicleType; // Acceso en minúsculas
+            if (detailVehicleTypeElement) detailVehicleTypeElement.textContent = product.detailspecs.vehicleType;
             
             const detailTreadDesignElement = document.getElementById('detail-tread-design');
-            if (detailTreadDesignElement) detailTreadDesignElement.textContent = product.detailspecs.treadDesign; // Acceso en minúsculas
+            if (detailTreadDesignElement) detailTreadDesignElement.textContent = product.detailspecs.treadDesign;
             
             const detailWarrantyElement = document.getElementById('detail-warranty');
-            if (detailWarrantyElement) detailWarrantyElement.textContent = product.detailspecs.warranty; // Acceso en minúsculas
+            if (detailWarrantyElement) detailWarrantyElement.textContent = product.detailspecs.warranty;
 
-            // Actualizar Más Información (pestaña MAS INFORMACIÓN)
             const moreInfoLoadIndexElement = document.getElementById('more-info-load-index');
-            if (moreInfoLoadIndexElement) moreInfoLoadIndexElement.textContent = product.moreinfo.loadIndex; // Acceso en minúsculas
+            if (moreInfoLoadIndexElement) moreInfoLoadIndexElement.textContent = product.moreinfo.loadIndex;
             
             const moreInfoSpeedIndexElement = document.getElementById('more-info-speed-index');
-            if (moreInfoSpeedIndexElement) moreInfoSpeedIndexElement.textContent = product.moreinfo.speedIndex; // Acceso en minúsculas
+            if (moreInfoSpeedIndexElement) moreInfoSpeedIndexElement.textContent = product.moreinfo.speedIndex;
             
             const moreInfoTypeElement = document.getElementById('more-info-type');
-            if (moreInfoTypeElement) moreInfoTypeElement.textContent = product.moreinfo.type; // Acceso en minúsculas
+            if (moreInfoTypeElement) moreInfoTypeElement.textContent = product.moreinfo.type;
             
             const moreInfoConstructionElement = document.getElementById('more-info-construction');
-            if (moreInfoConstructionElement) moreInfoConstructionElement.textContent = product.moreinfo.construction; // Acceso en minúsculas
+            if (moreInfoConstructionElement) moreInfoConstructionElement.textContent = product.moreinfo.construction;
             
             const moreInfoApplicationElement = document.getElementById('more-info-application');
-            if (moreInfoApplicationElement) moreInfoApplicationElement.textContent = product.moreinfo.application; // Acceso en minúsculas
+            if (moreInfoApplicationElement) moreInfoApplicationElement.textContent = product.moreinfo.application;
             
             const moreInfoLettersElement = document.getElementById('more-info-letters');
-            if (moreInfoLettersElement) moreInfoLettersElement.textContent = product.moreinfo.letters; // Acceso en minúsculas
+            if (moreInfoLettersElement) moreInfoLettersElement.textContent = product.moreinfo.letters;
             
             const efficiencyLabelDiv = document.querySelector('.efficiency-label');
             if (efficiencyLabelDiv) {
@@ -320,7 +328,6 @@ document.addEventListener('DOMContentLoaded', () => {
                         img.classList.add('thumbnail');
                         if (index === 0) img.classList.add('active');
                         img.dataset.fullSrc = imgSrc;
-                        // Usar mainProductImageElement para el cambio de src
                         img.addEventListener('click', () => {
                             document.querySelectorAll('.thumbnail-gallery .thumbnail').forEach(t => t.classList.remove('active'));
                             img.classList.add('active');
