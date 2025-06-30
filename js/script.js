@@ -529,4 +529,5 @@ document.addEventListener('DOMContentLoaded', () => {
             });
             console.log(`loadRelatedProducts: Altura de tarjetas relacionadas ajustada a ${maxHeight}px.`);
         }
-    };
+    }
+});
