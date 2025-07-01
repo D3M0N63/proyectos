@@ -21,80 +21,116 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    const searchButton = document.querySelector('.tire-search-by-size .btn-search');
-    if (searchButton) {
-        searchButton.addEventListener('click', async () => { // Hacemos la función async
+    // ********** Lógica de Búsqueda por Medidas y Categoría **********
+    const searchBySizeButton = document.querySelector('.tire-search-by-size .btn-search');
+    const categoryLinks = document.querySelectorAll('.categories-nav a[data-category]'); // Seleccionar enlaces de categoría
+
+    const searchResultsSection = document.getElementById('search-results-section');
+    const searchResultsGrid = document.getElementById('search-results-grid');
+    const noSearchResultsMessage = document.getElementById('no-search-results');
+    const featuredProductsSection = document.querySelector('.featured-products');
+
+    // Función unificada para ejecutar la búsqueda
+    async function executeSearch(params) {
+        console.log(`executeSearch: Iniciando búsqueda con parámetros:`, params);
+
+        // Ocultar la sección de productos destacados temporalmente
+        if (featuredProductsSection) {
+            featuredProductsSection.style.display = 'none';
+        }
+
+        // Mostrar la sección de resultados de búsqueda y limpiar contenido previo
+        if (searchResultsSection && searchResultsGrid && noSearchResultsMessage) {
+            searchResultsSection.style.display = 'block';
+            searchResultsGrid.innerHTML = '<p style="text-align:center; color: gray; width: 100%;">Cargando resultados...</p>';
+            noSearchResultsMessage.style.display = 'none';
+        } else {
+            console.error("executeSearch: Elementos de resultados de búsqueda no encontrados en el DOM.");
+            return;
+        }
+
+        try {
+            const queryString = new URLSearchParams(params).toString();
+            const response = await fetch(`/.netlify/functions/getProducts${queryString ? `?${queryString}` : ''}`);
+            
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(`HTTP error! status: ${response.status} - ${errorData.error || response.statusText}`);
+            }
+
+            const results = await response.json();
+            console.log('executeSearch: Resultados de búsqueda obtenidos:', results);
+
+            searchResultsGrid.innerHTML = ''; // Limpiar el mensaje de carga
+
+            if (results.length > 0) {
+                results.forEach(product => {
+                    const productCardHtml = `
+                        <div class="product-card">
+                            <img src="${product.images[0]}" alt="${product.name}">
+                            <div class="product-info">
+                                <p class="brand">${product.quickspecs.brand}</p>
+                                <p class="model">${product.name}</p>
+                                <p class="price">${product.price}</p>
+                                <p class="price-local">(${product.pricelocal.split(' / ')[0]})</p>
+                                <a href="product-detail.html?product=${product.id}" class="btn-view-product">Ver producto</a>
+                            </div>
+                        </div>
+                    `;
+                    searchResultsGrid.insertAdjacentHTML('beforeend', productCardHtml);
+                });
+                // Ajustar la altura mínima de las tarjetas después de cargarlas
+                const cards = searchResultsGrid.querySelectorAll('.product-card');
+                if (cards.length > 0) {
+                    let maxHeight = 0;
+                    cards.forEach(card => { card.style.minHeight = 'auto'; });
+                    cards.forEach(card => { if (card.offsetHeight > maxHeight) { maxHeight = card.offsetHeight; } });
+                    cards.forEach(card => { card.style.minHeight = `${maxHeight}px`; });
+                }
+
+            } else {
+                noSearchResultsMessage.style.display = 'block';
+            }
+        } catch (error) {
+            console.error('executeSearch: Error durante la búsqueda de neumáticos:', error);
+            searchResultsGrid.innerHTML = '<p style="text-align:center; color: red;">Error al realizar la búsqueda. Por favor, intente de nuevo.</p>';
+            noSearchResultsMessage.style.display = 'none'; // Asegurarse de que el mensaje de no resultados no se muestre con error
+        }
+    }
+
+    // Event Listener para el botón de búsqueda por medidas
+    if (searchBySizeButton) {
+        searchBySizeButton.addEventListener('click', () => {
             const ancho = document.getElementById('ancho') ? document.getElementById('ancho').value : '';
             const perfil = document.getElementById('perfil') ? document.getElementById('perfil').value : '';
             const aro = document.getElementById('aro') ? document.getElementById('aro').value : '';
 
-            console.log(`Iniciando búsqueda con: Ancho=${ancho}, Perfil=${perfil}, Aro=${aro}`);
+            const searchParams = {};
+            if (ancho && ancho !== 'todos') searchParams.ancho = ancho;
+            if (perfil && perfil !== 'todos') searchParams.perfil = perfil;
+            if (aro && aro !== 'todos') searchParams.aro = aro;
 
-            const searchResultsSection = document.getElementById('search-results-section');
-            const searchResultsGrid = document.getElementById('search-results-grid');
-            const noSearchResultsMessage = document.getElementById('no-search-results');
-            const featuredProductsSection = document.querySelector('.featured-products');
-
-            if (searchResultsSection && searchResultsGrid && noSearchResultsMessage && featuredProductsSection) {
-                featuredProductsSection.style.display = 'none'; // Oculta destacados cuando se busca
-
-                searchResultsSection.style.display = 'block';
-                searchResultsGrid.innerHTML = '<p style="text-align:center; color: gray; width: 100%;">Cargando resultados...</p>';
-                noSearchResultsMessage.style.display = 'none';
-
-                try {
-                    const params = new URLSearchParams();
-                    if (ancho && ancho !== 'todos') params.append('ancho', ancho);
-                    if (perfil && perfil !== 'todos') params.append('perfil', perfil);
-                    if (aro && aro !== 'todos') params.append('aro', aro);
-
-                    const queryString = params.toString();
-                    const response = await fetch(`/.netlify/functions/getProducts${queryString ? `?${queryString}` : ''}`);
-                    
-                    if (!response.ok) {
-                        const errorData = await response.json();
-                        throw new Error(`HTTP error! status: ${response.status} - ${errorData.error || response.statusText}`);
-                    }
-
-                    const results = await response.json();
-                    console.log('Resultados de búsqueda obtenidos:', results);
-
-                    searchResultsGrid.innerHTML = ''; // Limpiar el mensaje de carga
-
-                    if (results.length > 0) {
-                        results.forEach(product => {
-                            const productCardHtml = `
-                                <div class="product-card">
-                                    <img src="${product.images[0]}" alt="${product.name}">
-                                    <div class="product-info">
-                                        <p class="brand">${product.quickspecs.brand}</p>
-                                        <p class="model">${product.name}</p>
-                                        <p class="price">${product.price}</p>
-                                        <p class="price-local">(${product.pricelocal.split(' / ')[0]})</p>
-                                        <a href="product-detail.html?product=${product.id}" class="btn-view-product">Ver producto</a>
-                                    </div>
-                                </div>
-                            `;
-                            searchResultsGrid.insertAdjacentHTML('beforeend', productCardHtml);
-                        });
-                        const cards = searchResultsGrid.querySelectorAll('.product-card');
-                        if (cards.length > 0) {
-                            let maxHeight = 0;
-                            cards.forEach(card => { card.style.minHeight = 'auto'; });
-                            cards.forEach(card => { if (card.offsetHeight > maxHeight) { maxHeight = card.offsetHeight; } });
-                            cards.forEach(card => { card.style.minHeight = `${maxHeight}px`; });
-                        }
-
-                    } else {
-                        noSearchResultsMessage.style.display = 'block';
-                    }
-                } catch (error) {
-                    console.error('Error durante la búsqueda de neumáticos:', error);
-                    searchResultsGrid.innerHTML = '<p style="text-align:center; color: red;">Error al realizar la búsqueda. Por favor, intente de nuevo.</p>';
-                }
-            }
+            executeSearch(searchParams);
         });
     }
+
+    // Event Listeners para los enlaces de categoría
+    categoryLinks.forEach(link => {
+        link.addEventListener('click', (event) => {
+            event.preventDefault(); // Evitar la navegación por defecto
+            const category = link.dataset.category; // Obtener la categoría del atributo data-category
+            if (category) {
+                executeSearch({ category: category }); // Ejecutar búsqueda por categoría
+            } else {
+                // Si no hay categoría específica, mostrar todos los productos destacados
+                if (featuredProductsSection) featuredProductsSection.style.display = 'block';
+                if (searchResultsSection) searchResultsSection.style.display = 'none';
+                searchResultsGrid.innerHTML = '';
+                noSearchResultsMessage.style.display = 'none';
+            }
+        });
+    });
+
 
     const accordionHeaders = document.querySelectorAll('.accordion-header');
     accordionHeaders.forEach(header => {
@@ -135,11 +171,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (mySwiperInstance) {
             console.log("renderProductsCarousel: Destruyendo instancia existente de Swiper.");
-            mySwiperInstance.destroy(true, true); // `true, true` también limpia los slides del DOM
-            mySwiperInstance = null; // Resetear la instancia
+            mySwiperInstance.destroy(true, true);
+            mySwiperInstance = null;
         }
         
-        swiperWrapper.innerHTML = ''; // Asegurar que el contenedor está vacío para los nuevos slides
+        swiperWrapper.innerHTML = '';
 
         if (products.length === 0) {
             swiperWrapper.innerHTML = '<p style="text-align:center; color: gray; width: 100%;">No hay productos destacados disponibles.</p>';
@@ -149,7 +185,6 @@ document.addEventListener('DOMContentLoaded', () => {
             console.log("renderProductsCarousel: No hay productos para renderizar. Carrusel vacío.");
             return;
         } else {
-            // Asegurarse de que los controles sean visibles si hay productos
             swiperPagination.style.display = 'block';
             swiperNext.style.display = 'block';
             swiperPrev.style.display = 'block';
@@ -205,14 +240,15 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             const products = await response.json();
             console.log('fetchAllProducts: Productos obtenidos del backend:', products);
-            if (!window.location.pathname.includes('product-detail.html')) {
+            // Solo renderizar el carrusel si estamos en la página principal y no hay resultados de búsqueda activos
+            if (!window.location.pathname.includes('product-detail.html') && searchResultsSection.style.display !== 'block') {
                  renderProductsCarousel(products);
             }
             return products;
         } catch (error) {
             console.error('fetchAllProducts: Error fetching all products:', error);
             const carouselContainer = document.querySelector('.mySwiper .swiper-wrapper');
-            if (carouselContainer && !window.location.pathname.includes('product-detail.html')) {
+            if (carouselContainer && !window.location.pathname.includes('product-detail.html') && searchResultsSection.style.display !== 'block') {
                 carouselContainer.innerHTML = '<p style="text-align:center; color: red;">Error al cargar los productos. Por favor, intente de nuevo más tarde.</p>';
             }
             return [];

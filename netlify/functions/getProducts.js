@@ -26,8 +26,8 @@ exports.handler = async (event) => {
             paramIndex++;
         }
 
-        // Verifica si se proporcionaron parámetros de búsqueda por medidas
-        const { ancho, perfil, aro, q } = event.queryStringParameters || {}; // Añadido 'q' para búsqueda genérica
+        // Verifica si se proporcionaron parámetros de búsqueda por medidas o categoría
+        const { ancho, perfil, aro, q, category } = event.queryStringParameters || {}; // Añadido 'category'
 
         if (ancho && ancho !== 'todos') {
             queryText += ` AND quickspecs->>'largura' = $${paramIndex}`;
@@ -48,9 +48,20 @@ exports.handler = async (event) => {
 
         // Filtrado por texto genérico (q)
         if (q) {
-            const searchTerm = `%${q.toLowerCase()}%`; // Búsqueda insensible a mayúsculas/minúsculas
+            const searchTerm = `%${q.toLowerCase()}%`;
             queryText += ` AND (LOWER(name) LIKE $${paramIndex} OR LOWER(quickspecs->>'brand') LIKE $${paramIndex})`;
             queryParams.push(searchTerm);
+            paramIndex++;
+        }
+
+        // Filtrado por categoría
+        if (category && category !== 'todos') {
+            // Asumiendo que la columna 'categories' en la DB contiene la categoría exacta
+            // Si 'categories' es un array de texto en la DB, la consulta sería diferente (ej. 'categories @> ARRAY[$1]')
+            // Si es una cadena con comas, usaríamos LIKE '%categoria%'
+            // Basado en tu esquema, 'categories' es VARCHAR(255), por lo que buscamos coincidencia exacta.
+            queryText += ` AND categories = $${paramIndex}`;
+            queryParams.push(category);
             paramIndex++;
         }
         
