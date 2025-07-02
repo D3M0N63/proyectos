@@ -28,8 +28,10 @@ document.addEventListener('DOMContentLoaded', () => {
             const perfil = document.getElementById('perfil') ? document.getElementById('perfil').value : '';
             const aro = document.getElementById('aro') ? document.getElementById('aro').value : '';
 
-            console.log(`Buscando neumáticos con: Ancho=${ancho}, Perfil=${perfil}, Aro=${aro}`);
-            alert(`Buscando neumáticos: Ancho ${ancho}, Perfil ${perfil}, Aro ${aro}. (Esta es solo una simulación)`);
+            // Redirige a la nueva página de resultados con los parámetros de búsqueda
+            // Se envían todos los parámetros, incluso si son "todos" o vacíos,
+            // la función de Netlify los manejará.
+            window.location.href = `search-results.html?ancho=${ancho}&perfil=${perfil}&aro=${aro}`;
         });
     }
 
@@ -72,7 +74,8 @@ document.addEventListener('DOMContentLoaded', () => {
                         <p class="model">${product.name}</p>
                         <p class="price">${product.price}</p>
                         <p class="price-local">(${product.pricelocal && product.pricelocal.split(' / ')[0] ? product.pricelocal.split(' / ')[0] : 'N/A'})</p>
-                        </div>
+                        <!-- BOTÓN "Ver producto" ELIMINADO: <a href="product-detail.html?product=${product.id}" class="btn-view-product">Ver producto</a> -->
+                    </div>
                 </div>
             `;
             swiperWrapper.insertAdjacentHTML('beforeend', productCardHtml);
@@ -288,13 +291,13 @@ document.addEventListener('DOMContentLoaded', () => {
                         img.src = imgSrc;
                         img.alt = `Thumbnail ${index + 1} de ${product.name}`;
                         img.classList.add('thumbnail', 'rounded-md', 'shadow-sm', 'cursor-pointer', 'hover:opacity-75', 'transition-opacity');
-                        if (index === 0) img.classList.add('active', 'border-2', 'border-blue-500');
+                        if (index === 0) img.classList.add('active', 'border-2', 'border-red-500'); // Color rojo
                         img.dataset.fullSrc = imgSrc;
                         img.addEventListener('click', () => {
                             document.querySelectorAll('.thumbnail-gallery .thumbnail').forEach(t => {
-                                t.classList.remove('active', 'border-2', 'border-blue-500');
+                                t.classList.remove('active', 'border-2', 'border-red-500'); // Color rojo
                             });
-                            img.classList.add('active', 'border-2', 'border-blue-500');
+                            img.classList.add('active', 'border-2', 'border-red-500'); // Color rojo
                             mainProductImage.src = img.dataset.fullSrc;
                         });
                         thumbnailGalleryDiv.appendChild(img);
@@ -323,7 +326,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 productDetailContainer.innerHTML = `
                     <h2 class="text-2xl font-bold text-center text-red-600 mb-4">Producto no encontrado</h2>
                     <p class="text-center text-gray-600">Lo sentimos, el producto que buscas no está disponible.</p>
-                    <a href="index.html" class="block text-center mt-4 text-blue-600 hover:underline">Volver a la página principal</a>
+                    <a href="index.html" class="block text-center mt-4 text-red-600 hover:underline">Volver a la página principal</a>
                 `;
                 const productTabsSection = document.querySelector('.product-tabs-section');
                 if (productTabsSection) productTabsSection.style.display = 'none';
@@ -371,9 +374,10 @@ document.addEventListener('DOMContentLoaded', () => {
                         <div class="p-4">
                             <p class="brand text-sm text-gray-500">${product.quickspecs && product.quickspecs.brand ? product.quickspecs.brand : 'N/A'}</p>
                             <p class="model text-lg font-semibold text-gray-800 mb-1">${product.name}</p>
-                            <p class="price text-xl font-bold text-blue-600 mb-1">${product.price}</p>
+                            <p class="price text-xl font-bold text-red-600 mb-1">${product.price}</p>
                             <p class="price-local text-sm text-gray-600">(${product.pricelocal && product.pricelocal.split(' / ')[0] ? product.pricelocal.split(' / ')[0] : 'N/A'})</p>
-                            </div>
+                            <!-- BOTÓN "Ver producto" ELIMINADO: <a href="product-detail.html?product=${product.id}" class="btn-view-product mt-3 block text-center bg-red-500 text-white py-2 px-4 rounded-md hover:bg-red-600 transition-colors">Ver producto</a> -->
+                        </div>
                     </div>
                 `;
                 relatedProductsContainer.insertAdjacentHTML('beforeend', productCard);
