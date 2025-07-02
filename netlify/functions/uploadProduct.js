@@ -8,7 +8,7 @@ exports.handler = async (event) => {
         return {
             statusCode: 405,
             headers: { "Access-Control-Allow-Origin": "*" },
-            body: JSON.stringify({ error: 'Método no permitido. Solo se aceptan solicitudes POST.' })
+            body: JSON.stringify({ error: 'Method Not Allowed. Only POST requests are accepted.' })
         };
     }
 
@@ -17,15 +17,14 @@ exports.handler = async (event) => {
     const client = new Client({
         connectionString: process.env.DATABASE_URL,
         ssl: {
-            // 'rejectUnauthorized: false' es a menudo necesario para conexiones SSL
-            // con bases de datos como Neon desde entornos serverless.
             rejectUnauthorized: false
         }
     });
 
+    let productData; // Declara productData fuera del try para que sea accesible en el catch
     try {
         // Analiza el cuerpo de la solicitud JSON
-        const productData = JSON.parse(event.body);
+        productData = JSON.parse(event.body);
 
         // Validación básica de datos (puedes añadir más validaciones aquí)
         if (!productData.id || !productData.name) {
@@ -36,37 +35,19 @@ exports.handler = async (event) => {
             };
         }
 
-        // Convierte la cadena de imágenes separadas por coma en un array
-        // Si no hay imágenes, se usa un array vacío
-        const imagesArray = productData.images ? productData.images.split(',').map(url => url.trim()) : [];
+        // Asegúrate de que imagesArray sea un array, incluso si productData.images es null/undefined
+        const imagesArray = Array.isArray(productData.images) ? productData.images : [];
 
-        // Asegúrate de que los campos JSONB sean objetos JavaScript válidos
-        // Si no son JSON válicos, se usarán objetos vacíos para evitar errores
-        let quickspecsObj = {};
-        try {
-            quickspecsObj = productData.quickspecs ? JSON.parse(productData.quickspecs) : {};
-        } catch (e) {
-            console.warn('Quick Specs no es un JSON válido, usando objeto vacío.');
-        }
-
-        let detailspecsObj = {};
-        try {
-            detailspecsObj = productData.detailspecs ? JSON.parse(productData.detailspecs) : {};
-        } catch (e) {
-            console.warn('Detail Specs no es un JSON válido, usando objeto vacío.');
-        }
-
-        let moreinfoObj = {};
-        try {
-            moreinfoObj = productData.moreinfo ? JSON.parse(productData.moreinfo) : {};
-        } catch (e) {
-            console.warn('More Info no es un JSON válido, usando objeto vacío.');
-        }
-
+        // Asegúrate de que los campos JSONB sean objetos válidos.
+        // Si vienen vacíos del frontend (como {}), o si no se envían, se usarán objetos vacíos.
+        const quickspecsObj = productData.quickspecs && typeof productData.quickspecs === 'object' ? productData.quickspecs : {};
+        const detailspecsObj = productData.detailspecs && typeof productData.detailspecs === 'object' ? productData.detailspecs : {};
+        const moreinfoObj = productData.moreinfo && typeof productData.moreinfo === 'object' ? productData.moreinfo : {};
 
         await client.connect(); // Establece la conexión a la base de datos
 
         // Sentencia SQL para insertar un nuevo producto
+        // Asegúrate de que el orden de las columnas y los tipos de datos coincidan con tu tabla 'products'
         const queryText = `
             INSERT INTO products (
                 id, name, brand, price, pricelocal, stockstatus, sku, categories, tags, images, description, quickspecs, detailspecs, moreinfo
@@ -76,17 +57,18 @@ exports.handler = async (event) => {
         `;
 
         // Parámetros para la consulta SQL
+        // Usamos '|| null' para asegurar que los campos opcionales se inserten como NULL si están vacíos o undefined
         const queryParams = [
             productData.id,
             productData.name,
-            productData.brand || null, // Usar null si el campo está vacío
+            productData.brand || null,
             productData.price || null,
             productData.pricelocal || null,
             productData.stockstatus || null,
             productData.sku || null,
             productData.categories || null,
             productData.tags || null,
-            imagesArray, // Array de URLs
+            imagesArray, // Este ya es un array
             productData.description || null,
             quickspecsObj, // Objeto JSON
             detailspecsObj, // Objeto JSON
@@ -108,6 +90,15 @@ exports.handler = async (event) => {
     } catch (error) {
         // En caso de error, registra el error y devuelve una respuesta HTTP 500 (Error Interno del Servidor).
         console.error('Error al crear producto en la base de datos:', error);
+        // Si el error es una violación de clave primaria (ID duplicado), dar un mensaje más específico
+        if (error.code === '23505') { // PostgreSQL error code for unique_violation
+            return {
+                statusCode: 409, // Conflict
+                headers: { "Access-Control-Allow-Origin": "*" },
+                body: JSON.stringify({ error: `El ID de producto '${productData ? productData.id : 'desconocido'}' ya existe. Por favor, use un ID único.` })
+            };
+        }
+        // Para otros errores 500, puedes intentar enviar un mensaje más detallado si el error lo permite
         return {
             statusCode: 500,
             headers: {
@@ -115,7 +106,7 @@ exports.handler = async (event) => {
                 "Access-Control-Allow-Methods": "POST",
                 "Content-Type": "application/json"
             },
-            body: JSON.stringify({ error: 'Error al crear el producto. Verifique los datos e intente de nuevo.' })
+            body: JSON.stringify({ error: `Error interno del servidor al crear el producto. Detalles: ${error.message || 'Error desconocido'}` })
         };
     } finally {
         // Asegúrate de cerrar la conexión a la base de datos, incluso si ocurre un error.
