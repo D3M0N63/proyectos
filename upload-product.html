@@ -127,25 +127,8 @@
                 <label for="description" class="block text-sm mb-1">Descripción:</label>
                 <textarea id="description" name="description" rows="5" placeholder="Una descripción detallada del producto..."></textarea>
             </div>
-
-            <!-- JSONB Fields -->
-            <h2 class="text-xl font-semibold text-gray-700 mt-8 mb-4">Especificaciones (JSON)</h2>
-            <p class="text-sm text-gray-600 mb-4">Introduce los datos en formato JSON válido. Ejemplo: <code>{"key": "value", "anotherKey": 123}</code></p>
-
-            <div class="form-group">
-                <label for="quickspecs" class="block text-sm mb-1">Quick Specs (JSON):</label>
-                <textarea id="quickspecs" name="quickspecs" rows="4" placeholder='{"brand": "Pirelli", "largura": "205", "perfil": "55", "aro": "R16", "loadIndex": "91", "speedIndex": "V"}'></textarea>
-            </div>
-
-            <div class="form-group">
-                <label for="detailspecs" class="block text-sm mb-1">Detail Specs (JSON):</label>
-                <textarea id="detailspecs" name="detailspecs" rows="4" placeholder='{"measure": "205/55 R16", "loadIndex": "91", "speedIndex": "V", "vehicleType": "Auto", "treadDesign": "Asimétrico", "warranty": "5 años"}'></textarea>
-            </div>
-
-            <div class="form-group">
-                <label for="moreinfo" class="block text-sm mb-1">More Info (JSON):</label>
-                <textarea id="moreinfo" name="moreinfo" rows="4" placeholder='{"loadIndex": "91", "speedIndex": "V", "type": "Radial", "construction": "Tubeless", "application": "Carretera", "letters": "Negras"}'></textarea>
-            </div>
+            
+            <!-- Los campos para Quick Specs, Detail Specs y More Info se gestionarán automáticamente como objetos vacíos/nulos -->
 
             <button type="submit" class="btn-submit w-full mt-6">Subir Producto</button>
         </form>
