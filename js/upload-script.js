@@ -4,74 +4,110 @@ document.addEventListener('DOMContentLoaded', () => {
     const pageTitle = document.getElementById('pageTitle');
     const formHeading = document.getElementById('formHeading');
     const productIdInput = document.getElementById('id');
+    const loadProductBtn = document.getElementById('loadProductBtn');
+    const editProductIdInput = document.getElementById('editProductId');
+    const loadMessageDiv = document.getElementById('loadMessage');
+    const clearFormBtn = document.getElementById('clearFormBtn');
 
-    const urlParams = new URLSearchParams(window.location.search);
-    const productIdToEdit = urlParams.get('product_id'); // Parámetro para editar
+    let currentProductId = null; // Almacena el ID del producto que se está editando
 
-    let isEditMode = false;
+    // Función para mostrar mensajes en la sección de carga/edición
+    function displayLoadMessage(message, type) {
+        loadMessageDiv.textContent = message;
+        loadMessageDiv.className = `message-box ${type}`;
+        loadMessageDiv.classList.remove('hidden');
+    }
 
-    // Función para cargar los datos de un producto existente si estamos en modo edición
-    async function loadProductForEdit(id) {
+    // Función para mostrar mensajes en la sección principal del formulario
+    function displayFormMessage(message, type) {
+        messageDiv.textContent = message;
+        messageDiv.className = `message-box ${type}`;
+        messageDiv.classList.remove('hidden');
+    }
+
+    // Función para pre-llenar el formulario con los datos de un producto
+    function populateForm(product) {
+        productIdInput.value = product.id || '';
+        document.getElementById('name').value = product.name || '';
+        document.getElementById('brand').value = product.brand || '';
+        document.getElementById('price').value = product.price || '';
+        document.getElementById('pricelocal').value = product.pricelocal || '';
+        document.getElementById('stockstatus').value = product.stockstatus || '';
+        document.getElementById('sku').value = product.sku || '';
+        document.getElementById('categories').value = product.categories || '';
+        document.getElementById('tags').value = product.tags || '';
+        document.getElementById('images').value = (product.images && Array.isArray(product.images)) ? product.images.join(', ') : '';
+        document.getElementById('description').value = product.description || '';
+
+        const quickspecs = product.quickspecs || {};
+        document.getElementById('quickspecs_largura').value = quickspecs.largura || '';
+        document.getElementById('quickspecs_perfil').value = quickspecs.perfil || '';
+        document.getElementById('quickspecs_aro').value = quickspecs.aro || '';
+    }
+
+    // Función para limpiar el formulario y volver al modo de creación
+    function clearFormAndSwitchToCreateMode() {
+        uploadProductForm.reset();
+        productIdInput.removeAttribute('readonly');
+        productIdInput.classList.remove('bg-gray-200', 'cursor-not-allowed');
+        pageTitle.textContent = 'Subir Nuevo Producto';
+        formHeading.textContent = 'Subir Nuevo Producto';
+        uploadProductForm.querySelector('button[type="submit"]').textContent = 'Subir Producto';
+        currentProductId = null; // No hay producto cargado para edición
+        displayFormMessage('', 'hidden'); // Limpiar mensajes del formulario
+        displayLoadMessage('', 'hidden'); // Limpiar mensajes de carga
+        editProductIdInput.value = ''; // Limpiar el campo de ID a editar
+    }
+
+    // Lógica para cargar un producto por ID
+    loadProductBtn.addEventListener('click', async () => {
+        const idToLoad = editProductIdInput.value.trim();
+        if (!idToLoad) {
+            displayLoadMessage('Por favor, ingrese un ID de producto para cargar.', 'error');
+            return;
+        }
+
+        displayLoadMessage('Cargando producto...', '');
         try {
-            const response = await fetch(`/.netlify/functions/getProducts?id=${id}`);
+            const response = await fetch(`/.netlify/functions/getProducts?id=${idToLoad}`);
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
             const products = await response.json();
+
             if (products.length > 0) {
                 const product = products[0];
-                
-                // Rellenar campos básicos
-                productIdInput.value = product.id || '';
-                document.getElementById('name').value = product.name || '';
-                document.getElementById('brand').value = product.brand || '';
-                document.getElementById('price').value = product.price || '';
-                document.getElementById('pricelocal').value = product.pricelocal || '';
-                document.getElementById('stockstatus').value = product.stockstatus || '';
-                document.getElementById('sku').value = product.sku || '';
-                document.getElementById('categories').value = product.categories || '';
-                document.getElementById('tags').value = product.tags || '';
-                document.getElementById('images').value = (product.images && Array.isArray(product.images)) ? product.images.join(', ') : '';
-                document.getElementById('description').value = product.description || '';
+                populateForm(product);
+                currentProductId = product.id; // Establecer el ID del producto que se está editando
 
-                // Rellenar campos de Quick Specs (medidas)
-                const quickspecs = product.quickspecs || {};
-                document.getElementById('quickspecs_largura').value = quickspecs.largura || '';
-                document.getElementById('quickspecs_perfil').value = quickspecs.perfil || '';
-                document.getElementById('quickspecs_aro').value = quickspecs.aro || ''; // Aro sin 'R'
-
-                // Deshabilitar el campo ID en modo edición
-                productIdInput.setAttribute('readonly', true);
+                productIdInput.setAttribute('readonly', true); // ID de solo lectura
                 productIdInput.classList.add('bg-gray-200', 'cursor-not-allowed');
 
                 pageTitle.textContent = `Editar Producto: ${product.name || product.id}`;
                 formHeading.textContent = `Editar Producto: ${product.name || product.id}`;
                 uploadProductForm.querySelector('button[type="submit"]').textContent = 'Actualizar Producto';
-
-                isEditMode = true; // Establecer el modo edición
+                displayLoadMessage(`Producto '${product.name || product.id}' cargado para edición.`, 'success');
             } else {
-                displayMessage(`Error: Producto con ID '${id}' no encontrado.`, 'error');
-                // Podrías redirigir o limpiar el formulario aquí si el producto no existe
+                displayLoadMessage(`Error: Producto con ID '${idToLoad}' no encontrado.`, 'error');
+                clearFormAndSwitchToCreateMode(); // Limpiar el formulario si no se encuentra
             }
         } catch (error) {
-            displayMessage(`Error al cargar los datos del producto para edición: ${error.message}`, 'error');
+            displayLoadMessage(`Error al cargar los datos del producto: ${error.message}`, 'error');
             console.error('Error fetching product for edit:', error);
         }
-    }
+    });
 
-    // Si hay un ID en la URL, cargar el producto para edición
-    if (productIdToEdit) {
-        loadProductForEdit(productIdToEdit);
-    }
+    // Event listener para el botón "Limpiar Formulario"
+    clearFormBtn.addEventListener('click', clearFormAndSwitchToCreateMode);
 
+
+    // Lógica de envío del formulario (Crear o Actualizar)
     if (uploadProductForm) {
         uploadProductForm.addEventListener('submit', async (event) => {
-            event.preventDefault(); // Previene el envío predeterminado del formulario
+            event.preventDefault();
 
-            messageDiv.textContent = isEditMode ? 'Actualizando producto...' : 'Subiendo producto...';
-            messageDiv.className = 'message-box'; // Limpia clases anteriores
-            messageDiv.classList.remove('hidden');
-
+            displayFormMessage(currentProductId ? 'Actualizando producto...' : 'Subiendo producto...', '');
+            
             const productData = {};
             const formData = new FormData(uploadProductForm);
 
@@ -101,7 +137,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 aro: formData.get('quickspecs_aro')
             };
 
-            // Elimina propiedades vacías de quickspecs para no guardar "key: ''"
+            // Elimina propiedades vacías de quickspecs
             for (const key in productData.quickspecs) {
                 if (productData.quickspecs[key] === '') {
                     delete productData.quickspecs[key];
@@ -117,7 +153,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             try {
                 // Determina el método HTTP (POST para crear, PUT para actualizar)
-                const httpMethod = isEditMode ? 'PUT' : 'POST';
+                const httpMethod = currentProductId ? 'PUT' : 'POST';
                 const submitButton = uploadProductForm.querySelector('button[type="submit"]');
                 submitButton.disabled = true; // Deshabilitar botón para evitar envíos múltiples
 
@@ -132,32 +168,24 @@ document.addEventListener('DOMContentLoaded', () => {
                 const result = await response.json();
 
                 if (response.ok) {
-                    displayMessage(`${isEditMode ? 'Producto actualizado' : 'Producto subido'} exitosamente! ID: ${result.productId}`, 'success');
-                    if (!isEditMode) { // Solo resetear el formulario si es una nueva creación
-                        uploadProductForm.reset();
-                        productIdInput.removeAttribute('readonly'); // Habilitar ID para nueva entrada
-                        productIdInput.classList.remove('bg-gray-200', 'cursor-not-allowed');
-                        pageTitle.textContent = 'Subir Nuevo Producto';
-                        formHeading.textContent = 'Subir Nuevo Producto';
-                        submitButton.textContent = 'Subir Producto';
-                        isEditMode = false;
+                    displayFormMessage(`${result.message}! ID: ${result.productId}`, 'success');
+                    if (!currentProductId) { // Si fue una nueva creación, limpiar el formulario
+                        clearFormAndSwitchToCreateMode();
+                    } else {
+                        // Si fue una actualización, mantener el formulario pre-llenado pero con mensaje de éxito
+                        // y re-habilitar el botón
+                        submitButton.disabled = false;
                     }
                 } else {
-                    displayMessage(`Error: ${result.error || 'Error desconocido'}`, 'error');
+                    displayFormMessage(`Error: ${result.error || 'Error desconocido'}`, 'error');
                     console.error('Error response from server:', result);
                 }
             } catch (error) {
-                displayMessage('Error de red o del servidor al procesar producto.', 'error');
+                displayFormMessage('Error de red o del servidor al procesar producto.', 'error');
                 console.error('Fetch error:', error);
             } finally {
                 uploadProductForm.querySelector('button[type="submit"]').disabled = false; // Re-habilitar botón
             }
         });
-    }
-
-    function displayMessage(message, type) {
-        messageDiv.textContent = message;
-        messageDiv.className = `message-box ${type}`;
-        messageDiv.classList.remove('hidden');
     }
 });

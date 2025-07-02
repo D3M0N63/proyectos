@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Subir Nuevo Producto</title>
+    <title id="pageTitle">Subir Nuevo Producto</title>
     <!-- Incluye Tailwind CSS para estilos básicos y responsividad -->
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
@@ -35,6 +35,12 @@
             border-color: #3b82f6; /* Borde azul al enfocar */
             box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25); /* Sombra azul al enfocar */
         }
+        /* Estilo para campos readonly/disabled */
+        .form-group input[type="text"][readonly],
+        .form-group input[type="text"][disabled] {
+            background-color: #e5e7eb; /* Gris más claro para indicar no editable */
+            cursor: not-allowed;
+        }
         .btn-submit {
             background-color: #22c55e; /* Verde */
             color: white;
@@ -60,11 +66,47 @@
             background-color: #fee2e2; /* Rojo claro */
             color: #991b1b; /* Rojo oscuro */
         }
+        .btn-secondary {
+            background-color: #6b7280; /* Gris */
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            transition: background-color 0.2s ease-in-out;
+        }
+        .btn-secondary:hover {
+            background-color: #4b5563; /* Gris más oscuro */
+        }
+        .btn-load {
+            background-color: #3b82f6; /* Azul */
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            transition: background-color 0.2s ease-in-out;
+        }
+        .btn-load:hover {
+            background-color: #2563eb; /* Azul más oscuro */
+        }
     </style>
 </head>
 <body class="p-4">
     <div class="container mx-auto bg-white p-8 rounded-lg shadow-lg">
-        <h1 class="text-3xl font-bold text-center text-gray-800 mb-8">Subir Nuevo Producto</h1>
+        <h1 id="formHeading" class="text-3xl font-bold text-center text-gray-800 mb-8">Subir Nuevo Producto</h1>
+
+        <!-- Sección para Cargar/Editar Producto -->
+        <div class="mb-8 p-6 bg-gray-50 rounded-lg border border-gray-200">
+            <h2 class="text-xl font-semibold text-gray-700 mb-4">Cargar Producto para Editar</h2>
+            <div class="flex flex-col md:flex-row gap-4 items-end">
+                <div class="form-group flex-grow w-full md:w-auto">
+                    <label for="editProductId" class="block text-sm mb-1">ID del Producto a Editar:</label>
+                    <input type="text" id="editProductId" placeholder="ej. np307" class="w-full">
+                </div>
+                <button type="button" id="loadProductBtn" class="btn-load w-full md:w-auto">Cargar Producto</button>
+                <button type="button" id="clearFormBtn" class="btn-secondary w-full md:w-auto">Limpiar Formulario</button>
+            </div>
+            <div id="loadMessage" class="message-box hidden mt-4"></div>
+        </div>
 
         <form id="uploadProductForm" class="space-y-6">
             <!-- Información Básica -->
@@ -146,8 +188,6 @@
             </div>
             <p class="text-xs text-gray-500 mt-1">Introduce solo el número para el Aro (ej. 16, 17, 22.5).</p>
             
-            <!-- Otros campos de Quick Specs, Detail Specs y More Info se enviarán como objetos vacíos -->
-
             <button type="submit" class="btn-submit w-full mt-6">Subir Producto</button>
         </form>
 
