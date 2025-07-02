@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resultados de Búsqueda de Neumáticos</title>
+    <!-- Incluye Tailwind CSS para estilos básicos y responsividad -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Iconos de Font Awesome (para consistencia con index.html) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* Estilos generales para consistencia con index.html */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6; /* Fondo gris claro, similar al de tu sitio */
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .container {
+            max-width: 960px; /* Ancho máximo para los resultados */
+            padding: 1.5rem; /* Espaciado general */
+        }
+
+        /* Estilo para el título de la página de resultados */
+        h1 {
+            color: #1f2937; /* Color de texto oscuro, similar a tus encabezados */
+            margin-bottom: 2rem;
+        }
+
+        /* Estilo de la tarjeta de resultado de producto, similar a product-card en index.html */
+        .product-result-card {
+            background-color: #ffffff;
+            border-radius: 0.75rem; /* Bordes redondeados */
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); /* Sombra más pronunciada, similar a tu sitio */
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            transition: transform 0.2s ease-in-out; /* Animación al pasar el ratón */
+        }
+        .product-result-card:hover {
+            transform: translateY(-5px); /* Pequeño levantamiento al pasar el ratón */
+        }
+
+        @media (min-width: 768px) {
+            .product-result-card {
+                flex-direction: row;
+                text-align: left;
+                align-items: center; /* Centrar verticalmente en desktop */
+            }
+        }
+        .product-result-card img {
+            width: 120px; /* Tamaño fijo para la imagen del neumático */
+            height: 120px;
+            object-fit: contain; /* Asegura que la imagen se vea completa */
+            margin-bottom: 1rem;
+        }
+        @media (min-width: 768px) {
+            .product-result-card img {
+                margin-right: 1.5rem;
+                margin-bottom: 0;
+            }
+        }
+        .product-info-left {
+            flex-grow: 1;
+        }
+        .product-info-left .name {
+            font-size: 1.25rem; /* text-xl */
+            font-weight: 600; /* font-semibold */
+            color: #1f2937; /* text-gray-900 */
+            margin-bottom: 0.5rem;
+        }
+        .product-info-left .price {
+            font-size: 1.5rem; /* text-2xl */
+            font-weight: 700; /* font-bold */
+            color: #22c55e; /* Verde que usas para precios */
+            margin-bottom: 0.25rem;
+        }
+        .product-info-left .price-details {
+            font-size: 0.875rem; /* text-sm */
+            color: #6b7280; /* text-gray-600 */
+            margin-bottom: 0.75rem;
+        }
+        .product-info-left .details-link {
+            font-size: 0.875rem; /* text-sm */
+            color: #3b82f6; /* text-blue-600 */
+            text-decoration: none;
+            transition: color 0.2s ease-in-out;
+        }
+        .product-info-left .details-link:hover {
+            color: #2563eb; /* blue-700 */
+        }
+        .product-brand-logo {
+            width: 80px; /* Tamaño del logo de la marca */
+            height: auto;
+            margin-top: 1rem;
+            margin-bottom: 1rem;
+        }
+        @media (min-width: 768px) {
+            .product-brand-logo {
+                margin-left: auto; /* Mover a la derecha */
+                margin-right: 1.5rem;
+                margin-top: 0;
+                margin-bottom: 0;
+            }
+        }
+        /* Estilo del botón "COMPRAR", similar a btn-subscribe o btn-search */
+        .buy-button {
+            background-color: #007bff; /* Un azul vibrante, similar a los botones de tu sitio */
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            transition: background-color 0.2s ease-in-out, transform 0.1s ease-in-out;
+            width: 100%; /* Ocupa todo el ancho en móvil */
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Sombra para el botón */
+        }
+        .buy-button:hover {
+            background-color: #0056b3; /* Azul más oscuro al pasar el ratón */
+            transform: translateY(-2px); /* Pequeño levantamiento al pasar el ratón */
+        }
+        .buy-button:active {
+            transform: translateY(0); /* Vuelve a su posición original al hacer clic */
+        }
+        @media (min-width: 768px) {
+            .buy-button {
+                width: auto; /* Ancho automático en desktop */
+                min-width: 120px; /* Ancho mínimo para el botón */
+                margin-left: 1.5rem;
+            }
+        }
+
+        .no-results {
+            text-align: center;
+            color: #6b7280;
+            font-size: 1.125rem;
+            margin-top: 2rem;
+        }
+    </style>
+</head>
+<body class="p-4">
+    <div class="container mx-auto mt-8 mb-8 flex-grow">
+        <h1 class="text-3xl font-bold text-center text-gray-800 mb-8">Resultados de Búsqueda</h1>
+        <div id="searchResultsContainer" class="flex flex-col items-center">
+            <!-- Los resultados de la búsqueda se cargarán aquí -->
+            <p class="text-center text-gray-600">Cargando resultados...</p>
+        </div>
+    </div>
+
+    <!-- Script para manejar la lógica de búsqueda y renderizado -->
+    <script src="js/search-results-script.js"></script>
+</body>
+</html>
+
