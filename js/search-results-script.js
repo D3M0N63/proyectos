@@ -69,7 +69,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                             <!-- El enlace "Ver Detalles" no redirige a product-detail.html ya que está inhabilitado -->
                             <a href="#" class="details-link"> + Ver Detalles</a>
                         </div>
-                        <!-- LOGO DE MARCA ELIMINADO: <img src="${brandLogoSrc}" alt="Logo de ${product.quickspecs && product.quickspecs.brand ? product.quickspecs.brand : 'Marca'}" class="product-brand-logo"> -->
+                        <!-- LOGO DE MARCA ELIMINADO COMPLETAMENTE DE LA PLANTILLA -->
                         <a href="${whatsappLink}" target="_blank" class="buy-button bg-green-500 text-white py-2 px-4 rounded-md font-semibold hover:bg-green-600 transition-colors duration-300 shadow-md">CONTACTO</a>
                     </div>
                 `;
