@@ -29,7 +29,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function populateForm(product) {
         productIdInput.value = product.id || '';
         document.getElementById('name').value = product.name || '';
-        document.getElementById('brand').value = product.brand || '';
+        document.getElementById('brand').value = product.brand || ''; // Sigue rellenando el campo de marca principal
         document.getElementById('price').value = product.price || '';
         document.getElementById('pricelocal').value = product.pricelocal || '';
         document.getElementById('stockstatus').value = product.stockstatus || '';
@@ -40,9 +40,10 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('description').value = product.description || '';
 
         const quickspecs = product.quickspecs || {};
+        // Rellenar campos de Quick Specs (medidas y ahora también la marca si existe en quickspecs)
         document.getElementById('quickspecs_largura').value = quickspecs.largura || '';
         document.getElementById('quickspecs_perfil').value = quickspecs.perfil || '';
-        document.getElementById('quickspecs_aro').value = quickspecs.aro || '';
+        document.getElementById('quickspecs_aro').value = quickspecs.aro || ''; // Aro sin 'R'
     }
 
     // Función para limpiar el formulario y volver al modo de creación
@@ -114,7 +115,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // Recopila los datos de los campos básicos
             productData.id = formData.get('id');
             productData.name = formData.get('name');
-            productData.brand = formData.get('brand');
+            productData.brand = formData.get('brand'); // Captura la marca principal
             productData.price = formData.get('price');
             productData.pricelocal = formData.get('pricelocal');
             productData.stockstatus = formData.get('stockstatus');
@@ -130,8 +131,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 productData.images = [];
             }
 
-            // Construye el objeto quickspecs solo con los campos de medidas
+            // Construye el objeto quickspecs con las medidas Y AHORA TAMBIÉN LA MARCA
             productData.quickspecs = {
+                brand: formData.get('brand'), // Incluir la marca aquí también
                 largura: formData.get('quickspecs_largura'),
                 perfil: formData.get('quickspecs_perfil'),
                 aro: formData.get('quickspecs_aro')
