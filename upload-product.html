@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Subir Nuevo Producto</title>
+    <!-- Incluye Tailwind CSS para estilos básicos y responsividad -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6; /* Fondo gris claro */
+        }
+        .container {
+            max-width: 800px;
+        }
+        .form-group label {
+            font-weight: 600;
+            color: #374151; /* Gris oscuro */
+        }
+        .form-group input[type="text"],
+        .form-group textarea {
+            border: 1px solid #d1d5db; /* Borde gris */
+            border-radius: 0.5rem; /* Bordes redondeados */
+            padding: 0.75rem 1rem;
+            width: 100%;
+            font-size: 0.9rem;
+            color: #1f2937; /* Texto oscuro */
+            background-color: #ffffff; /* Fondo blanco */
+            transition: border-color 0.2s ease-in-out;
+        }
+        .form-group input[type="text"]:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #3b82f6; /* Borde azul al enfocar */
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25); /* Sombra azul al enfocar */
+        }
+        .btn-submit {
+            background-color: #22c55e; /* Verde */
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            transition: background-color 0.2s ease-in-out;
+        }
+        .btn-submit:hover {
+            background-color: #16a34a; /* Verde más oscuro al pasar el ratón */
+        }
+        .message-box {
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-top: 1rem;
+            font-weight: 500;
+        }
+        .message-box.success {
+            background-color: #d1fae5; /* Verde claro */
+            color: #065f46; /* Verde oscuro */
+        }
+        .message-box.error {
+            background-color: #fee2e2; /* Rojo claro */
+            color: #991b1b; /* Rojo oscuro */
+        }
+    </style>
+</head>
+<body class="p-4">
+    <div class="container mx-auto bg-white p-8 rounded-lg shadow-lg">
+        <h1 class="text-3xl font-bold text-center text-gray-800 mb-8">Subir Nuevo Producto</h1>
+
+        <form id="uploadProductForm" class="space-y-6">
+            <!-- Información Básica -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="form-group">
+                    <label for="id" class="block text-sm mb-1">ID del Producto (Único):</label>
+                    <input type="text" id="id" name="id" required placeholder="ej. np307">
+                </div>
+                <div class="form-group">
+                    <label for="name" class="block text-sm mb-1">Nombre del Producto:</label>
+                    <input type="text" id="name" name="name" required placeholder="ej. PIRELLI P7 CINTURATO">
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="form-group">
+                    <label for="brand" class="block text-sm mb-1">Marca:</label>
+                    <input type="text" id="brand" name="brand" placeholder="ej. Pirelli">
+                </div>
+                <div class="form-group">
+                    <label for="price" class="block text-sm mb-1">Precio (USD):</label>
+                    <input type="text" id="price" name="price" placeholder="ej. USD 89.90">
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="form-group">
+                    <label for="pricelocal" class="block text-sm mb-1">Precio Local (Guaraníes):</label>
+                    <input type="text" id="pricelocal" name="pricelocal" placeholder="ej. Gs. 650.000 / cuota 6x 108.333">
+                </div>
+                <div class="form-group">
+                    <label for="stockstatus" class="block text-sm mb-1">Estado de Stock:</label>
+                    <input type="text" id="stockstatus" name="stockstatus" placeholder="ej. En stock, Agotado, Últimas unidades">
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="form-group">
+                    <label for="sku" class="block text-sm mb-1">SKU:</label>
+                    <input type="text" id="sku" name="sku" placeholder="ej. SKU876543">
+                </div>
+                <div class="form-group">
+                    <label for="categories" class="block text-sm mb-1">Categorías (separadas por coma):</label>
+                    <input type="text" id="categories" name="categories" placeholder="ej. Neumáticos para Autos, Verano">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="tags" class="block text-sm mb-1">Etiquetas (separadas por coma):</label>
+                <input type="text" id="tags" name="tags" placeholder="ej. Pirelli, P7, Cinturato, Verano">
+            </div>
+
+            <div class="form-group">
+                <label for="images" class="block text-sm mb-1">URLs de Imágenes (separadas por coma):</label>
+                <textarea id="images" name="images" rows="3" placeholder="ej. https://ejemplo.com/img1.jpg, https://ejemplo.com/img2.jpg"></textarea>
+                <p class="text-xs text-gray-500 mt-1">Asegúrate de que las URLs sean públicas y válidas.</p>
+            </div>
+
+            <div class="form-group">
+                <label for="description" class="block text-sm mb-1">Descripción:</label>
+                <textarea id="description" name="description" rows="5" placeholder="Una descripción detallada del producto..."></textarea>
+            </div>
+
+            <!-- JSONB Fields -->
+            <h2 class="text-xl font-semibold text-gray-700 mt-8 mb-4">Especificaciones (JSON)</h2>
+            <p class="text-sm text-gray-600 mb-4">Introduce los datos en formato JSON válido. Ejemplo: <code>{"key": "value", "anotherKey": 123}</code></p>
+
+            <div class="form-group">
+                <label for="quickspecs" class="block text-sm mb-1">Quick Specs (JSON):</label>
+                <textarea id="quickspecs" name="quickspecs" rows="4" placeholder='{"brand": "Pirelli", "largura": "205", "perfil": "55", "aro": "R16", "loadIndex": "91", "speedIndex": "V"}'></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="detailspecs" class="block text-sm mb-1">Detail Specs (JSON):</label>
+                <textarea id="detailspecs" name="detailspecs" rows="4" placeholder='{"measure": "205/55 R16", "loadIndex": "91", "speedIndex": "V", "vehicleType": "Auto", "treadDesign": "Asimétrico", "warranty": "5 años"}'></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="moreinfo" class="block text-sm mb-1">More Info (JSON):</label>
+                <textarea id="moreinfo" name="moreinfo" rows="4" placeholder='{"loadIndex": "91", "speedIndex": "V", "type": "Radial", "construction": "Tubeless", "application": "Carretera", "letters": "Negras"}'></textarea>
+            </div>
+
+            <button type="submit" class="btn-submit w-full mt-6">Subir Producto</button>
+        </form>
+
+        <div id="message" class="message-box hidden"></div>
+    </div>
+
+    <!-- Script para manejar el formulario -->
+    <script src="js/upload-script.js"></script>
+</body>
+</html>
