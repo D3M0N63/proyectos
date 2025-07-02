@@ -10,46 +10,52 @@ document.addEventListener('DOMContentLoaded', () => {
             messageDiv.className = 'message-box'; // Limpia clases anteriores
             messageDiv.classList.remove('hidden');
 
-            const formData = new FormData(uploadProductForm);
             const productData = {};
+            const formData = new FormData(uploadProductForm);
 
-            // Recopila los datos del formulario
-            for (const [key, value] of formData.entries()) {
-                productData[key] = value;
-            }
+            // Recopila los datos de los campos básicos
+            productData.id = formData.get('id');
+            productData.name = formData.get('name');
+            productData.brand = formData.get('brand');
+            productData.price = formData.get('price');
+            productData.pricelocal = formData.get('pricelocal');
+            productData.stockstatus = formData.get('stockstatus');
+            productData.sku = formData.get('sku');
+            productData.categories = formData.get('categories');
+            productData.tags = formData.get('tags');
+            productData.description = formData.get('description');
 
             // Procesa el campo 'images' (cadena separada por comas a array)
-            if (productData.images) {
+            if (productData.images = formData.get('images')) {
                 productData.images = productData.images.split(',').map(url => url.trim()).filter(url => url !== '');
             } else {
                 productData.images = [];
             }
 
-            // Procesa los campos JSONB (cadenas JSON a objetos JavaScript)
-            // Es importante que el usuario introduzca JSON válido en el textarea
-            try {
-                productData.quickspecs = productData.quickspecs ? JSON.parse(productData.quickspecs) : {};
-            } catch (e) {
-                displayMessage('Error: Quick Specs no es un JSON válido.', 'error');
-                console.error('Error parsing quickspecs:', e);
-                return; // Detiene el envío si hay un error de JSON
+            // Construye el objeto quickspecs solo con los campos de medidas
+            productData.quickspecs = {
+                largura: formData.get('quickspecs_largura'),
+                perfil: formData.get('quickspecs_perfil'),
+                aro: formData.get('quickspecs_aro')
+            };
+
+            // Elimina propiedades vacías de quickspecs para no guardar "key: ''"
+            for (const key in productData.quickspecs) {
+                if (productData.quickspecs[key] === '') {
+                    delete productData.quickspecs[key];
+                }
+            }
+            // Si quickspecs queda vacío después de eliminar las propiedades vacías,
+            // asegúrate de que sea un objeto vacío para la DB, no null.
+            if (Object.keys(productData.quickspecs).length === 0) {
+                productData.quickspecs = {};
             }
 
-            try {
-                productData.detailspecs = productData.detailspecs ? JSON.parse(productData.detailspecs) : {};
-            } catch (e) {
-                displayMessage('Error: Detail Specs no es un JSON válido.', 'error');
-                console.error('Error parsing detailspecs:', e);
-                return;
-            }
 
-            try {
-                productData.moreinfo = productData.moreinfo ? JSON.parse(productData.moreinfo) : {};
-            } catch (e) {
-                displayMessage('Error: More Info no es un JSON válido.', 'error');
-                console.error('Error parsing moreinfo:', e);
-                return;
-            }
+            // Los campos detailspecs y moreinfo se enviarán como objetos vacíos por defecto
+            productData.detailspecs = {};
+            productData.moreinfo = {};
+
 
             try {
                 // Envía los datos a la función de Netlify

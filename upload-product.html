@@ -127,8 +127,26 @@
                 <label for="description" class="block text-sm mb-1">Descripción:</label>
                 <textarea id="description" name="description" rows="5" placeholder="Una descripción detallada del producto..."></textarea>
             </div>
+
+            <!-- Campos de Medidas (Quick Specs Esenciales para Búsqueda) -->
+            <h2 class="text-xl font-semibold text-gray-700 mt-8 mb-4">Medidas del Neumático (Esencial para Búsqueda)</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="form-group">
+                    <label for="quickspecs_largura" class="block text-sm mb-1">Largura:</label>
+                    <input type="text" id="quickspecs_largura" name="quickspecs_largura" placeholder="ej. 205">
+                </div>
+                <div class="form-group">
+                    <label for="quickspecs_perfil" class="block text-sm mb-1">Perfil:</label>
+                    <input type="text" id="quickspecs_perfil" name="quickspecs_perfil" placeholder="ej. 55">
+                </div>
+                <div class="form-group">
+                    <label for="quickspecs_aro" class="block text-sm mb-1">Aro:</label>
+                    <input type="text" id="quickspecs_aro" name="quickspecs_aro" placeholder="ej. 16 (solo el número, sin 'R')">
+                </div>
+            </div>
+            <p class="text-xs text-gray-500 mt-1">Introduce solo el número para el Aro (ej. 16, 17, 22.5).</p>
             
-            <!-- Los campos para Quick Specs, Detail Specs y More Info se gestionarán automáticamente como objetos vacíos/nulos -->
+            <!-- Otros campos de Quick Specs, Detail Specs y More Info se enviarán como objetos vacíos -->
 
             <button type="submit" class="btn-submit w-full mt-6">Subir Producto</button>
         </form>
