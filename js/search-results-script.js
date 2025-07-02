@@ -53,11 +53,11 @@ document.addEventListener('DOMContentLoaded', async () => {
             `;
         } else {
             products.forEach(product => {
-                // Asegurarse de que quickspecs exista y tenga la marca
-                // Ajusta esta ruta si tus logos están en otro lugar o tienen otro nombre
-                const brandLogoSrc = product.quickspecs && product.quickspecs.brand
-                    ? `./assets/images/brands/${product.quickspecs.brand.toLowerCase()}.png` // Asume que tienes logos en esta ruta
-                    : 'https://placehold.co/80x40/cccccc/333333?text=Logo'; // Placeholder si no hay logo
+                // Generar el mensaje de WhatsApp para el botón "CONTACTO"
+                const productNameForWhatsapp = product.name || 'un neumático';
+                const whatsappMessage = encodeURIComponent(`Hola! Me interesa el neumático ${productNameForWhatsapp} que vi en su web. ID: ${product.id}`);
+                // Reemplaza '595XXXXXXXXX' con el número de WhatsApp real de tu negocio
+                const whatsappLink = `https://wa.me/595XXXXXXXXX?text=${whatsappMessage}`;
 
                 const productCardHtml = `
                     <div class="product-result-card w-full">
@@ -69,8 +69,8 @@ document.addEventListener('DOMContentLoaded', async () => {
                             <!-- El enlace "Ver Detalles" no redirige a product-detail.html ya que está inhabilitado -->
                             <a href="#" class="details-link"> + Ver Detalles</a>
                         </div>
-                        <img src="${brandLogoSrc}" alt="Logo de ${product.quickspecs && product.quickspecs.brand ? product.quickspecs.brand : 'Marca'}" class="product-brand-logo">
-                        <button class="buy-button">COMPRAR</button>
+                        <!-- LOGO DE MARCA ELIMINADO: <img src="${brandLogoSrc}" alt="Logo de ${product.quickspecs && product.quickspecs.brand ? product.quickspecs.brand : 'Marca'}" class="product-brand-logo"> -->
+                        <a href="${whatsappLink}" target="_blank" class="buy-button bg-green-500 text-white py-2 px-4 rounded-md font-semibold hover:bg-green-600 transition-colors duration-300 shadow-md">CONTACTO</a>
                     </div>
                 `;
                 searchResultsContainer.insertAdjacentHTML('beforeend', productCardHtml);
