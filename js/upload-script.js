@@ -9,6 +9,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const loadMessageDiv = document.getElementById('loadMessage');
     const clearFormBtn = document.getElementById('clearFormBtn');
 
+    // Nuevos elementos para la moneda
+    const priceValueInput = document.getElementById('price_value');
+    const priceCurrencySelect = document.getElementById('price_currency');
+
     let currentProductId = null; // Almacena el ID del producto que se está editando
 
     // Función para mostrar mensajes en la sección de carga/edición
@@ -29,8 +33,25 @@ document.addEventListener('DOMContentLoaded', () => {
     function populateForm(product) {
         productIdInput.value = product.id || '';
         document.getElementById('name').value = product.name || '';
-        document.getElementById('brand').value = product.brand || ''; // Sigue rellenando el campo de marca principal
-        document.getElementById('price').value = product.price || '';
+        document.getElementById('brand').value = product.brand || '';
+        
+        // Llenar el campo de precio y la moneda
+        if (product.price) {
+            if (product.price.startsWith('USD')) {
+                priceCurrencySelect.value = 'USD';
+                priceValueInput.value = product.price.substring(3).trim(); // Quita "USD "
+            } else if (product.price.startsWith('Gs.')) {
+                priceCurrencySelect.value = 'Gs.';
+                priceValueInput.value = product.price.substring(3).trim(); // Quita "Gs. "
+            } else {
+                priceCurrencySelect.value = 'USD'; // Valor por defecto si no se reconoce
+                priceValueInput.value = product.price; // Si no tiene prefijo, se asume el valor completo
+            }
+        } else {
+            priceCurrencySelect.value = 'USD';
+            priceValueInput.value = '';
+        }
+
         document.getElementById('pricelocal').value = product.pricelocal || '';
         document.getElementById('stockstatus').value = product.stockstatus || '';
         document.getElementById('sku').value = product.sku || '';
@@ -40,7 +61,6 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('description').value = product.description || '';
 
         const quickspecs = product.quickspecs || {};
-        // Rellenar campos de Quick Specs (medidas y ahora también la marca si existe en quickspecs)
         document.getElementById('quickspecs_largura').value = quickspecs.largura || '';
         document.getElementById('quickspecs_perfil').value = quickspecs.perfil || '';
         document.getElementById('quickspecs_aro').value = quickspecs.aro || ''; // Aro sin 'R'
@@ -58,6 +78,7 @@ document.addEventListener('DOMContentLoaded', () => {
         displayFormMessage('', 'hidden'); // Limpiar mensajes del formulario
         displayLoadMessage('', 'hidden'); // Limpiar mensajes de carga
         editProductIdInput.value = ''; // Limpiar el campo de ID a editar
+        priceCurrencySelect.value = 'USD'; // Resetear selector de moneda
     }
 
     // Lógica para cargar un producto por ID
@@ -115,9 +136,15 @@ document.addEventListener('DOMContentLoaded', () => {
             // Recopila los datos de los campos básicos
             productData.id = formData.get('id');
             productData.name = formData.get('name');
-            productData.brand = formData.get('brand'); // Captura la marca principal
-            productData.price = formData.get('price');
-            productData.pricelocal = formData.get('pricelocal');
+            productData.brand = formData.get('brand');
+            
+            // Construye el campo de precio con el símbolo seleccionado
+            const priceValue = formData.get('price_value').trim();
+            const priceCurrency = formData.get('price_currency');
+            productData.price = priceValue ? `${priceCurrency} ${priceValue}` : ''; // Formato "USD 89.90" o "Gs. 650000"
+
+            productData.pricelocal = formData.get('pricelocal'); // Este campo se mantiene como texto libre
+
             productData.stockstatus = formData.get('stockstatus');
             productData.sku = formData.get('sku');
             productData.categories = formData.get('categories');
@@ -131,7 +158,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 productData.images = [];
             }
 
-            // Construye el objeto quickspecs con las medidas Y AHORA TAMBIÉN LA MARCA
+            // Construye el objeto quickspecs con las medidas y la marca
             productData.quickspecs = {
                 brand: formData.get('brand'), // Incluir la marca aquí también
                 largura: formData.get('quickspecs_largura'),

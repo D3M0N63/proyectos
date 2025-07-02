@@ -19,7 +19,8 @@
             color: #374151; /* Gris oscuro */
         }
         .form-group input[type="text"],
-        .form-group textarea {
+        .form-group textarea,
+        .form-group select { /* Añadido select a los estilos */
             border: 1px solid #d1d5db; /* Borde gris */
             border-radius: 0.5rem; /* Bordes redondeados */
             padding: 0.75rem 1rem;
@@ -30,7 +31,8 @@
             transition: border-color 0.2s ease-in-out;
         }
         .form-group input[type="text"]:focus,
-        .form-group textarea:focus {
+        .form-group textarea:focus,
+        .form-group select:focus { /* Añadido select a los estilos de foco */
             outline: none;
             border-color: #3b82f6; /* Borde azul al enfocar */
             box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25); /* Sombra azul al enfocar */
@@ -127,8 +129,14 @@
                     <input type="text" id="brand" name="brand" placeholder="ej. Pirelli">
                 </div>
                 <div class="form-group">
-                    <label for="price" class="block text-sm mb-1">Precio (USD):</label>
-                    <input type="text" id="price" name="price" placeholder="ej. USD 89.90">
+                    <label for="price_value" class="block text-sm mb-1">Precio:</label>
+                    <div class="flex items-center gap-2">
+                        <select id="price_currency" name="price_currency" class="w-auto">
+                            <option value="USD">USD</option>
+                            <option value="Gs.">Gs.</option>
+                        </select>
+                        <input type="text" id="price_value" name="price_value" placeholder="ej. 89.90">
+                    </div>
                 </div>
             </div>
 
