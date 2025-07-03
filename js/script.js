@@ -29,8 +29,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const aro = document.getElementById('aro') ? document.getElementById('aro').value : '';
 
             // Redirige a la nueva página de resultados con los parámetros de búsqueda
-            // Se envían todos los parámetros, incluso si son "todos" o vacíos,
-            // la función de Netlify los manejará.
             window.location.href = `search-results.html?ancho=${ancho}&perfil=${perfil}&aro=${aro}`;
         });
     }
@@ -121,7 +119,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Función para obtener un producto específico por ID para la página de detalle
-    // Esta función no será llamada si la página de detalle está inhabilitada
     async function fetchProductById(id) {
         try {
             const response = await fetch(`/.netlify/functions/getProducts?id=${id}`);
@@ -142,16 +139,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     // Lógica principal al cargar la página
-    // ***** CAMBIO IMPORTANTE: INHABILITAR product-detail.html *****
     if (window.location.pathname.includes('product-detail.html')) {
         const productDetailContainer = document.querySelector('.product-detail-container');
         if (productDetailContainer) {
             productDetailContainer.innerHTML = `
                 <h2 class="text-2xl font-bold text-center text-gray-800 mb-4">Página de Detalle de Producto No Disponible.</h2>
                 <p class="text-center text-gray-600">Lo sentimos, esta funcionalidad ha sido deshabilitada.</p>
-                <a href="index.html" class="block text-center mt-4 text-blue-600 hover:underline">Volver a la página principal</a>
+                <a href="index.html" class="block text-center mt-4 text-red-600 hover:underline">Volver a la página principal</a>
             `;
-            // Ocultar otras secciones si existen
             const productTabsSection = document.querySelector('.product-tabs-section');
             if (productTabsSection) productTabsSection.style.display = 'none';
             const relatedProductsSection = document.querySelector('.related-products');
@@ -164,13 +159,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     // Función que carga los detalles de un producto específico en product-detail.html
-    // ***** ESTA FUNCIÓN AHORA ES INACCESIBLE SI product-detail.html está inhabilitada *****
     async function loadProductDetail(id) {
-        // Este código ya no se ejecutará si la página de detalle está inhabilitada por la lógica anterior
-        // Pero se mantiene por si en el futuro se desea reactivar
         const product = await fetchProductById(id);
         if (product) {
-            // Actualizar información principal
             const productNameElement = document.getElementById('product-name');
             if (productNameElement) productNameElement.textContent = product.name || 'N/A';
 
@@ -202,7 +193,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const productTagsElement = document.getElementById('product-tags');
             if (productTagsElement) productTagsElement.textContent = product.tags || 'N/A';
 
-            // Actualizar Quick Specs (manejo de objetos JSONB)
             const quickspecs = product.quickspecs || {};
             const productBrandElement = document.getElementById('product-brand');
             if (productBrandElement) productBrandElement.textContent = quickspecs.brand || 'N/A';
@@ -222,7 +212,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const productSpeedIndexElement = document.getElementById('product-speed-index');
             if (productSpeedIndexElement) productSpeedIndexElement.textContent = quickspecs.speedIndex || 'N/A';
 
-            // Actualizar Detalles (pestaña DETALLES)
             const detailspecs = product.detailspecs || {};
             const detailsTabHeading = document.querySelector('#details h3');
             if (detailsTabHeading) detailsTabHeading.textContent = `Detalles del ${product.name || 'Producto'}`;
@@ -248,7 +237,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const detailWarrantyElement = document.getElementById('detail-warranty');
             if (detailWarrantyElement) detailWarrantyElement.textContent = detailspecs.warranty || 'N/A';
 
-            // Actualizar Más Información (pestaña MAS INFORMACIÓN)
             const moreinfo = product.moreinfo || {};
             const moreInfoLoadIndexElement = document.getElementById('more-info-load-index');
             if (moreInfoLoadIndexElement) moreInfoLoadIndexElement.textContent = moreinfo.loadIndex || 'N/A';
@@ -274,9 +262,8 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
 
-            // Actualizar galería de imágenes
             const images = product.images || [];
-            const mainProductImage = document.getElementById('main-product-image'); // Definir mainProductImage aquí
+            const mainProductImage = document.getElementById('main-product-image');
             if (mainProductImage) {
                 mainProductImage.src = images.length > 0 ? images[0] : 'https://placehold.co/400x400/cccccc/333333?text=No+Image';
             }
@@ -291,13 +278,13 @@ document.addEventListener('DOMContentLoaded', () => {
                         img.src = imgSrc;
                         img.alt = `Thumbnail ${index + 1} de ${product.name}`;
                         img.classList.add('thumbnail', 'rounded-md', 'shadow-sm', 'cursor-pointer', 'hover:opacity-75', 'transition-opacity');
-                        if (index === 0) img.classList.add('active', 'border-2', 'border-red-500'); // Color rojo
+                        if (index === 0) img.classList.add('active', 'border-2', 'border-red-500');
                         img.dataset.fullSrc = imgSrc;
                         img.addEventListener('click', () => {
                             document.querySelectorAll('.thumbnail-gallery .thumbnail').forEach(t => {
-                                t.classList.remove('active', 'border-2', 'border-red-500'); // Color rojo
+                                t.classList.remove('active', 'border-2', 'border-red-500');
                             });
-                            img.classList.add('active', 'border-2', 'border-red-500'); // Color rojo
+                            img.classList.add('active', 'border-2', 'border-red-500');
                             mainProductImage.src = img.dataset.fullSrc;
                         });
                         thumbnailGalleryDiv.appendChild(img);
@@ -308,7 +295,6 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
 
-            // Actualizar enlace de WhatsApp
             const whatsappBtn = document.querySelector('.btn-pedir-informacion');
             if (whatsappBtn) {
                 const productNameForWhatsapp = product.name || 'un neumático';
@@ -316,7 +302,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 whatsappBtn.href = `https://wa.me/595XXXXXXXXX?text=${whatsappMessage}`;
             }
 
-            // Cargar productos relacionados después de cargar el producto principal
             loadRelatedProducts(id);
 
         } else {
@@ -399,5 +384,28 @@ document.addEventListener('DOMContentLoaded', () => {
                 card.style.minHeight = `${maxHeight}px`;
             });
         }
+    }
+
+    // Lógica para los enlaces de categorías en el encabezado
+    const categoryLinks = document.querySelectorAll('.categories-nav a[data-category]');
+    categoryLinks.forEach(link => {
+        link.addEventListener('click', (event) => {
+            event.preventDefault(); // Evita la navegación por defecto del enlace
+            const category = event.target.dataset.category;
+            if (category) {
+                // Redirige a la página de resultados de búsqueda con el parámetro de categoría
+                window.location.href = `search-results.html?category=${category}`;
+            }
+        });
+    });
+
+    // Lógica para el botón de menú móvil (si existe)
+    const mobileMenuButton = document.getElementById('mobile-menu-button');
+    const mobileCategoriesNav = document.getElementById('mobile-categories-nav');
+
+    if (mobileMenuButton && mobileCategoriesNav) {
+        mobileMenuButton.addEventListener('click', () => {
+            mobileCategoriesNav.classList.toggle('active');
+        });
     }
 });

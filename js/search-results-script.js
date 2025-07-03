@@ -4,6 +4,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const ancho = urlParams.get('ancho');
     const perfil = urlParams.get('perfil');
     const aro = urlParams.get('aro');
+    const category = urlParams.get('category'); // Nuevo: Leer parámetro de categoría
 
     // Mostrar los parámetros de búsqueda en el título o en algún lugar visible
     const searchTitle = document.querySelector('h1');
@@ -13,6 +14,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (ancho && ancho !== 'todos') paramsArray.push(`Ancho: ${ancho}`);
         if (perfil && perfil !== 'todos') paramsArray.push(`Perfil: ${perfil}`);
         if (aro && aro !== 'todos') paramsArray.push(`Aro: ${aro}`);
+        if (category && category !== 'todos') paramsArray.push(`Categoría: ${category}`); // Nuevo: Añadir categoría al título
 
         if (paramsArray.length > 0) {
             titleText += ` para ${paramsArray.join(', ')}`;
@@ -21,9 +23,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     // Si no hay ningún criterio de búsqueda significativo, mostrar mensaje
-    if ((!ancho || ancho === 'todos') && (!perfil || perfil === 'todos') && (!aro || aro === 'todos')) {
+    if ((!ancho || ancho === 'todos') && (!perfil || perfil === 'todos') && (!aro || aro === 'todos') && (!category || category === 'todos')) {
         searchResultsContainer.innerHTML = `
-            <p class="no-results">Por favor, ingrese al menos un criterio de búsqueda (ancho, perfil o aro) diferente de "Todos" desde la página principal.</p>
+            <p class="no-results">Por favor, ingrese al menos un criterio de búsqueda (ancho, perfil, aro o categoría) diferente de "Todos".</p>
             <a href="index.html" class="text-red-600 hover:underline mt-4">Volver a la página principal</a>
         `;
         return;
@@ -35,6 +37,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (ancho) queryParams.append('ancho', ancho);
         if (perfil) queryParams.append('perfil', perfil);
         if (aro) queryParams.append('aro', aro);
+        if (category) queryParams.append('category', category); // Nuevo: Añadir categoría a los parámetros
 
         const response = await fetch(`/.netlify/functions/searchProducts?${queryParams.toString()}`);
 
@@ -69,7 +72,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                             <!-- El enlace "Ver Detalles" no redirige a product-detail.html ya que está inhabilitado -->
                             <a href="#" class="details-link"> + Ver Detalles</a>
                         </div>
-                        <!-- LOGO DE MARCA ELIMINADO COMPLETAMENTE DE LA PLANTILLA -->
                         <a href="${whatsappLink}" target="_blank" class="buy-button bg-green-500 text-white py-2 px-4 rounded-md font-semibold hover:bg-green-600 transition-colors duration-300 shadow-md">CONTACTO</a>
                     </div>
                 `;

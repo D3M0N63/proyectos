@@ -21,17 +21,14 @@ exports.handler = async (event) => {
     try {
         await client.connect();
 
-        const { ancho, perfil, aro } = event.queryStringParameters || {};
+        const { ancho, perfil, aro, category } = event.queryStringParameters || {};
 
         // Construir la consulta SQL dinámicamente
-        // Usamos WHERE 1=1 para facilitar la adición de condiciones con AND
-        let queryText = 'SELECT * FROM products WHERE 1=1';
+        let queryText = 'SELECT * FROM products WHERE 1=1'; // 1=1 para facilitar la adición de condiciones
         const queryParams = [];
         let paramIndex = 1;
 
         // Añadir condiciones de búsqueda si los parámetros están presentes y no son 'todos'
-        // Usamos ILIKE para búsquedas insensibles a mayúsculas/minúsculas y % para coincidencias parciales
-        // Los campos quickspecs.largura, perfil, aro son de tipo texto en el JSONB
         if (ancho && ancho !== 'todos') {
             queryText += ` AND quickspecs->>'largura' ILIKE $${paramIndex}`;
             queryParams.push(`%${ancho}%`);
@@ -43,12 +40,22 @@ exports.handler = async (event) => {
             paramIndex++;
         }
         if (aro && aro !== 'todos') {
-            // Manejar 'R16' vs '16' para el aro
             const cleanAro = aro.startsWith('R') ? aro.substring(1) : aro;
             queryText += ` AND quickspecs->>'aro' ILIKE $${paramIndex}`;
-            queryParams.push(`%${cleanAro}%`); // Busca el número, asumiendo que en DB es solo el número
+            queryParams.push(`%${cleanAro}%`);
             paramIndex++;
         }
+        // Añadir filtro por categoría
+        if (category && category !== 'todos') {
+            // Asume que la columna 'categories' en la DB es un string separado por comas
+            // O un array de texto si lo manejas así. Si es un string, ILIKE es adecuado.
+            // Si es un array, necesitarías 'categories @> ARRAY[$1]'
+            // Para simplicidad, asumo que 'categories' es un string que contiene la categoría
+            queryText += ` AND categories ILIKE $${paramIndex}`;
+            queryParams.push(`%${category}%`);
+            paramIndex++;
+        }
+
 
         // Ordenar los resultados (opcional, pero ayuda a la consistencia)
         queryText += ' ORDER BY name ASC';
