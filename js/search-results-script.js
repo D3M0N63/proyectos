@@ -79,6 +79,8 @@ document.addEventListener('DOMContentLoaded', async () => {
                 `;
                 searchResultsContainer.insertAdjacentHTML('beforeend', productCardHtml);
             });
+            // Adjuntar listeners de zoom después de renderizar los resultados
+            attachZoomListeners();
         }
     } catch (error) {
         console.error('Error al cargar los resultados de búsqueda:', error);
@@ -95,8 +97,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             event.preventDefault(); // Evita la navegación por defecto del enlace
             const selectedCategory = event.target.dataset.category;
             if (selectedCategory) {
-                // Redirige a la misma página de resultados, pero con el nuevo parámetro de categoría
-                // y limpiando los parámetros de ancho/perfil/aro para una búsqueda solo por categoría
                 window.location.href = `search-results.html?category=${selectedCategory}`;
             }
         });
@@ -111,4 +111,41 @@ document.addEventListener('DOMContentLoaded', async () => {
             mobileCategoriesNav.classList.toggle('active');
         });
     }
+
+    // --- Lógica para el Modal de Ampliación de Imagen (Copiada de script.js) ---
+    const imageZoomModal = document.getElementById('imageZoomModal');
+    const zoomedImage = document.getElementById('zoomedImage');
+    const closeZoomBtn = document.querySelector('.close-zoom-btn');
+
+    function attachZoomListeners() {
+        const zoomableImages = document.querySelectorAll('.product-image-zoom');
+        zoomableImages.forEach(img => {
+            img.removeEventListener('click', openZoomModal); // Evitar duplicados
+            img.addEventListener('click', openZoomModal);
+        });
+    }
+
+    function openZoomModal(event) {
+        const clickedImageSrc = event.target.src;
+        zoomedImage.src = clickedImageSrc;
+        imageZoomModal.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+    }
+
+    if (closeZoomBtn) {
+        closeZoomBtn.addEventListener('click', closeZoomModal);
+    }
+    if (imageZoomModal) {
+        imageZoomModal.addEventListener('click', (event) => {
+            if (event.target === imageZoomModal) {
+                closeZoomModal();
+            }
+        });
+    }
+
+    function closeZoomModal() {
+        imageZoomModal.style.display = 'none';
+        document.body.style.overflow = '';
+    }
+    // --- FIN Lógica para el Modal de Ampliación de Imagen ---
 });

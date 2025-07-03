@@ -74,6 +74,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         <p class="model">${product.name}</p>
                         <p class="price">${product.price}</p>
                         <p class="price-local">(${product.pricelocal && product.pricelocal.split(' / ')[0] ? product.pricelocal.split(' / ')[0] : 'N/A'})</p>
+                        <!-- BOTÓN "Ver producto" ELIMINADO: <a href="product-detail.html?product=${product.id}" class="btn-view-product">Ver producto</a> -->
                     </div>
                 </div>
             `;
@@ -95,7 +96,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 768: { slidesPerView: 3, spaceBetween: 30 },
                 1024: { slidesPerView: 4, spaceBetween: 30 },
             },
+            on: {
+                // Después de que Swiper inicialice o actualice, adjuntar listeners a las imágenes
+                init: attachZoomListeners,
+                update: attachZoomListeners,
+                slideChangeTransitionEnd: attachZoomListeners // Para nuevas diapositivas al cambiar
+            }
         });
+
+        // Adjuntar listeners de zoom después de renderizar el carrusel
+        attachZoomListeners();
     }
 
     // Función para obtener todos los productos para la página principal
@@ -411,4 +421,48 @@ document.addEventListener('DOMContentLoaded', () => {
             mobileCategoriesNav.classList.toggle('active');
         });
     }
+
+    // --- Lógica para el Modal de Ampliación de Imagen ---
+    const imageZoomModal = document.getElementById('imageZoomModal');
+    const zoomedImage = document.getElementById('zoomedImage');
+    const closeZoomBtn = document.querySelector('.close-zoom-btn');
+
+    function attachZoomListeners() {
+        // Seleccionar todas las imágenes con la clase 'product-image-zoom'
+        // Esto incluye imágenes en el carrusel y en los productos relacionados
+        const zoomableImages = document.querySelectorAll('.product-image-zoom');
+
+        zoomableImages.forEach(img => {
+            // Remover cualquier listener previo para evitar duplicados
+            img.removeEventListener('click', openZoomModal);
+            // Añadir el listener de clic
+            img.addEventListener('click', openZoomModal);
+        });
+    }
+
+    function openZoomModal(event) {
+        const clickedImageSrc = event.target.src;
+        zoomedImage.src = clickedImageSrc;
+        imageZoomModal.style.display = 'flex'; // Mostrar el modal
+        document.body.style.overflow = 'hidden'; // Evitar scroll en el body
+    }
+
+    // Cerrar el modal al hacer clic en el botón de cerrar o en el overlay
+    if (closeZoomBtn) {
+        closeZoomBtn.addEventListener('click', closeZoomModal);
+    }
+    if (imageZoomModal) {
+        imageZoomModal.addEventListener('click', (event) => {
+            // Cerrar solo si se hace clic directamente en el overlay, no en la imagen
+            if (event.target === imageZoomModal) {
+                closeZoomModal();
+            }
+        });
+    }
+
+    function closeZoomModal() {
+        imageZoomModal.style.display = 'none'; // Ocultar el modal
+        document.body.style.overflow = ''; // Restaurar scroll en el body
+    }
+    // --- FIN Lógica para el Modal de Ampliación de Imagen ---
 });

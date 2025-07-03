@@ -1020,10 +1020,11 @@ img {
     justify-content: center;
 }
 
-/* Estilos para el efecto de lupa (zoom al pasar el cursor) */
+/* Estilos para el efecto de ampliación (zoom al hacer clic) */
 .image-container {
     overflow: hidden; /* Oculta el contenido que se desborda al hacer zoom */
     position: relative;
+    cursor: zoom-in; /* Indica que la imagen es clickeable para zoom */
     /* Define un tamaño fijo o máximo para el contenedor si es necesario */
     width: 100%; /* Ocupa el ancho disponible */
     height: 180px; /* Ejemplo: altura fija para carousel */
@@ -1045,15 +1046,46 @@ img {
     }
 }
 
-
 .product-image-zoom {
     width: 100%;
     height: 100%;
     object-fit: contain; /* Asegura que la imagen se vea completa */
-    transition: transform 0.3s ease-in-out; /* Transición suave para el zoom */
-    transform-origin: center center; /* El zoom se origina desde el centro */
+    /* Eliminamos la transición y el transform:scale del hover aquí */
 }
 
-.product-image-zoom:hover {
-    transform: scale(1.2); /* Nivel de zoom al pasar el cursor */
+/* Estilos para el modal de ampliación */
+.image-zoom-overlay {
+    display: none; /* Oculto por defecto */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8); /* Fondo oscuro semitransparente */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999; /* Asegura que esté por encima de todo */
+}
+
+.image-zoom-content {
+    max-width: 90%;
+    max-height: 90%;
+    object-fit: contain; /* Asegura que la imagen se ajuste dentro del modal */
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+}
+
+.close-zoom-btn {
+    position: absolute;
+    top: 20px;
+    right: 30px;
+    color: #fff;
+    font-size: 40px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+
+.close-zoom-btn:hover {
+    color: #dc3545; /* Rojo al pasar el cursor */
 }
