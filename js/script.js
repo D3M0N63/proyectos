@@ -441,8 +441,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     let lens = null; // La lupa
-    const zoomFactor = 1.25; // Factor de ampliación
-    const offset = 20; // Desplazamiento de la lupa desde el cursor (en píxeles)
+    const zoomFactor = 1; // Factor de ampliación
+    const offset = 300; // Desplazamiento de la lupa desde el cursor (en píxeles)
 
     function handleMouseEnter(e) {
         const img = e.currentTarget.querySelector('.product-image-zoom');
