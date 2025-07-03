@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const ancho = urlParams.get('ancho');
     const perfil = urlParams.get('perfil');
     const aro = urlParams.get('aro');
-    const category = urlParams.get('category'); // Nuevo: Leer parámetro de categoría
+    const category = urlParams.get('category');
 
     // Mostrar los parámetros de búsqueda en el título o en algún lugar visible
     const searchTitle = document.querySelector('h1');
@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (ancho && ancho !== 'todos') paramsArray.push(`Ancho: ${ancho}`);
         if (perfil && perfil !== 'todos') paramsArray.push(`Perfil: ${perfil}`);
         if (aro && aro !== 'todos') paramsArray.push(`Aro: ${aro}`);
-        if (category && category !== 'todos') paramsArray.push(`Categoría: ${category}`); // Nuevo: Añadir categoría al título
+        if (category && category !== 'todos') paramsArray.push(`Categoría: ${category}`);
 
         if (paramsArray.length > 0) {
             titleText += ` para ${paramsArray.join(', ')}`;
@@ -37,7 +37,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (ancho) queryParams.append('ancho', ancho);
         if (perfil) queryParams.append('perfil', perfil);
         if (aro) queryParams.append('aro', aro);
-        if (category) queryParams.append('category', category); // Nuevo: Añadir categoría a los parámetros
+        if (category) queryParams.append('category', category);
 
         const response = await fetch(`/.netlify/functions/searchProducts?${queryParams.toString()}`);
 
@@ -64,7 +64,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
                 const productCardHtml = `
                     <div class="product-result-card w-full">
-                        <img src="${product.images && product.images.length > 0 ? product.images[0] : 'https://placehold.co/120x120/cccccc/333333?text=Neumatico'}" alt="Neumático ${product.name}">
+                        <div class="image-container">
+                            <img src="${product.images && product.images.length > 0 ? product.images[0] : 'https://placehold.co/120x120/cccccc/333333?text=Neumatico'}" alt="Neumático ${product.name}" class="product-image-zoom">
+                        </div>
                         <div class="product-info-left flex-grow">
                             <p class="name">${product.name || 'Neumático sin nombre'}</p>
                             <p class="price">${product.price || 'N/A'}</p>
@@ -84,5 +86,29 @@ document.addEventListener('DOMContentLoaded', async () => {
             <p class="no-results text-red-600">Error al cargar los resultados. Por favor, intente de nuevo más tarde.</p>
             <a href="index.html" class="text-red-600 hover:underline mt-4">Volver a la página principal</a>
         `;
+    }
+
+    // Lógica para los enlaces de categorías en el encabezado de search-results.html
+    const categoryLinks = document.querySelectorAll('.categories-nav a[data-category]');
+    categoryLinks.forEach(link => {
+        link.addEventListener('click', (event) => {
+            event.preventDefault(); // Evita la navegación por defecto del enlace
+            const selectedCategory = event.target.dataset.category;
+            if (selectedCategory) {
+                // Redirige a la misma página de resultados, pero con el nuevo parámetro de categoría
+                // y limpiando los parámetros de ancho/perfil/aro para una búsqueda solo por categoría
+                window.location.href = `search-results.html?category=${selectedCategory}`;
+            }
+        });
+    });
+
+    // Lógica para el botón de menú móvil (si existe)
+    const mobileMenuButton = document.getElementById('mobile-menu-button');
+    const mobileCategoriesNav = document.getElementById('mobile-categories-nav');
+
+    if (mobileMenuButton && mobileCategoriesNav) {
+        mobileMenuButton.addEventListener('click', () => {
+            mobileCategoriesNav.classList.toggle('active');
+        });
     }
 });
