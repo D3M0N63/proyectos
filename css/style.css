@@ -1023,7 +1023,7 @@ img {
 /* Estilos para el efecto de lupa (zoom al pasar el cursor) */
 .image-container {
     overflow: hidden; /* Oculta el contenido que se desborda al hacer zoom */
-    position: relative;
+    position: relative; /* Importante para el posicionamiento de la lupa */
     cursor: crosshair; /* Cambia el cursor a una cruz para indicar zoom */
     /* Define un tamaño fijo o máximo para el contenedor si es necesario */
     width: 100%; /* Ocupa el ancho disponible */

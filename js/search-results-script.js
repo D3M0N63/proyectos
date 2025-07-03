@@ -128,11 +128,18 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     let lens = null;
-    const zoomFactor = 2; // Factor de ampliación
+    const zoomFactor = 1.8; // Factor de ampliación
 
     function handleMouseEnter(e) {
         const img = e.currentTarget.querySelector('.product-image-zoom');
-        if (!img) return;
+        if (!img || !img.src) return;
+
+        if (img.naturalWidth === 0 || img.naturalHeight === 0) {
+            img.onload = () => {
+                handleMouseEnter(e);
+            };
+            return;
+        }
 
         if (!lens) {
             lens = document.createElement('div');
@@ -146,22 +153,31 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     function handleMouseMove(e) {
-        if (!lens) return;
+        if (!lens || lens.style.display === 'none') return;
 
         const img = e.currentTarget.querySelector('.product-image-zoom');
-        if (!img) return;
+        if (!img || img.naturalWidth === 0 || img.naturalHeight === 0) {
+            lens.style.display = 'none';
+            return;
+        }
 
-        const rect = img.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
+        const mouseX = e.clientX;
+        const mouseY = e.clientY;
 
-        const bgPosX = -x * zoomFactor + (lens.offsetWidth / 2);
-        const bgPosY = -y * zoomFactor + (lens.offsetHeight / 2);
+        const imgRect = img.getBoundingClientRect();
+        const x = mouseX - imgRect.left;
+        const y = mouseY - imgRect.top;
+
+        const ratioX = img.naturalWidth / imgRect.width;
+        const ratioY = img.naturalHeight / imgRect.height;
+
+        const bgPosX = -x * zoomFactor * ratioX + (lens.offsetWidth / 2);
+        const bgPosY = -y * zoomFactor * ratioY + (lens.offsetHeight / 2);
 
         lens.style.backgroundPosition = `${bgPosX}px ${bgPosY}px`;
 
-        lens.style.left = `${e.clientX}px`;
-        lens.style.top = `${e.clientY}px`;
+        lens.style.left = `${mouseX}px`;
+        lens.style.top = `${mouseY}px`;
     }
 
     function handleMouseLeave() {

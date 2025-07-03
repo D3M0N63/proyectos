@@ -428,12 +428,12 @@ document.addEventListener('DOMContentLoaded', () => {
         const imageContainers = document.querySelectorAll('.image-container');
 
         imageContainers.forEach(container => {
-            // Asegúrate de que no haya listeners duplicados antes de añadirlos
+            // Remover cualquier listener previo para evitar duplicados
             container.removeEventListener('mouseenter', handleMouseEnter);
             container.removeEventListener('mouseleave', handleMouseLeave);
             container.removeEventListener('mousemove', handleMouseMove);
 
-            // Añade los nuevos listeners
+            // Añadir los nuevos listeners
             container.addEventListener('mouseenter', handleMouseEnter);
             container.addEventListener('mouseleave', handleMouseLeave);
             container.addEventListener('mousemove', handleMouseMove);
@@ -441,11 +441,20 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     let lens = null; // La lupa
-    const zoomFactor = 2; // Factor de ampliación
+    const zoomFactor = 1.8; // Factor de ampliación (ajustado para menos zoom)
 
     function handleMouseEnter(e) {
         const img = e.currentTarget.querySelector('.product-image-zoom');
-        if (!img) return;
+        if (!img || !img.src) return; // Asegurarse de que la imagen y su src existan
+
+        // Si la imagen aún no ha cargado sus dimensiones naturales, esperar
+        if (img.naturalWidth === 0 || img.naturalHeight === 0) {
+            img.onload = () => {
+                // Una vez que la imagen cargue, re-ejecutar handleMouseEnter
+                handleMouseEnter(e);
+            };
+            return; // Salir, la función se volverá a llamar cuando la imagen cargue
+        }
 
         // Crea la lupa si no existe
         if (!lens) {
@@ -456,37 +465,52 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Configura el fondo de la lupa con la imagen original
         lens.style.backgroundImage = `url('${img.src}')`;
-        // Calcula el tamaño del fondo de la lupa para el zoom
+        // Calcula el tamaño del fondo de la lupa usando las dimensiones naturales de la imagen y el factor de zoom
         lens.style.backgroundSize = `${img.naturalWidth * zoomFactor}px ${img.naturalHeight * zoomFactor}px`;
-        lens.style.display = 'block';
+        lens.style.display = 'block'; // Mostrar la lupa
     }
 
     function handleMouseMove(e) {
-        if (!lens) return;
+        if (!lens || lens.style.display === 'none') return; // Solo mover si la lupa está visible
 
         const img = e.currentTarget.querySelector('.product-image-zoom');
-        if (!img) return;
+        if (!img || img.naturalWidth === 0 || img.naturalHeight === 0) {
+            lens.style.display = 'none'; // Si la imagen no está lista durante el movimiento, ocultar la lupa
+            return;
+        }
 
-        // Obtener la posición del cursor relativa a la imagen
-        const rect = img.getBoundingClientRect();
-        const x = e.clientX - rect.left; // x dentro de la imagen
-        const y = e.clientY - rect.top;  // y dentro de la imagen
+        // Obtener la posición del cursor relativa al viewport
+        const mouseX = e.clientX;
+        const mouseY = e.clientY;
+
+        // Obtener la posición y dimensiones del contenedor de la imagen
+        const containerRect = e.currentTarget.getBoundingClientRect();
+
+        // Calcular la posición del cursor relativa a la imagen renderizada dentro de su contenedor
+        // Esto es crucial para object-fit: contain
+        const imgRect = img.getBoundingClientRect(); // Obtener las dimensiones y posición REALES de la imagen renderizada
+        const x = mouseX - imgRect.left; // Coordenada X dentro de la imagen renderizada
+        const y = mouseY - imgRect.top;  // Coordenada Y dentro de la imagen renderizada
+
+        // Calcular la relación entre el tamaño natural y el tamaño renderizado de la imagen
+        const ratioX = img.naturalWidth / imgRect.width;
+        const ratioY = img.naturalHeight / imgRect.height;
 
         // Calcular la posición del fondo de la lupa
-        // Ajustar la posición del fondo para que la lupa muestre la parte correcta de la imagen ampliada
-        const bgPosX = -x * zoomFactor + (lens.offsetWidth / 2);
-        const bgPosY = -y * zoomFactor + (lens.offsetHeight / 2);
+        // Multiplicamos por ratioX/Y para que el movimiento de la lupa coincida con la imagen natural
+        const bgPosX = -x * zoomFactor * ratioX + (lens.offsetWidth / 2);
+        const bgPosY = -y * zoomFactor * ratioY + (lens.offsetHeight / 2);
 
         lens.style.backgroundPosition = `${bgPosX}px ${bgPosY}px`;
 
         // Posicionar la lupa centrada en el cursor
-        lens.style.left = `${e.clientX}px`;
-        lens.style.top = `${e.clientY}px`;
+        lens.style.left = `${mouseX}px`;
+        lens.style.top = `${mouseY}px`;
     }
 
     function handleMouseLeave() {
         if (lens) {
-            lens.style.display = 'none';
+            lens.style.display = 'none'; // Ocultar la lupa
         }
     }
     // --- FIN Lógica para el Efecto de Lupa ---
