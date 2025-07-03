@@ -442,6 +442,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let lens = null; // La lupa
     const zoomFactor = 1.25; // Factor de ampliación
+    const offset = 20; // Desplazamiento de la lupa desde el cursor (en píxeles)
 
     function handleMouseEnter(e) {
         const img = e.currentTarget.querySelector('.product-image-zoom');
@@ -501,9 +502,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         lens.style.backgroundPosition = `${bgPosX}px ${bgPosY}px`;
 
-        // Posicionar la lupa centrada en el cursor
-        lens.style.left = `${mouseX}px`;
-        lens.style.top = `${mouseY}px`;
+        // Posicionar la lupa con un offset
+        lens.style.left = `${mouseX + offset}px`; // Ligeramente a la derecha
+        lens.style.top = `${mouseY + offset}px`;  // Ligeramente hacia abajo
     }
 
     function handleMouseLeave() {
