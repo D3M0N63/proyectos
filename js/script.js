@@ -441,7 +441,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     let lens = null; // La lupa
-    const zoomFactor = 1.25; // Factor de ampliación (reducido a 1.25)
+    const zoomFactor = 1.25; // Factor de ampliación
 
     function handleMouseEnter(e) {
         const img = e.currentTarget.querySelector('.product-image-zoom');
