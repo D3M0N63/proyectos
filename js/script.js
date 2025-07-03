@@ -74,7 +74,6 @@ document.addEventListener('DOMContentLoaded', () => {
                         <p class="model">${product.name}</p>
                         <p class="price">${product.price}</p>
                         <p class="price-local">(${product.pricelocal && product.pricelocal.split(' / ')[0] ? product.pricelocal.split(' / ')[0] : 'N/A'})</p>
-                        <!-- BOTÓN "Ver producto" ELIMINADO: <a href="product-detail.html?product=${product.id}" class="btn-view-product">Ver producto</a> -->
                     </div>
                 </div>
             `;
@@ -97,15 +96,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 1024: { slidesPerView: 4, spaceBetween: 30 },
             },
             on: {
-                // Después de que Swiper inicialice o actualice, adjuntar listeners a las imágenes
-                init: attachZoomListeners,
-                update: attachZoomListeners,
-                slideChangeTransitionEnd: attachZoomListeners // Para nuevas diapositivas al cambiar
+                // Adjuntar listeners de zoom después de que Swiper inicialice o actualice
+                init: setupMagnifyingGlassListeners,
+                update: setupMagnifyingGlassListeners,
+                slideChangeTransitionEnd: setupMagnifyingGlassListeners
             }
         });
 
-        // Adjuntar listeners de zoom después de renderizar el carrusel
-        attachZoomListeners();
+        // Adjuntar listeners de zoom al inicio
+        setupMagnifyingGlassListeners();
     }
 
     // Función para obtener todos los productos para la página principal
@@ -422,47 +421,69 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // --- Lógica para el Modal de Ampliación de Imagen ---
-    const imageZoomModal = document.getElementById('imageZoomModal');
-    const zoomedImage = document.getElementById('zoomedImage');
-    const closeZoomBtn = document.querySelector('.close-zoom-btn');
+    // --- Lógica para el Efecto de Lupa ---
+    function setupMagnifyingGlassListeners() {
+        const imageContainers = document.querySelectorAll('.image-container'); // Selecciona los contenedores de imagen
 
-    function attachZoomListeners() {
-        // Seleccionar todas las imágenes con la clase 'product-image-zoom'
-        // Esto incluye imágenes en el carrusel y en los productos relacionados
-        const zoomableImages = document.querySelectorAll('.product-image-zoom');
+        imageContainers.forEach(container => {
+            // Asegúrate de que no haya listeners duplicados
+            container.removeEventListener('mouseenter', handleMouseEnter);
+            container.removeEventListener('mouseleave', handleMouseLeave);
+            container.removeEventListener('mousemove', handleMouseMove);
 
-        zoomableImages.forEach(img => {
-            // Remover cualquier listener previo para evitar duplicados
-            img.removeEventListener('click', openZoomModal);
-            // Añadir el listener de clic
-            img.addEventListener('click', openZoomModal);
+            // Añade los nuevos listeners
+            container.addEventListener('mouseenter', handleMouseEnter);
+            container.addEventListener('mouseleave', handleMouseLeave);
+            container.addEventListener('mousemove', handleMouseMove);
         });
     }
 
-    function openZoomModal(event) {
-        const clickedImageSrc = event.target.src;
-        zoomedImage.src = clickedImageSrc;
-        imageZoomModal.style.display = 'flex'; // Mostrar el modal
-        document.body.style.overflow = 'hidden'; // Evitar scroll en el body
+    let lens = null; // La lupa
+    const zoomFactor = 2; // Factor de ampliación
+
+    function handleMouseEnter(e) {
+        const img = e.currentTarget.querySelector('.product-image-zoom');
+        if (!img) return;
+
+        // Crea la lupa si no existe
+        if (!lens) {
+            lens = document.createElement('div');
+            lens.classList.add('magnifying-lens');
+            document.body.appendChild(lens);
+        }
+
+        // Configura el fondo de la lupa con la imagen original
+        lens.style.backgroundImage = `url('${img.src}')`;
+        lens.style.backgroundSize = `${img.width * zoomFactor}px ${img.height * zoomFactor}px`;
+        lens.style.display = 'block';
     }
 
-    // Cerrar el modal al hacer clic en el botón de cerrar o en el overlay
-    if (closeZoomBtn) {
-        closeZoomBtn.addEventListener('click', closeZoomModal);
-    }
-    if (imageZoomModal) {
-        imageZoomModal.addEventListener('click', (event) => {
-            // Cerrar solo si se hace clic directamente en el overlay, no en la imagen
-            if (event.target === imageZoomModal) {
-                closeZoomModal();
-            }
-        });
+    function handleMouseMove(e) {
+        if (!lens) return;
+
+        const img = e.currentTarget.querySelector('.product-image-zoom');
+        if (!img) return;
+
+        // Obtener la posición del cursor relativa a la imagen
+        const rect = img.getBoundingClientRect();
+        const x = e.clientX - rect.left; // x dentro de la imagen
+        const y = e.clientY - rect.top;  // y dentro de la imagen
+
+        // Calcular la posición del fondo de la lupa
+        const bgPosX = -x * zoomFactor + (lens.offsetWidth / 2);
+        const bgPosY = -y * zoomFactor + (lens.offsetHeight / 2);
+
+        lens.style.backgroundPosition = `${bgPosX}px ${bgPosY}px`;
+
+        // Posicionar la lupa centrada en el cursor
+        lens.style.left = `${e.clientX}px`;
+        lens.style.top = `${e.clientY}px`;
     }
 
-    function closeZoomModal() {
-        imageZoomModal.style.display = 'none'; // Ocultar el modal
-        document.body.style.overflow = ''; // Restaurar scroll en el body
+    function handleMouseLeave() {
+        if (lens) {
+            lens.style.display = 'none';
+        }
     }
-    // --- FIN Lógica para el Modal de Ampliación de Imagen ---
+    // --- FIN Lógica para el Efecto de Lupa ---
 });
