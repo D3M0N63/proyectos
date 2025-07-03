@@ -441,7 +441,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     let lens = null; // La lupa
-    const zoomFactor = 1.5; // Factor de ampliación (ajustado a 1.5)
+    const zoomFactor = 1.25; // Factor de ampliación (reducido a 1.25)
 
     function handleMouseEnter(e) {
         const img = e.currentTarget.querySelector('.product-image-zoom');
@@ -491,7 +491,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const yInImage = mouseY - imgRect.top;
 
         // Calcular la relación entre el tamaño natural y el tamaño renderizado de la imagen
-        // Esto es crucial para object-fit: contain
         const ratioX = img.naturalWidth / imgRect.width;
         const ratioY = img.naturalHeight / imgRect.height;
 

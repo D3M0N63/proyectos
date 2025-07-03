@@ -128,7 +128,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     let lens = null;
-    const zoomFactor = 1.5; // Factor de ampliación
+    const zoomFactor = 1.25; // Factor de ampliación
 
     function handleMouseEnter(e) {
         const img = e.currentTarget.querySelector('.product-image-zoom');
@@ -187,4 +187,3 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
     // --- FIN Lógica para el Efecto de Lupa ---
 });
-
