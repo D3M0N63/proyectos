@@ -1019,3 +1019,41 @@ img {
     gap: 30px;
     justify-content: center;
 }
+
+/* Estilos para el efecto de lupa (zoom al pasar el cursor) */
+.image-container {
+    overflow: hidden; /* Oculta el contenido que se desborda al hacer zoom */
+    position: relative;
+    /* Define un tamaño fijo o máximo para el contenedor si es necesario */
+    width: 100%; /* Ocupa el ancho disponible */
+    height: 180px; /* Ejemplo: altura fija para carousel */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Ajuste para product-result-card para que el contenedor de imagen sea fijo */
+.product-result-card .image-container {
+    width: 120px; /* Tamaño fijo para la imagen en resultados de búsqueda */
+    height: 120px;
+    margin-bottom: 1rem;
+}
+@media (min-width: 768px) {
+    .product-result-card .image-container {
+        margin-right: 1.5rem;
+        margin-bottom: 0;
+    }
+}
+
+
+.product-image-zoom {
+    width: 100%;
+    height: 100%;
+    object-fit: contain; /* Asegura que la imagen se vea completa */
+    transition: transform 0.3s ease-in-out; /* Transición suave para el zoom */
+    transform-origin: center center; /* El zoom se origina desde el centro */
+}
+
+.product-image-zoom:hover {
+    transform: scale(1.2); /* Nivel de zoom al pasar el cursor */
+}

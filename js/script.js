@@ -66,13 +66,14 @@ document.addEventListener('DOMContentLoaded', () => {
         products.forEach(product => {
             const productCardHtml = `
                 <div class="swiper-slide product-card">
-                    <img src="${product.images && product.images.length > 0 ? product.images[0] : 'https://placehold.co/150x150/cccccc/333333?text=No+Image'}" alt="Neumático ${product.name}">
+                    <div class="image-container">
+                        <img src="${product.images && product.images.length > 0 ? product.images[0] : 'https://placehold.co/150x150/cccccc/333333?text=No+Image'}" alt="Neumático ${product.name}" class="product-image-zoom">
+                    </div>
                     <div class="product-info">
                         <p class="brand">${product.quickspecs && product.quickspecs.brand ? product.quickspecs.brand : 'N/A'}</p>
                         <p class="model">${product.name}</p>
                         <p class="price">${product.price}</p>
                         <p class="price-local">(${product.pricelocal && product.pricelocal.split(' / ')[0] ? product.pricelocal.split(' / ')[0] : 'N/A'})</p>
-                        <!-- BOTÓN "Ver producto" ELIMINADO: <a href="product-detail.html?product=${product.id}" class="btn-view-product">Ver producto</a> -->
                     </div>
                 </div>
             `;
@@ -355,7 +356,9 @@ document.addEventListener('DOMContentLoaded', () => {
             if (product) {
                 const productCard = `
                     <div class="product-card bg-white rounded-lg shadow-md overflow-hidden transform transition-transform hover:scale-105 duration-300">
-                        <img src="${product.images && product.images.length > 0 ? product.images[0] : 'https://placehold.co/200x200/cccccc/333333?text=No+Image'}" alt="Neumático ${product.name}" class="w-full h-48 object-cover">
+                        <div class="image-container">
+                            <img src="${product.images && product.images.length > 0 ? product.images[0] : 'https://placehold.co/200x200/cccccc/333333?text=No+Image'}" alt="Neumático ${product.name}" class="product-image-zoom">
+                        </div>
                         <div class="p-4">
                             <p class="brand text-sm text-gray-500">${product.quickspecs && product.quickspecs.brand ? product.quickspecs.brand : 'N/A'}</p>
                             <p class="model text-lg font-semibold text-gray-800 mb-1">${product.name}</p>
