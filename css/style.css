@@ -1057,7 +1057,7 @@ img {
 .magnifying-lens {
     position: fixed; /* Posicionamiento fijo para que siga el cursor en la ventana */
     border: 2px solid #dc3545; /* Borde rojo para la lupa */
-    border-radius: 50%; /* Forma circular */
+    border-radius: 8px; /* Forma cuadrada con esquinas redondeadas */
     cursor: none; /* Oculta el cursor dentro de la lupa */
     width: 150px; /* Tamaño de la lupa */
     height: 150px;

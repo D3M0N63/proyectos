@@ -441,7 +441,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     let lens = null; // La lupa
-    const zoomFactor = 1.8; // Factor de ampliación (ajustado para menos zoom)
+    const zoomFactor = 1.5; // Factor de ampliación (ajustado a 1.5)
 
     function handleMouseEnter(e) {
         const img = e.currentTarget.querySelector('.product-image-zoom');
@@ -483,23 +483,22 @@ document.addEventListener('DOMContentLoaded', () => {
         const mouseX = e.clientX;
         const mouseY = e.clientY;
 
-        // Obtener la posición y dimensiones del contenedor de la imagen
-        const containerRect = e.currentTarget.getBoundingClientRect();
+        // Obtener la posición y dimensiones REALES de la imagen renderizada
+        const imgRect = img.getBoundingClientRect();
 
-        // Calcular la posición del cursor relativa a la imagen renderizada dentro de su contenedor
-        // Esto es crucial para object-fit: contain
-        const imgRect = img.getBoundingClientRect(); // Obtener las dimensiones y posición REALES de la imagen renderizada
-        const x = mouseX - imgRect.left; // Coordenada X dentro de la imagen renderizada
-        const y = mouseY - imgRect.top;  // Coordenada Y dentro de la imagen renderizada
+        // Calcular la posición del cursor *dentro* de la imagen renderizada
+        const xInImage = mouseX - imgRect.left;
+        const yInImage = mouseY - imgRect.top;
 
         // Calcular la relación entre el tamaño natural y el tamaño renderizado de la imagen
+        // Esto es crucial para object-fit: contain
         const ratioX = img.naturalWidth / imgRect.width;
         const ratioY = img.naturalHeight / imgRect.height;
 
         // Calcular la posición del fondo de la lupa
         // Multiplicamos por ratioX/Y para que el movimiento de la lupa coincida con la imagen natural
-        const bgPosX = -x * zoomFactor * ratioX + (lens.offsetWidth / 2);
-        const bgPosY = -y * zoomFactor * ratioY + (lens.offsetHeight / 2);
+        const bgPosX = -xInImage * zoomFactor * ratioX + (lens.offsetWidth / 2);
+        const bgPosY = -yInImage * zoomFactor * ratioY + (lens.offsetHeight / 2);
 
         lens.style.backgroundPosition = `${bgPosX}px ${bgPosY}px`;
 

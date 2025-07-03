@@ -128,7 +128,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     let lens = null;
-    const zoomFactor = 1.8; // Factor de ampliación
+    const zoomFactor = 1.5; // Factor de ampliación
 
     function handleMouseEnter(e) {
         const img = e.currentTarget.querySelector('.product-image-zoom');
@@ -165,14 +165,14 @@ document.addEventListener('DOMContentLoaded', async () => {
         const mouseY = e.clientY;
 
         const imgRect = img.getBoundingClientRect();
-        const x = mouseX - imgRect.left;
-        const y = mouseY - imgRect.top;
+        const xInImage = mouseX - imgRect.left;
+        const yInImage = mouseY - imgRect.top;
 
         const ratioX = img.naturalWidth / imgRect.width;
         const ratioY = img.naturalHeight / imgRect.height;
 
-        const bgPosX = -x * zoomFactor * ratioX + (lens.offsetWidth / 2);
-        const bgPosY = -y * zoomFactor * ratioY + (lens.offsetHeight / 2);
+        const bgPosX = -xInImage * zoomFactor * ratioX + (lens.offsetWidth / 2);
+        const bgPosY = -yInImage * zoomFactor * ratioY + (lens.offsetHeight / 2);
 
         lens.style.backgroundPosition = `${bgPosX}px ${bgPosY}px`;
 
@@ -187,3 +187,4 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
     // --- FIN Lógica para el Efecto de Lupa ---
 });
+
