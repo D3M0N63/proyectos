@@ -80,7 +80,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 searchResultsContainer.insertAdjacentHTML('beforeend', productCardHtml);
             });
             // Adjuntar listeners de zoom después de renderizar los resultados
-            attachZoomListeners();
+            setupMagnifyingGlassListeners();
         }
     } catch (error) {
         console.error('Error al cargar los resultados de búsqueda:', error);
@@ -112,40 +112,62 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    // --- Lógica para el Modal de Ampliación de Imagen (Copiada de script.js) ---
-    const imageZoomModal = document.getElementById('imageZoomModal');
-    const zoomedImage = document.getElementById('zoomedImage');
-    const closeZoomBtn = document.querySelector('.close-zoom-btn');
+    // --- Lógica para el Efecto de Lupa (Copiada de script.js) ---
+    function setupMagnifyingGlassListeners() {
+        const imageContainers = document.querySelectorAll('.image-container');
 
-    function attachZoomListeners() {
-        const zoomableImages = document.querySelectorAll('.product-image-zoom');
-        zoomableImages.forEach(img => {
-            img.removeEventListener('click', openZoomModal); // Evitar duplicados
-            img.addEventListener('click', openZoomModal);
+        imageContainers.forEach(container => {
+            container.removeEventListener('mouseenter', handleMouseEnter);
+            container.removeEventListener('mouseleave', handleMouseLeave);
+            container.removeEventListener('mousemove', handleMouseMove);
+
+            container.addEventListener('mouseenter', handleMouseEnter);
+            container.addEventListener('mouseleave', handleMouseLeave);
+            container.addEventListener('mousemove', handleMouseMove);
         });
     }
 
-    function openZoomModal(event) {
-        const clickedImageSrc = event.target.src;
-        zoomedImage.src = clickedImageSrc;
-        imageZoomModal.style.display = 'flex';
-        document.body.style.overflow = 'hidden';
+    let lens = null;
+    const zoomFactor = 2; // Factor de ampliación
+
+    function handleMouseEnter(e) {
+        const img = e.currentTarget.querySelector('.product-image-zoom');
+        if (!img) return;
+
+        if (!lens) {
+            lens = document.createElement('div');
+            lens.classList.add('magnifying-lens');
+            document.body.appendChild(lens);
+        }
+
+        lens.style.backgroundImage = `url('${img.src}')`;
+        lens.style.backgroundSize = `${img.naturalWidth * zoomFactor}px ${img.naturalHeight * zoomFactor}px`;
+        lens.style.display = 'block';
     }
 
-    if (closeZoomBtn) {
-        closeZoomBtn.addEventListener('click', closeZoomModal);
-    }
-    if (imageZoomModal) {
-        imageZoomModal.addEventListener('click', (event) => {
-            if (event.target === imageZoomModal) {
-                closeZoomModal();
-            }
-        });
+    function handleMouseMove(e) {
+        if (!lens) return;
+
+        const img = e.currentTarget.querySelector('.product-image-zoom');
+        if (!img) return;
+
+        const rect = img.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+
+        const bgPosX = -x * zoomFactor + (lens.offsetWidth / 2);
+        const bgPosY = -y * zoomFactor + (lens.offsetHeight / 2);
+
+        lens.style.backgroundPosition = `${bgPosX}px ${bgPosY}px`;
+
+        lens.style.left = `${e.clientX}px`;
+        lens.style.top = `${e.clientY}px`;
     }
 
-    function closeZoomModal() {
-        imageZoomModal.style.display = 'none';
-        document.body.style.overflow = '';
+    function handleMouseLeave() {
+        if (lens) {
+            lens.style.display = 'none';
+        }
     }
-    // --- FIN Lógica para el Modal de Ampliación de Imagen ---
+    // --- FIN Lógica para el Efecto de Lupa ---
 });

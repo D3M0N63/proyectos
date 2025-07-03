@@ -74,6 +74,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         <p class="model">${product.name}</p>
                         <p class="price">${product.price}</p>
                         <p class="price-local">(${product.pricelocal && product.pricelocal.split(' / ')[0] ? product.pricelocal.split(' / ')[0] : 'N/A'})</p>
+                        <!-- BOTÓN "Ver producto" ELIMINADO: <a href="product-detail.html?product=${product.id}" class="btn-view-product">Ver producto</a> -->
                     </div>
                 </div>
             `;
@@ -423,10 +424,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Lógica para el Efecto de Lupa ---
     function setupMagnifyingGlassListeners() {
-        const imageContainers = document.querySelectorAll('.image-container'); // Selecciona los contenedores de imagen
+        // Seleccionar todos los contenedores de imagen con la clase 'image-container'
+        const imageContainers = document.querySelectorAll('.image-container');
 
         imageContainers.forEach(container => {
-            // Asegúrate de que no haya listeners duplicados
+            // Asegúrate de que no haya listeners duplicados antes de añadirlos
             container.removeEventListener('mouseenter', handleMouseEnter);
             container.removeEventListener('mouseleave', handleMouseLeave);
             container.removeEventListener('mousemove', handleMouseMove);
@@ -454,7 +456,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Configura el fondo de la lupa con la imagen original
         lens.style.backgroundImage = `url('${img.src}')`;
-        lens.style.backgroundSize = `${img.width * zoomFactor}px ${img.height * zoomFactor}px`;
+        // Calcula el tamaño del fondo de la lupa para el zoom
+        lens.style.backgroundSize = `${img.naturalWidth * zoomFactor}px ${img.naturalHeight * zoomFactor}px`;
         lens.style.display = 'block';
     }
 
@@ -470,6 +473,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const y = e.clientY - rect.top;  // y dentro de la imagen
 
         // Calcular la posición del fondo de la lupa
+        // Ajustar la posición del fondo para que la lupa muestre la parte correcta de la imagen ampliada
         const bgPosX = -x * zoomFactor + (lens.offsetWidth / 2);
         const bgPosY = -y * zoomFactor + (lens.offsetHeight / 2);
 

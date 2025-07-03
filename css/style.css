@@ -1055,7 +1055,7 @@ img {
 
 /* Estilos para la lente de aumento */
 .magnifying-lens {
-    position: absolute;
+    position: fixed; /* Posicionamiento fijo para que siga el cursor en la ventana */
     border: 2px solid #dc3545; /* Borde rojo para la lupa */
     border-radius: 50%; /* Forma circular */
     cursor: none; /* Oculta el cursor dentro de la lupa */
@@ -1067,5 +1067,5 @@ img {
     display: none; /* Oculto por defecto */
     pointer-events: none; /* Permite que los eventos del mouse pasen a la imagen subyacente */
     transform: translate(-50%, -50%); /* Centra la lupa en el cursor */
-    z-index: 10; /* Asegura que esté por encima de la imagen */
+    z-index: 9999; /* Asegura que esté por encima de todo */
 }
