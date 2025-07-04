@@ -7,9 +7,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     const aro = urlParams.get('aro');
     const category = urlParams.get('category');
 
-    let allProducts = []; // Almacenará todos los productos obtenidos
-    const productsPerPage = 8; // Número de productos por página
-    let currentPage = 1; // Página actual
+    let allProducts = [];
+    const productsPerPage = 8;
+    let currentPage = 1;
 
     // Mostrar los parámetros de búsqueda en el título o en algún lugar visible
     const searchTitle = document.querySelector('h1');
@@ -50,16 +50,16 @@ document.addEventListener('DOMContentLoaded', async () => {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
 
-        allProducts = await response.json(); // Almacenar todos los productos
+        allProducts = await response.json();
 
         if (allProducts.length === 0) {
             searchResultsContainer.innerHTML = `
                 <p class="no-results">No se encontraron neumáticos que coincidan con los criterios de búsqueda.</p>
                 <a href="index.html" class="text-red-600 hover:underline mt-4">Volver a la página principal</a>
             `;
-            paginationControls.classList.add('hidden'); // Ocultar paginación si no hay resultados
+            paginationControls.classList.add('hidden');
         } else {
-            renderProducts(currentPage); // Renderizar la primera página
+            renderProducts(currentPage);
         }
     } catch (error) {
         console.error('Error al cargar los resultados de búsqueda:', error);
@@ -67,12 +67,11 @@ document.addEventListener('DOMContentLoaded', async () => {
             <p class="no-results text-red-600">Error al cargar los resultados. Por favor, intente de nuevo más tarde.</p>
             <a href="index.html" class="text-red-600 hover:underline mt-4">Volver a la página principal</a>
         `;
-        paginationControls.classList.add('hidden'); // Ocultar paginación en caso de error
+        paginationControls.classList.add('hidden');
     }
 
-    // Función para renderizar los productos de la página actual
     function renderProducts(page) {
-        searchResultsContainer.innerHTML = ''; // Limpiar resultados anteriores
+        searchResultsContainer.innerHTML = '';
         const startIndex = (page - 1) * productsPerPage;
         const endIndex = startIndex + productsPerPage;
         const productsToDisplay = allProducts.slice(startIndex, endIndex);
@@ -80,12 +79,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         productsToDisplay.forEach(product => {
             const productNameForWhatsapp = product.name || 'un neumático';
             const whatsappMessage = encodeURIComponent(`Hola! Me interesa el neumático ${productNameForWhatsapp} que vi en su web. ID: ${product.id}`);
-            const whatsappLink = `https://wa.me/595983068998?text=${whatsappMessage}`;
+            const whatsappLink = `https://wa.me/595XXXXXXXXX?text=${whatsappMessage}`;
 
             const productCardHtml = `
                 <div class="product-result-card w-full">
                     <div class="image-container">
-                        <img src="${product.images && product.images.length > 0 ? product.images[0] : 'https://placehold.co/120x120/cccccc/333333?text=Neumatico'}" alt="Neumático ${product.name}" class="product-image-zoom">
+                        <img src="${product.images && product.images.length > 0 ? product.images[0] : 'https://placehold.co/120x120/cccccc/333333?text=Neumatico'}" alt="Neumático ${product.name}" class="product-image-zoom product-image-clickable">
                     </div>
                     <div class="product-info-left flex-grow">
                         <p class="name">${product.name || 'Neumático sin nombre'}</p>
@@ -99,23 +98,22 @@ document.addEventListener('DOMContentLoaded', async () => {
             searchResultsContainer.insertAdjacentHTML('beforeend', productCardHtml);
         });
 
-        setupMagnifyingGlassListeners(); // Re-adjuntar listeners de lupa a los nuevos productos
-        renderPaginationControls(); // Renderizar los controles de paginación
+        setupMagnifyingGlassListeners(); // Adjuntar listeners de lupa
+        attachZoomModalListeners(); // Adjuntar listeners de ampliación
+        renderPaginationControls();
     }
 
-    // Función para renderizar los controles de paginación
     function renderPaginationControls() {
-        paginationControls.innerHTML = ''; // Limpiar controles anteriores
+        paginationControls.innerHTML = '';
         const totalPages = Math.ceil(allProducts.length / productsPerPage);
 
         if (totalPages <= 1) {
-            paginationControls.classList.add('hidden'); // Ocultar si solo hay una página
+            paginationControls.classList.add('hidden');
             return;
         }
 
-        paginationControls.classList.remove('hidden'); // Mostrar si hay más de una página
+        paginationControls.classList.remove('hidden');
 
-        // Botón Anterior
         const prevButton = document.createElement('button');
         prevButton.textContent = 'Anterior';
         prevButton.classList.add('pagination-button');
@@ -123,11 +121,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         prevButton.addEventListener('click', () => {
             currentPage--;
             renderProducts(currentPage);
-            window.scrollTo(0, 0); // Scroll al inicio de la página
+            window.scrollTo(0, 0);
         });
         paginationControls.appendChild(prevButton);
 
-        // Botones de número de página
         for (let i = 1; i <= totalPages; i++) {
             const pageButton = document.createElement('button');
             pageButton.textContent = i;
@@ -138,12 +135,11 @@ document.addEventListener('DOMContentLoaded', async () => {
             pageButton.addEventListener('click', () => {
                 currentPage = i;
                 renderProducts(currentPage);
-                window.scrollTo(0, 0); // Scroll al inicio de la página
+                window.scrollTo(0, 0);
             });
             paginationControls.appendChild(pageButton);
         }
 
-        // Botón Siguiente
         const nextButton = document.createElement('button');
         nextButton.textContent = 'Siguiente';
         nextButton.classList.add('pagination-button');
@@ -151,16 +147,15 @@ document.addEventListener('DOMContentLoaded', async () => {
         nextButton.addEventListener('click', () => {
             currentPage++;
             renderProducts(currentPage);
-            window.scrollTo(0, 0); // Scroll al inicio de la página
+            window.scrollTo(0, 0);
         });
         paginationControls.appendChild(nextButton);
     }
 
-    // Lógica para los enlaces de categorías en el encabezado de search-results.html
     const categoryLinks = document.querySelectorAll('.categories-nav a[data-category]');
     categoryLinks.forEach(link => {
         link.addEventListener('click', (event) => {
-            event.preventDefault(); // Evita la navegación por defecto del enlace
+            event.preventDefault();
             const selectedCategory = event.target.dataset.category;
             if (selectedCategory) {
                 window.location.href = `search-results.html?category=${selectedCategory}`;
@@ -168,7 +163,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     });
 
-    // Lógica para el botón de menú móvil (si existe)
     const mobileMenuButton = document.getElementById('mobile-menu-button');
     const mobileCategoriesNav = document.getElementById('mobile-categories-nav');
 
@@ -179,26 +173,26 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     // --- Lógica para el Efecto de Lupa ---
-    function setupMagnifyingGlassListeners() {
-        const imageContainers = document.querySelectorAll('.image-container');
-
-        imageContainers.forEach(container => {
-            container.removeEventListener('mouseenter', handleMouseEnter);
-            container.removeEventListener('mouseleave', handleMouseLeave);
-            container.removeEventListener('mousemove', handleMouseMove);
-
-            container.addEventListener('mouseenter', handleMouseEnter);
-            container.addEventListener('mouseleave', handleMouseLeave);
-            container.addEventListener('mousemove', handleMouseMove);
-        });
-    }
-
     let lens = null;
     const zoomFactor = 1.25; // Factor de ampliación
     const offset = 20; // Desplazamiento de la lupa desde el cursor (en píxeles)
 
+    function setupMagnifyingGlassListeners() {
+        const zoomableImages = document.querySelectorAll('.product-image-zoom');
+
+        zoomableImages.forEach(img => {
+            img.removeEventListener('mouseenter', handleMouseEnter);
+            img.removeEventListener('mouseleave', handleMouseLeave);
+            img.removeEventListener('mousemove', handleMouseMove);
+
+            img.addEventListener('mouseenter', handleMouseEnter);
+            img.addEventListener('mouseleave', handleMouseLeave);
+            img.addEventListener('mousemove', handleMouseMove);
+        });
+    }
+
     function handleMouseEnter(e) {
-        const img = e.currentTarget.querySelector('.product-image-zoom');
+        const img = e.currentTarget;
         if (!img || !img.src) return;
 
         if (img.naturalWidth === 0 || img.naturalHeight === 0) {
@@ -222,7 +216,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     function handleMouseMove(e) {
         if (!lens || lens.style.display === 'none') return;
 
-        const img = e.currentTarget.querySelector('.product-image-zoom');
+        const img = e.currentTarget;
         if (!img || img.naturalWidth === 0 || img.naturalHeight === 0) {
             lens.style.display = 'none';
             return;
@@ -253,4 +247,42 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
     // --- FIN Lógica para el Efecto de Lupa ---
+
+    // --- Lógica para el Modal de Ampliación de Imagen ---
+    const imageZoomModal = document.getElementById('imageZoomModal');
+    const zoomedImage = document.getElementById('zoomedImage');
+    const closeZoomBtn = document.querySelector('.close-zoom-btn');
+
+    function attachZoomModalListeners() {
+        const clickableImages = document.querySelectorAll('.product-image-clickable');
+
+        clickableImages.forEach(img => {
+            img.removeEventListener('click', openZoomModal);
+            img.addEventListener('click', openZoomModal);
+        });
+    }
+
+    function openZoomModal(event) {
+        const clickedImageSrc = event.target.src;
+        zoomedImage.src = clickedImageSrc;
+        imageZoomModal.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+    }
+
+    if (closeZoomBtn) {
+        closeZoomBtn.addEventListener('click', closeZoomModal);
+    }
+    if (imageZoomModal) {
+        imageZoomModal.addEventListener('click', (event) => {
+            if (event.target === imageZoomModal) {
+                closeZoomModal();
+            }
+        });
+    }
+
+    function closeZoomModal() {
+        imageZoomModal.style.display = 'none';
+        document.body.style.overflow = '';
+    }
+    // --- FIN Lógica para el Modal de Ampliación de Imagen ---
 });

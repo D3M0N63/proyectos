@@ -62,11 +62,10 @@ document.addEventListener('DOMContentLoaded', () => {
         featuredProductsGrid.innerHTML = ''; // Limpiar productos existentes
 
         // Tomar hasta 12 productos aleatorios
-        // Asegurarse de que haya suficientes productos antes de intentar cortar 12
-        const productsToShuffle = [...products]; // Crear una copia para no modificar el array original
-        productsToShuffle.sort(() => 0.5 - Math.random()); // Mezclar aleatoriamente
+        const productsToShuffle = [...products];
+        productsToShuffle.sort(() => 0.5 - Math.random());
 
-        const productsToShow = productsToShuffle.slice(0, 12); // AHORA SELECCIONA HASTA 12 PRODUCTOS
+        const productsToShow = productsToShuffle.slice(0, 12);
 
         if (productsToShow.length === 0) {
             featuredProductsGrid.innerHTML = '<p class="text-center text-gray-600">No hay productos destacados disponibles.</p>';
@@ -77,7 +76,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const productCardHtml = `
                 <div class="product-card">
                     <div class="image-container">
-                        <img src="${product.images && product.images.length > 0 ? product.images[0] : 'https://placehold.co/150x150/cccccc/333333?text=No+Image'}" alt="Neumático ${product.name}" class="product-image-zoom">
+                        <img src="${product.images && product.images.length > 0 ? product.images[0] : 'https://placehold.co/150x150/cccccc/333333?text=No+Image'}" alt="Neumático ${product.name}" class="product-image-zoom product-image-clickable">
                     </div>
                     <div class="product-info">
                         <p class="brand">${product.quickspecs && product.quickspecs.brand ? product.quickspecs.brand : 'N/A'}</p>
@@ -90,12 +89,11 @@ document.addEventListener('DOMContentLoaded', () => {
             featuredProductsGrid.insertAdjacentHTML('beforeend', productCardHtml);
         });
 
-        // Ajustar altura de las tarjetas para que sean uniformes (opcional, si se desea)
         const productCards = featuredProductsGrid.querySelectorAll('.product-card');
         if (productCards.length > 0) {
             let maxHeight = 0;
             productCards.forEach(card => {
-                card.style.minHeight = 'auto'; // Resetear para recalcular
+                card.style.minHeight = 'auto';
             });
             productCards.forEach(card => {
                 if (card.offsetHeight > maxHeight) {
@@ -107,8 +105,9 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
 
-        // Adjuntar listeners de lupa a las nuevas imágenes
+        // Adjuntar listeners de lupa Y de clic para ampliación
         setupMagnifyingGlassListeners();
+        attachZoomModalListeners();
     }
 
     // Función para obtener todos los productos para la página principal
@@ -120,7 +119,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             const products = await response.json();
             console.log('Productos obtenidos del backend:', products);
-            renderFeaturedProductsGrid(products); // Llamar a la nueva función de renderizado
+            renderFeaturedProductsGrid(products);
             return products;
         } catch (error) {
             console.error('Error fetching all products:', error);
@@ -167,7 +166,6 @@ document.addEventListener('DOMContentLoaded', () => {
             if (relatedProductsSection) relatedProductsSection.style.display = 'none';
         }
     } else {
-        // En la página principal, cargar todos los productos para la sección "Más destacados"
         fetchAllProducts();
     }
 
@@ -351,14 +349,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
         let relatedProductsToShow = [];
 
-        // Filtra el producto actual y luego selecciona aleatoriamente
         const availableProducts = allProducts.filter(p => p.id !== currentProductId);
 
-        // Mezcla aleatoriamente los productos disponibles
         availableProducts.sort(() => 0.5 - Math.random());
 
-        // Selecciona hasta 12 productos relacionados
-        relatedProductsToShow = availableProducts.slice(0, 12); // CAMBIO: AHORA SELECCIONA HASTA 12 PRODUCTOS
+        relatedProductsToShow = availableProducts.slice(0, 12);
 
         const relatedSection = document.querySelector('.related-products');
         if (relatedProductsToShow.length === 0 && relatedSection) {
@@ -373,7 +368,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const productCard = `
                     <div class="product-card bg-white rounded-lg shadow-md overflow-hidden transform transition-transform hover:scale-105 duration-300">
                         <div class="image-container">
-                            <img src="${product.images && product.images.length > 0 ? product.images[0] : 'https://placehold.co/200x200/cccccc/333333?text=No+Image'}" alt="Neumático ${product.name}" class="product-image-zoom">
+                            <img src="${product.images && product.images.length > 0 ? product.images[0] : 'https://placehold.co/200x200/cccccc/333333?text=No+Image'}" alt="Neumático ${product.name}" class="product-image-zoom product-image-clickable">
                         </div>
                         <div class="p-4">
                             <p class="brand text-sm text-gray-500">${product.quickspecs && product.quickspecs.brand ? product.quickspecs.brand : 'N/A'}</p>
@@ -429,29 +424,29 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // --- Lógica para el Efecto de Lupa ---
-    function setupMagnifyingGlassListeners() {
-        // Seleccionar todos los contenedores de imagen con la clase 'image-container'
-        const imageContainers = document.querySelectorAll('.image-container');
+    let lens = null; // La lupa
+    const zoomFactor = 1.25; // Factor de ampliación
+    const offset = 250; // Desplazamiento de la lupa desde el cursor (en píxeles)
 
-        imageContainers.forEach(container => {
+    function setupMagnifyingGlassListeners() {
+        // Seleccionar todas las imágenes con la clase 'product-image-zoom'
+        const zoomableImages = document.querySelectorAll('.product-image-zoom');
+
+        zoomableImages.forEach(img => {
             // Remover cualquier listener previo para evitar duplicados
-            container.removeEventListener('mouseenter', handleMouseEnter);
-            container.removeEventListener('mouseleave', handleMouseLeave);
-            container.removeEventListener('mousemove', handleMouseMove);
+            img.removeEventListener('mouseenter', handleMouseEnter);
+            img.removeEventListener('mouseleave', handleMouseLeave);
+            img.removeEventListener('mousemove', handleMouseMove);
 
             // Añadir los nuevos listeners
-            container.addEventListener('mouseenter', handleMouseEnter);
-            container.addEventListener('mouseleave', handleMouseLeave);
-            container.addEventListener('mousemove', handleMouseMove);
+            img.addEventListener('mouseenter', handleMouseEnter);
+            img.addEventListener('mouseleave', handleMouseLeave);
+            img.addEventListener('mousemove', handleMouseMove);
         });
     }
 
-    let lens = null; // La lupa
-    const zoomFactor = 1; // Factor de ampliación (1 = tamaño real de la imagen en la lupa)
-    const offset = 20; // Desplazamiento de la lupa desde el cursor (en píxeles)
-
     function handleMouseEnter(e) {
-        const img = e.currentTarget.querySelector('.product-image-zoom');
+        const img = e.currentTarget; // La imagen es el target directo aquí
         if (!img || !img.src) return;
 
         // Si la imagen aún no ha cargado sus dimensiones naturales, esperar
@@ -471,42 +466,94 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         lens.style.backgroundImage = `url('${img.src}')`;
+        // Calcula el tamaño del fondo de la lupa usando las dimensiones naturales de la imagen y el factor de zoom
         lens.style.backgroundSize = `${img.naturalWidth * zoomFactor}px ${img.naturalHeight * zoomFactor}px`;
-        lens.style.display = 'block';
+        lens.style.display = 'block'; // Mostrar la lupa
     }
 
     function handleMouseMove(e) {
         if (!lens || lens.style.display === 'none') return;
 
-        const img = e.currentTarget.querySelector('.product-image-zoom');
+        const img = e.currentTarget; // La imagen es el target directo aquí
         if (!img || img.naturalWidth === 0 || img.naturalHeight === 0) {
-            lens.style.display = 'none';
+            lens.style.display = 'none'; // Si la imagen no está lista durante el movimiento, ocultar la lupa
             return;
         }
 
+        // Obtener la posición del cursor relativa al viewport
         const mouseX = e.clientX;
         const mouseY = e.clientY;
 
+        // Obtener la posición y dimensiones REALES de la imagen renderizada
         const imgRect = img.getBoundingClientRect();
+
+        // Calcular la posición del cursor *dentro* de la imagen renderizada
         const xInImage = mouseX - imgRect.left;
         const yInImage = mouseY - imgRect.top;
 
+        // Calcular la relación entre el tamaño natural y el tamaño renderizado de la imagen
         const ratioX = img.naturalWidth / imgRect.width;
         const ratioY = img.naturalHeight / imgRect.height;
 
+        // Calcular la posición del fondo de la lupa
+        // Multiplicamos por ratioX/Y para que el movimiento de la lupa coincida con la imagen natural
         const bgPosX = -xInImage * zoomFactor * ratioX + (lens.offsetWidth / 2);
         const bgPosY = -yInImage * zoomFactor * ratioY + (lens.offsetHeight / 2);
 
         lens.style.backgroundPosition = `${bgPosX}px ${bgPosY}px`;
 
-        lens.style.left = `${mouseX + offset}px`;
-        lens.style.top = `${mouseY + offset}px`;
+        // Posicionar la lupa con un offset
+        lens.style.left = `${mouseX + offset}px`; // Ligeramente a la derecha
+        lens.style.top = `${mouseY + offset}px`;  // Ligeramente hacia abajo
     }
 
     function handleMouseLeave() {
         if (lens) {
-            lens.style.display = 'none';
+            lens.style.display = 'none'; // Ocultar la lupa
         }
     }
     // --- FIN Lógica para el Efecto de Lupa ---
+
+    // --- Lógica para el Modal de Ampliación de Imagen ---
+    const imageZoomModal = document.getElementById('imageZoomModal');
+    const zoomedImage = document.getElementById('zoomedImage');
+    const closeZoomBtn = document.querySelector('.close-zoom-btn');
+
+    function attachZoomModalListeners() {
+        // Seleccionar todas las imágenes con la clase 'product-image-clickable'
+        const clickableImages = document.querySelectorAll('.product-image-clickable');
+
+        clickableImages.forEach(img => {
+            // Remover cualquier listener previo para evitar duplicados
+            img.removeEventListener('click', openZoomModal);
+            // Añadir el listener de clic
+            img.addEventListener('click', openZoomModal);
+        });
+    }
+
+    function openZoomModal(event) {
+        const clickedImageSrc = event.target.src;
+        zoomedImage.src = clickedImageSrc;
+        imageZoomModal.style.display = 'flex'; // Mostrar el modal
+        document.body.style.overflow = 'hidden'; // Evitar scroll en el body
+    }
+
+    // Cerrar el modal al hacer clic en el botón de cerrar o en el overlay
+    if (closeZoomBtn) {
+        closeZoomBtn.addEventListener('click', closeZoomModal);
+    }
+    if (imageZoomModal) {
+        imageZoomModal.addEventListener('click', (event) => {
+            // Cerrar solo si se hace clic directamente en el overlay, no en la imagen
+            if (event.target === imageZoomModal) {
+                closeZoomModal();
+            }
+        });
+    }
+
+    function closeZoomModal() {
+        imageZoomModal.style.display = 'none'; // Ocultar el modal
+        document.body.style.overflow = ''; // Restaurar scroll en el body
+    }
+    // --- FIN Lógica para el Modal de Ampliación de Imagen ---
 });
