@@ -354,6 +354,8 @@ img {
 .swiper-container {
     width: 100%;
     height: auto;
+    margin: 0 auto; /* Added to center the entire carousel container */
+    max-width: 1024px; /* Optional: Adjust max-width as needed for larger screens */
 }
 
 .swiper-slide {
