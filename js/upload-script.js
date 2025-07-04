@@ -9,9 +9,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const loadMessageDiv = document.getElementById('loadMessage');
     const clearFormBtn = document.getElementById('clearFormBtn');
 
-    // Nuevos elementos para la moneda
+    // Nuevos elementos para la moneda y categoría
     const priceValueInput = document.getElementById('price_value');
     const priceCurrencySelect = document.getElementById('price_currency');
+    const categoriesSelect = document.getElementById('categories'); // El nuevo select de categorías
 
     let currentProductId = null; // Almacena el ID del producto que se está editando
 
@@ -55,7 +56,15 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('pricelocal').value = product.pricelocal || '';
         document.getElementById('stockstatus').value = product.stockstatus || '';
         document.getElementById('sku').value = product.sku || '';
-        document.getElementById('categories').value = product.categories || '';
+        
+        // Llenar el selector de categorías
+        if (product.categories) {
+            // Asumiendo que categories es un string simple para el select
+            categoriesSelect.value = product.categories;
+        } else {
+            categoriesSelect.value = ''; // Seleccionar la opción por defecto
+        }
+
         document.getElementById('tags').value = product.tags || '';
         document.getElementById('images').value = (product.images && Array.isArray(product.images)) ? product.images.join(', ') : '';
         document.getElementById('description').value = product.description || '';
@@ -79,6 +88,7 @@ document.addEventListener('DOMContentLoaded', () => {
         displayLoadMessage('', 'hidden'); // Limpiar mensajes de carga
         editProductIdInput.value = ''; // Limpiar el campo de ID a editar
         priceCurrencySelect.value = 'USD'; // Resetear selector de moneda
+        categoriesSelect.value = ''; // Resetear selector de categoría
     }
 
     // Lógica para cargar un producto por ID
@@ -147,7 +157,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             productData.stockstatus = formData.get('stockstatus');
             productData.sku = formData.get('sku');
-            productData.categories = formData.get('categories');
+            productData.categories = formData.get('categories'); // Obtener valor del select
             productData.tags = formData.get('tags');
             productData.description = formData.get('description');
 
