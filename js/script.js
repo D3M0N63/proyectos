@@ -61,8 +61,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         featuredProductsGrid.innerHTML = ''; // Limpiar productos existentes
 
-        // Tomar hasta 10 productos aleatorios
-        const productsToShow = products.sort(() => 0.5 - Math.random()).slice(0, 10);
+        // Tomar hasta 12 productos aleatorios
+        const productsToShow = products.sort(() => 0.5 - Math.random()).slice(0, 12); // CAMBIO: AHORA SELECCIONA HASTA 12 PRODUCTOS
 
         if (productsToShow.length === 0) {
             featuredProductsGrid.innerHTML = '<p class="text-center text-gray-600">No hay productos destacados disponibles.</p>';
@@ -347,13 +347,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
         let relatedProductsToShow = [];
 
-        // Filtra el producto actual y luego selecciona aleatoriamente
         const availableProducts = allProducts.filter(p => p.id !== currentProductId);
 
-        // Mezcla aleatoriamente los productos disponibles
         availableProducts.sort(() => 0.5 - Math.random());
 
-        // Selecciona hasta 10 productos relacionados
         relatedProductsToShow = availableProducts.slice(0, 10);
 
         const relatedSection = document.querySelector('.related-products');
