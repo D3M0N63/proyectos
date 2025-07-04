@@ -1,4 +1,4 @@
-¿document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', () => {
     // Código existente para newsletter popup, búsqueda, y acordeón
     const newsletterPopup = document.getElementById('newsletter-popup');
     const closeBtn = document.querySelector('.newsletter-popup .close-btn');
