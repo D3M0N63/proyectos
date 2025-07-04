@@ -110,7 +110,7 @@ document.addEventListener('DOMContentLoaded', () => {
             mySwiperInstance.destroy(true, true); // Destruir para recrear limpiamente
         }
         mySwiperInstance = new Swiper(".mySwiper", {
-            slidesPerView: 1,
+            slidesPerView: 1, // Default for mobile
             spaceBetween: 10,
             loop: true,
             pagination: { el: ".swiper-pagination", clickable: true },
@@ -119,10 +119,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 delay: 3000, // Move every 3 seconds
                 disableOnInteraction: false, // Continue autoplay even after user interaction
             },
+            // Added to make pagination points represent groups of 2 slides
+            slidesPerGroup: 2,
             breakpoints: {
-                640: { slidesPerView: 2, spaceBetween: 20 },
-                768: { slidesPerView: 3, spaceBetween: 30 },
-                1024: { slidesPerView: 4, spaceBetween: 30 },
+                640: { slidesPerView: 2, spaceBetween: 20, slidesPerGroup: 2 }, // Adjusted for 2 products per view, 2 products per group
+                768: { slidesPerView: 3, spaceBetween: 30 }, // No specific slidesPerGroup, default to 2 as set above
+                1024: { slidesPerView: 4, spaceBetween: 30, slidesPerGroup: 2 }, // Adjusted for 4 products per view, 2 products per group
             },
             on: {
                 // Adjuntar listeners de zoom después de que Swiper inicialice o actualice
