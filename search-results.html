@@ -141,6 +141,38 @@
             font-size: 1.125rem;
             margin-top: 2rem;
         }
+        /* Estilos para la paginación */
+        .pagination-controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            margin-top: 2rem;
+            flex-wrap: wrap; /* Permite que los botones se envuelvan en pantallas pequeñas */
+        }
+        .pagination-button {
+            background-color: #f0f0f0;
+            color: #333;
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 0.375rem; /* rounded-md */
+            cursor: pointer;
+            transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
+            font-weight: 500;
+        }
+        .pagination-button:hover:not(:disabled) {
+            background-color: #e0e0e0;
+            color: #1f2937;
+        }
+        .pagination-button.active {
+            background-color: #dc3545; /* Rojo */
+            color: white;
+            border-color: #dc3545;
+        }
+        .pagination-button:disabled {
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
     </style>
 </head>
 <body class="p-4">
@@ -184,21 +216,20 @@
             <!-- Los resultados de la búsqueda se cargarán aquí -->
             <p class="text-center text-gray-600">Cargando resultados...</p>
         </div>
+        <div id="paginationControls" class="pagination-controls hidden">
+            <!-- Los controles de paginación se cargarán aquí -->
+        </div>
     </div>
 
     <!-- FOOTER SIMPLIFICADO -->
     <footer class="main-footer">
         <div class="footer-attention">
             <i class="fas fa-exclamation-triangle"></i>
-            <p>ATENCIÓN: HACEMOS ENVIOS A TODO EL PAIS</p>
-        </div>
-        <div class="footer-content">
-            <div class="footer-section footer-newsletter" style="flex: 1 1 100%; text-align: center;">
-                <p style="margin-top: 0;">Hecho por Tobias Torales</p>
-            </div>
+            <p>Envíos a todo el país</p>
         </div>
         <div class="footer-disclaimer">
             <p>Precios y condiciones de pago exclusivos para tienda online. Ventas sujetas a análisis y confirmación de datos. Valores, informaciones y stock con posibilidad de alteración sin previo aviso. Imágenes meramente ilustrativas.</p>
+            <p>Hecho por Tobias Torales</p>
         </div>
     </footer>
     <!-- FIN DEL FOOTER SIMPLIFICADO -->

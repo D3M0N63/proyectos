@@ -1,10 +1,15 @@
 document.addEventListener('DOMContentLoaded', async () => {
     const searchResultsContainer = document.getElementById('searchResultsContainer');
+    const paginationControls = document.getElementById('paginationControls');
     const urlParams = new URLSearchParams(window.location.search);
     const ancho = urlParams.get('ancho');
     const perfil = urlParams.get('perfil');
     const aro = urlParams.get('aro');
     const category = urlParams.get('category');
+
+    let allProducts = []; // Almacenará todos los productos obtenidos
+    const productsPerPage = 8; // Número de productos por página
+    let currentPage = 1; // Página actual
 
     // Mostrar los parámetros de búsqueda en el título o en algún lugar visible
     const searchTitle = document.querySelector('h1');
@@ -45,42 +50,16 @@ document.addEventListener('DOMContentLoaded', async () => {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
 
-        const products = await response.json();
+        allProducts = await response.json(); // Almacenar todos los productos
 
-        searchResultsContainer.innerHTML = ''; // Limpiar el mensaje de "Cargando..."
-
-        if (products.length === 0) {
+        if (allProducts.length === 0) {
             searchResultsContainer.innerHTML = `
                 <p class="no-results">No se encontraron neumáticos que coincidan con los criterios de búsqueda.</p>
                 <a href="index.html" class="text-red-600 hover:underline mt-4">Volver a la página principal</a>
             `;
+            paginationControls.classList.add('hidden'); // Ocultar paginación si no hay resultados
         } else {
-            products.forEach(product => {
-                // Generar el mensaje de WhatsApp para el botón "CONTACTO"
-                const productNameForWhatsapp = product.name || 'un neumático';
-                const whatsappMessage = encodeURIComponent(`Hola! Me interesa el neumático ${productNameForWhatsapp} que vi en su web. ID: ${product.id}`);
-                // Reemplaza '595XXXXXXXXX' con el número de WhatsApp real de tu negocio
-                const whatsappLink = `https://wa.me/595XXXXXXXXX?text=${whatsappMessage}`;
-
-                const productCardHtml = `
-                    <div class="product-result-card w-full">
-                        <div class="image-container">
-                            <img src="${product.images && product.images.length > 0 ? product.images[0] : 'https://placehold.co/120x120/cccccc/333333?text=Neumatico'}" alt="Neumático ${product.name}" class="product-image-zoom">
-                        </div>
-                        <div class="product-info-left flex-grow">
-                            <p class="name">${product.name || 'Neumático sin nombre'}</p>
-                            <p class="price">${product.price || 'N/A'}</p>
-                            <p class="price-details">${product.pricelocal || 'N/A'}</p>
-                            <!-- El enlace "Ver Detalles" no redirige a product-detail.html ya que está inhabilitado -->
-                            <a href="#" class="details-link"> + Ver Detalles</a>
-                        </div>
-                        <a href="${whatsappLink}" target="_blank" class="buy-button bg-green-500 text-white py-2 px-4 rounded-md font-semibold hover:bg-green-600 transition-colors duration-300 shadow-md">CONTACTO</a>
-                    </div>
-                `;
-                searchResultsContainer.insertAdjacentHTML('beforeend', productCardHtml);
-            });
-            // Adjuntar listeners de zoom después de renderizar los resultados
-            setupMagnifyingGlassListeners();
+            renderProducts(currentPage); // Renderizar la primera página
         }
     } catch (error) {
         console.error('Error al cargar los resultados de búsqueda:', error);
@@ -88,6 +67,93 @@ document.addEventListener('DOMContentLoaded', async () => {
             <p class="no-results text-red-600">Error al cargar los resultados. Por favor, intente de nuevo más tarde.</p>
             <a href="index.html" class="text-red-600 hover:underline mt-4">Volver a la página principal</a>
         `;
+        paginationControls.classList.add('hidden'); // Ocultar paginación en caso de error
+    }
+
+    // Función para renderizar los productos de la página actual
+    function renderProducts(page) {
+        searchResultsContainer.innerHTML = ''; // Limpiar resultados anteriores
+        const startIndex = (page - 1) * productsPerPage;
+        const endIndex = startIndex + productsPerPage;
+        const productsToDisplay = allProducts.slice(startIndex, endIndex);
+
+        productsToDisplay.forEach(product => {
+            const productNameForWhatsapp = product.name || 'un neumático';
+            const whatsappMessage = encodeURIComponent(`Hola! Me interesa el neumático ${productNameForWhatsapp} que vi en su web. ID: ${product.id}`);
+            const whatsappLink = `https://wa.me/595XXXXXXXXX?text=${whatsappMessage}`;
+
+            const productCardHtml = `
+                <div class="product-result-card w-full">
+                    <div class="image-container">
+                        <img src="${product.images && product.images.length > 0 ? product.images[0] : 'https://placehold.co/120x120/cccccc/333333?text=Neumatico'}" alt="Neumático ${product.name}" class="product-image-zoom">
+                    </div>
+                    <div class="product-info-left flex-grow">
+                        <p class="name">${product.name || 'Neumático sin nombre'}</p>
+                        <p class="price">${product.price || 'N/A'}</p>
+                        <p class="price-details">${product.pricelocal || 'N/A'}</p>
+                        <a href="#" class="details-link"> + Ver Detalles</a>
+                    </div>
+                    <a href="${whatsappLink}" target="_blank" class="buy-button bg-green-500 text-white py-2 px-4 rounded-md font-semibold hover:bg-green-600 transition-colors duration-300 shadow-md">CONTACTO</a>
+                </div>
+            `;
+            searchResultsContainer.insertAdjacentHTML('beforeend', productCardHtml);
+        });
+
+        setupMagnifyingGlassListeners(); // Re-adjuntar listeners de lupa a los nuevos productos
+        renderPaginationControls(); // Renderizar los controles de paginación
+    }
+
+    // Función para renderizar los controles de paginación
+    function renderPaginationControls() {
+        paginationControls.innerHTML = ''; // Limpiar controles anteriores
+        const totalPages = Math.ceil(allProducts.length / productsPerPage);
+
+        if (totalPages <= 1) {
+            paginationControls.classList.add('hidden'); // Ocultar si solo hay una página
+            return;
+        }
+
+        paginationControls.classList.remove('hidden'); // Mostrar si hay más de una página
+
+        // Botón Anterior
+        const prevButton = document.createElement('button');
+        prevButton.textContent = 'Anterior';
+        prevButton.classList.add('pagination-button');
+        prevButton.disabled = currentPage === 1;
+        prevButton.addEventListener('click', () => {
+            currentPage--;
+            renderProducts(currentPage);
+            window.scrollTo(0, 0); // Scroll al inicio de la página
+        });
+        paginationControls.appendChild(prevButton);
+
+        // Botones de número de página
+        for (let i = 1; i <= totalPages; i++) {
+            const pageButton = document.createElement('button');
+            pageButton.textContent = i;
+            pageButton.classList.add('pagination-button');
+            if (i === currentPage) {
+                pageButton.classList.add('active');
+            }
+            pageButton.addEventListener('click', () => {
+                currentPage = i;
+                renderProducts(currentPage);
+                window.scrollTo(0, 0); // Scroll al inicio de la página
+            });
+            paginationControls.appendChild(pageButton);
+        }
+
+        // Botón Siguiente
+        const nextButton = document.createElement('button');
+        nextButton.textContent = 'Siguiente';
+        nextButton.classList.add('pagination-button');
+        nextButton.disabled = currentPage === totalPages;
+        nextButton.addEventListener('click', () => {
+            currentPage++;
+            renderProducts(currentPage);
+            window.scrollTo(0, 0); // Scroll al inicio de la página
+        });
+        paginationControls.appendChild(nextButton);
     }
 
     // Lógica para los enlaces de categorías en el encabezado de search-results.html
@@ -128,8 +194,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     let lens = null;
-    const zoomFactor = 1; // Factor de ampliación
-    const offset = 200; // Desplazamiento de la lupa desde el cursor (en píxeles)
+    const zoomFactor = 1.25; // Factor de ampliación
+    const offset = 20; // Desplazamiento de la lupa desde el cursor (en píxeles)
 
     function handleMouseEnter(e) {
         const img = e.currentTarget.querySelector('.product-image-zoom');
