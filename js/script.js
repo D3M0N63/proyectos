@@ -445,19 +445,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let lens = null; // La lupa
     const zoomFactor = 1; // Factor de ampliación
-    const offset = 150; // Desplazamiento de la lupa desde el cursor (en píxeles)
+    const offset = 20; // Desplazamiento de la lupa desde el cursor (en píxeles)
 
     function handleMouseEnter(e) {
         const img = e.currentTarget.querySelector('.product-image-zoom');
         if (!img || !img.src) return;
 
+        // Si la imagen aún no ha cargado sus dimensiones naturales, esperar
         if (img.naturalWidth === 0 || img.naturalHeight === 0) {
             img.onload = () => {
+                // Una vez que la imagen cargue, re-ejecutar handleMouseEnter
                 handleMouseEnter(e);
             };
-            return;
+            return; // Salir, la función se volverá a llamar cuando la imagen cargue
         }
 
+        // Crea la lupa si no existe
         if (!lens) {
             lens = document.createElement('div');
             lens.classList.add('magnifying-lens');
@@ -504,3 +507,5 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     // --- FIN Lógica para el Efecto de Lupa ---
 });
+
+
