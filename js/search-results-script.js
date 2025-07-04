@@ -79,7 +79,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         productsToDisplay.forEach(product => {
             const productNameForWhatsapp = product.name || 'un neumático';
             const whatsappMessage = encodeURIComponent(`Hola! Me interesa el neumático ${productNameForWhatsapp} que vi en su web. ID: ${product.id}`);
-            const whatsappLink = `https://wa.me/595XXXXXXXXX?text=${whatsappMessage}`;
+            const whatsappLink = `https://wa.me/595983068998?text=${whatsappMessage}`;
 
             const productCardHtml = `
                 <div class="product-result-card w-full">
@@ -175,7 +175,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     // --- Lógica para el Efecto de Lupa ---
     let lens = null;
     const zoomFactor = 1.25; // Factor de ampliación
-    const offset = 20; // Desplazamiento de la lupa desde el cursor (en píxeles)
+    const offset = 250; // Desplazamiento de la lupa desde el cursor (en píxeles)
 
     function setupMagnifyingGlassListeners() {
         const zoomableImages = document.querySelectorAll('.product-image-zoom');
