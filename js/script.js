@@ -55,7 +55,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Función para renderizar los productos en la sección "Más destacados"
-    function renderFeaturedProductsGrid(products) { // Renombrado de renderProductsCarousel
+    function renderFeaturedProductsGrid(products) {
         const featuredProductsGrid = document.getElementById('featuredProductsGrid');
         if (!featuredProductsGrid) return;
 
@@ -347,11 +347,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
         let relatedProductsToShow = [];
 
+        // Filtra el producto actual y luego selecciona aleatoriamente
         const availableProducts = allProducts.filter(p => p.id !== currentProductId);
 
+        // Mezcla aleatoriamente los productos disponibles
         availableProducts.sort(() => 0.5 - Math.random());
 
-        relatedProductsToShow = availableProducts.slice(0, 10);
+        // Selecciona hasta 12 productos relacionados
+        relatedProductsToShow = availableProducts.slice(0, 12); // CAMBIO: AHORA SELECCIONA HASTA 12 PRODUCTOS
 
         const relatedSection = document.querySelector('.related-products');
         if (relatedProductsToShow.length === 0 && relatedSection) {
