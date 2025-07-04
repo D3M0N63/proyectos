@@ -6,6 +6,7 @@ body {
     box-sizing: border-box;
     background-color: #f4f4f4;
     color: #333;
+    overflow-x: hidden; /* Added to prevent horizontal scrolling */
 }
 
 a {
@@ -293,12 +294,17 @@ img {
 }
 
 .product-card {
+    box-sizing: border-box; /* Added to ensure consistent box model */
     background-color: #fff;
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0,0,0,0.1);
     padding: 20px;
     text-align: center;
     transition: transform 0.2s ease;
+}
+.product-card .image-container,
+.product-card .product-info {
+    box-sizing: border-box; /* Added to ensure consistent box model for children */
 }
 
 .product-card:hover {
@@ -755,6 +761,23 @@ img {
         font-size: 25px;
     }
 }
+
+/* New media query for mobile devices (less than 640px) */
+@media (max-width: 639px) {
+    .featured-products {
+        padding-left: 10px; /* Adjust horizontal padding to give more room if needed */
+        padding-right: 10px; /* Adjust horizontal padding to give more room if needed */
+    }
+    .swiper-container {
+        max-width: 100%; /* Ensure the carousel container fits within the screen */
+    }
+    .product-card {
+        width: 100%; /* Force product card to take full available width on mobile */
+        /* You can adjust padding here if the 20px padding is too much for very small screens */
+        /* padding: 15px; */
+    }
+}
+
 
 /* Product Detail Page Specific Styles */
 .product-detail-container {
