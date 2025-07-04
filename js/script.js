@@ -56,6 +56,31 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let mySwiperInstance = null; // Variable para la instancia de Swiper
 
+    // Function to equalize heights of product cards in a given container
+    function equalizeProductCardHeights(containerSelector) {
+        const productCards = document.querySelectorAll(containerSelector + ' .product-card');
+        if (productCards.length === 0) return;
+
+        let maxHeight = 0;
+        // Reset min-height first to get natural heights
+        productCards.forEach(card => {
+            card.style.minHeight = 'auto';
+        });
+
+        // Find the maximum height
+        productCards.forEach(card => {
+            if (card.offsetHeight > maxHeight) {
+                maxHeight = card.offsetHeight;
+            }
+        });
+
+        // Apply the maximum height as min-height to all cards
+        productCards.forEach(card => {
+            card.style.minHeight = `${maxHeight}px`;
+        });
+    }
+
+
     // Función para renderizar los productos en el carrusel de index.html
     function renderProductsCarousel(products) {
         const swiperWrapper = document.querySelector('.mySwiper .swiper-wrapper');
@@ -101,14 +126,25 @@ document.addEventListener('DOMContentLoaded', () => {
             },
             on: {
                 // Adjuntar listeners de zoom después de que Swiper inicialice o actualice
-                init: setupMagnifyingGlassListeners,
-                update: setupMagnifyingGlassListeners,
-                slideChangeTransitionEnd: setupMagnifyingGlassListeners
+                init: () => {
+                    setupMagnifyingGlassListeners();
+                    equalizeProductCardHeights('.mySwiper'); // Equalize heights on init
+                },
+                update: () => {
+                    setupMagnifyingGlassListeners();
+                    equalizeProductCardHeights('.mySwiper'); // Equalize heights on update
+                },
+                slideChangeTransitionEnd: () => {
+                    setupMagnifyingGlassListeners();
+                    equalizeProductCardHeights('.mySwiper'); // Equalize heights after slide change
+                }
             }
         });
 
         // Adjuntar listeners de zoom al inicio
         setupMagnifyingGlassListeners();
+        // Equalize heights after initial render if Swiper is not yet fully initialized by its `on` events
+        equalizeProductCardHeights('.mySwiper');
     }
 
     // Función para obtener todos los productos para la página principal
@@ -387,21 +423,8 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
-        const relatedCards = relatedProductsContainer.querySelectorAll('.product-card');
-        if (relatedCards.length > 0) {
-            let maxHeight = 0;
-            relatedCards.forEach(card => {
-                card.style.minHeight = 'auto';
-            });
-            relatedCards.forEach(card => {
-                if (card.offsetHeight > maxHeight) {
-                    maxHeight = card.offsetHeight;
-                }
-            });
-            relatedCards.forEach(card => {
-                card.style.minHeight = `${maxHeight}px`;
-            });
-        }
+        // Apply height equalization for related products
+        equalizeProductCardHeights('.products-grid-related');
     }
 
     // Lógica para los enlaces de categorías en el encabezado
