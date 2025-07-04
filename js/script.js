@@ -559,7 +559,7 @@ document.addEventListener('DOMContentLoaded', () => {
 ```
 ---
 
-`js/searcharch-results-script.js` (Con Lupa y Modal de Ampliación)
+.js/searcharch-results-script.js (Con Lupa y Modal de Ampliación)
 
 
 ```javascript
