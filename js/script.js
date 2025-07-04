@@ -111,7 +111,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         mySwiperInstance = new Swiper(".mySwiper", {
             slidesPerView: 1, // Default for mobile
-            spaceBetween: 10, // Adjusted space for better visual separation with centeredSlides
+            spaceBetween: 20, // Adjusted space for better visual separation with centeredSlides
             loop: true,
             pagination: { el: ".swiper-pagination", clickable: true },
             // Removed navigation for no arrows
@@ -426,8 +426,21 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
-        // Apply height equalization for related products
-        equalizeProductCardHeights('.products-grid-related');
+        const relatedCards = relatedProductsContainer.querySelectorAll('.product-card');
+        if (relatedCards.length > 0) {
+            let maxHeight = 0;
+            relatedCards.forEach(card => {
+                card.style.minHeight = 'auto';
+            });
+            relatedCards.forEach(card => {
+                if (card.offsetHeight > maxHeight) {
+                    maxHeight = card.offsetHeight;
+                }
+            });
+            relatedCards.forEach(card => {
+                card.style.minHeight = `${maxHeight}px`;
+            });
+        }
     }
 
     // Lógica para los enlaces de categorías en el encabezado
@@ -473,7 +486,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let lens = null; // La lupa
     const zoomFactor = 1; // Factor de ampliación
-    const offset = 350; // Desplazamiento de la lupa desde el cursor (en píxeles)
+    const offset = 150; // Desplazamiento de la lupa desde el cursor (en píxeles)
 
     function handleMouseEnter(e) {
         const img = e.currentTarget.querySelector('.product-image-zoom');
