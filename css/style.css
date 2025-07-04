@@ -771,6 +771,9 @@ img {
     .swiper-container {
         max-width: 100%; /* Ensure the carousel container fits within the screen */
     }
+    .swiper-slide { /* Ensure the slide itself takes 100% of wrapper's width */
+        width: 100%; /* Added */
+    }
     .product-card {
         width: 100%; /* Force product card to take full available width on mobile */
         /* You can adjust padding here if the 20px padding is too much for very small screens */
