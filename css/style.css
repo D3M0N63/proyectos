@@ -278,6 +278,8 @@ img {
 .featured-products {
     padding: 40px 20px;
     text-align: center;
+    background-color: #fff; /* Added: White background */
+    box-shadow: 0 -2px 5px rgba(0,0,0,0.05); /* Added: Subtle shadow */
 }
 
 .featured-products h2 {
@@ -305,6 +307,7 @@ img {
 .product-card .image-container,
 .product-card .product-info {
     box-sizing: border-box; /* Added to ensure consistent box model for children */
+    min-width: 0; /* Added to ensure flex items can shrink */
 }
 
 .product-card:hover {

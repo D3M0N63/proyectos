@@ -65,6 +65,9 @@ exports.handler = async (event) => {
             paramIndex++;
         }
         
+        // Added ORDER BY RANDOM() and LIMIT 10 for random products
+        queryText += ' ORDER BY RANDOM() LIMIT 10'; 
+
         console.log("Executing query:", queryText, queryParams);
 
         const res = await client.query(queryText, queryParams);

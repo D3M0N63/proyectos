@@ -362,7 +362,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const productDetailContainer = document.querySelector('.product-detail-container');
             if (productDetailContainer) {
                 productDetailContainer.innerHTML = `
-                    <h2 class="text-2xl font-bold text-center text-red-600 mb-4">Producto no encontrado</h2>
+                    <h2 class="text-2xl font-bold text-center text-red-600 mb-4">Página de Detalle de Producto No Disponible.</h2>
                     <p class="text-center text-gray-600">Lo sentimos, el producto que buscas no está disponible.</p>
                     <a href="index.html" class="block text-center mt-4 text-red-600 hover:underline">Volver a la página principal</a>
                 `;
