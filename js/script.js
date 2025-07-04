@@ -1,7 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // Código existente para newsletter popup, búsqueda, y acordeón
-    // NOTA: La funcionalidad de newsletter popup fue eliminada en actualizaciones anteriores.
-    // El HTML asociado a newsletter-popup en index.html también debe ser eliminado.
+    // --- Código de Newsletter Popup (ELIMINADO) ---
+    // NOTA: El HTML asociado a newsletter-popup en index.html también debe ser eliminado.
 
     const searchButton = document.querySelector('.tire-search-by-size .btn-search');
     if (searchButton) {
@@ -376,7 +375,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     maxHeight = card.offsetHeight;
                 }
             });
-            productCards.forEach(card => { // Corrected: should be relatedCards
+            relatedCards.forEach(card => {
                 card.style.minHeight = `${maxHeight}px`;
             });
         }
