@@ -970,7 +970,7 @@ img {
 }
 
 .products-grid-related {
-    display: grid;
+    display: none;
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
     gap: 30px;
     justify-content: center;
