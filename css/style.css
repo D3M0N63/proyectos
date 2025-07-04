@@ -1059,8 +1059,8 @@ img {
     border: 2px solid #dc3545; /* Borde rojo para la lupa */
     border-radius: 8px; /* Forma cuadrada con esquinas redondeadas */
     cursor: none; /* Oculta el cursor dentro de la lupa */
-    width: 600px; /* Tamaño de la lupa (AUMENTADO) */
-    height: 600px; /* Tamaño de la lupa (AUMENTADO) */
+    width: 300px; /* Tamaño de la lupa (AUMENTADO) */
+    height: 300px; /* Tamaño de la lupa (AUMENTADO) */
     background-repeat: no-repeat;
     background-color: rgba(255, 255, 255, 0.9); /* Fondo blanco semitransparente */
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
