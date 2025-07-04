@@ -703,7 +703,8 @@ img {
         right: 20px;
         font-size: 25px;
     }
-} /* <--- THIS IS THE MISSING CLOSING BRACE */
+} /* END OF @media (max-width: 768px) */
+
 
 /* Product Detail Page Specific Styles */
 .product-detail-container {
