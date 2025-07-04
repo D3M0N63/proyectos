@@ -1047,8 +1047,8 @@ img {
 }
 
 .product-image-zoom {
-    width: 50%;
-    height: 50%;
+    width: 80%;
+    height: 80%;
     object-fit: contain; /* Asegura que la imagen se vea completa */
     /* No hay transform:scale aquí, el zoom lo hará la lente */
 }
