@@ -360,8 +360,12 @@ img {
     display: flex;
     justify-content: center; /* Centra el contenido horizontalmente */
     align-items: center;     /* Centra el contenido verticalmente */
-    /* Asegúrate de que el slide pueda ocupar el ancho necesario para centrar */
-    width: 100% !important; /* Forzar el ancho completo para el centrado del item */
+    /* Removed the conflicting width declaration */
+}
+
+/* Added to center the group of slides within the carousel container */
+.mySwiper .swiper-wrapper {
+    justify-content: center;
 }
 
 .swiper-pagination-bullet-active {
