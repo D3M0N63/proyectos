@@ -56,8 +56,7 @@ document.addEventListener('DOMContentLoaded', () => {
         productsToShow.forEach(product => {
             const productCardHtml = `
                 <div class="product-card">
-                    <div class="image-container">
-                        <img src="${product.images && product.images.length > 0 ? product.images[0] : 'https://placehold.co/150x150/cccccc/333333?text=No+Image'}" alt="Neumático ${product.name}" class="product-image-zoom product-image-clickable">
+                    <img src="${product.images && product.images.length > 0 ? product.images[0] : './imagenes/no-image.jpg'}" alt="Neumático ${product.name}" class="product-image-zoom product-image-clickable">
                     </div>
                     <div class="product-info">
                         <p class="brand">${product.quickspecs && product.quickspecs.brand ? product.quickspecs.brand : 'N/A'}</p>
@@ -258,7 +257,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const images = product.images || [];
             const mainProductImage = document.getElementById('main-product-image');
             if (mainProductImage) {
-                mainProductImage.src = images.length > 0 ? images[0] : 'https://placehold.co/400x400/cccccc/333333?text=No+Image';
+                mainProductImage.src = images.length > 0 ? images[0] : './imagenes/no-image.jpg';
             }
 
             const thumbnailGalleryDiv = document.querySelector('.thumbnail-gallery');

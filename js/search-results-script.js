@@ -84,7 +84,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             const productCardHtml = `
                 <div class="product-result-card w-full">
                     <div class="image-container">
-                        <img src="${product.images && product.images.length > 0 ? product.images[0] : 'https://placehold.co/120x120/cccccc/333333?text=Neumatico'}" alt="Neumático ${product.name}" class="product-image-zoom product-image-clickable">
+                        <img src="${product.images && product.images.length > 0 ? product.images[0] : './imagenes/no-image.jpg'}" alt="Neumático ${product.name}" class="product-image-zoom product-image-clickable">
                     </div>
                     <div class="product-info-left flex-grow">
                         <p class="name">${product.name || 'Neumático sin nombre'}</p>
