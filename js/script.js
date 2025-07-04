@@ -74,8 +74,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         <p class="model">${product.name}</p>
                         <p class="price">${product.price}</p>
                         <p class="price-local">(${product.pricelocal && product.pricelocal.split(' / ')[0] ? product.pricelocal.split(' / ')[0] : 'N/A'})</p>
-                        <!-- BOTÓN "Ver producto" ELIMINADO: <a href="product-detail.html?product=${product.id}" class="btn-view-product">Ver producto</a> -->
-                    </div>
+                        </div>
                 </div>
             `;
             swiperWrapper.insertAdjacentHTML('beforeend', productCardHtml);
@@ -90,7 +89,11 @@ document.addEventListener('DOMContentLoaded', () => {
             spaceBetween: 10,
             loop: true,
             pagination: { el: ".swiper-pagination", clickable: true },
-            navigation: { nextEl: ".swiper-button-next", prevEl: ".swiper-button-prev" },
+            // Removed navigation for no arrows
+            autoplay: {
+                delay: 3000, // Move every 3 seconds
+                disableOnInteraction: false, // Continue autoplay even after user interaction
+            },
             breakpoints: {
                 640: { slidesPerView: 2, spaceBetween: 20 },
                 768: { slidesPerView: 3, spaceBetween: 30 },
@@ -377,8 +380,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             <p class="model text-lg font-semibold text-gray-800 mb-1">${product.name}</p>
                             <p class="price text-xl font-bold text-red-600 mb-1">${product.price}</p>
                             <p class="price-local text-sm text-gray-600">(${product.pricelocal && product.pricelocal.split(' / ')[0] ? product.pricelocal.split(' / ')[0] : 'N/A'})</p>
-                            <!-- BOTÓN "Ver producto" ELIMINADO: <a href="product-detail.html?product=${product.id}" class="btn-view-product mt-3 block text-center bg-red-500 text-white py-2 px-4 rounded-md hover:bg-red-600 transition-colors">Ver producto</a> -->
-                        </div>
+                            </div>
                     </div>
                 `;
                 relatedProductsContainer.insertAdjacentHTML('beforeend', productCard);
@@ -507,5 +509,3 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     // --- FIN Lógica para el Efecto de Lupa ---
 });
-
-
