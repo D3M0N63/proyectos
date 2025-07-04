@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', () => {
+¿document.addEventListener('DOMContentLoaded', () => {
     // Código existente para newsletter popup, búsqueda, y acordeón
     const newsletterPopup = document.getElementById('newsletter-popup');
     const closeBtn = document.querySelector('.newsletter-popup .close-btn');
@@ -62,7 +62,11 @@ document.addEventListener('DOMContentLoaded', () => {
         featuredProductsGrid.innerHTML = ''; // Limpiar productos existentes
 
         // Tomar hasta 12 productos aleatorios
-        const productsToShow = products.sort(() => 0.5 - Math.random()).slice(0, 12); // CAMBIO: AHORA SELECCIONA HASTA 12 PRODUCTOS
+        // Asegurarse de que haya suficientes productos antes de intentar cortar 12
+        const productsToShuffle = [...products]; // Crear una copia para no modificar el array original
+        productsToShuffle.sort(() => 0.5 - Math.random()); // Mezclar aleatoriamente
+
+        const productsToShow = productsToShuffle.slice(0, 12); // AHORA SELECCIONA HASTA 12 PRODUCTOS
 
         if (productsToShow.length === 0) {
             featuredProductsGrid.innerHTML = '<p class="text-center text-gray-600">No hay productos destacados disponibles.</p>';
