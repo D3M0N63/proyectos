@@ -54,43 +54,24 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    let mySwiperInstance = null; // Variable para la instancia de Swiper
+    // Función para renderizar los productos en la sección "Más destacados"
+    function renderFeaturedProductsGrid(products) { // Renombrado de renderProductsCarousel
+        const featuredProductsGrid = document.getElementById('featuredProductsGrid');
+        if (!featuredProductsGrid) return;
 
-    // Function to equalize heights of product cards in a given container
-    function equalizeProductCardHeights(containerSelector) {
-        const productCards = document.querySelectorAll(containerSelector + ' .product-card');
-        if (productCards.length === 0) return;
+        featuredProductsGrid.innerHTML = ''; // Limpiar productos existentes
 
-        let maxHeight = 0;
-        // Reset min-height first to get natural heights
-        productCards.forEach(card => {
-            card.style.minHeight = 'auto';
-        });
+        // Tomar hasta 10 productos aleatorios
+        const productsToShow = products.sort(() => 0.5 - Math.random()).slice(0, 10);
 
-        // Find the maximum height
-        productCards.forEach(card => {
-            if (card.offsetHeight > maxHeight) {
-                maxHeight = card.offsetHeight;
-            }
-        });
+        if (productsToShow.length === 0) {
+            featuredProductsGrid.innerHTML = '<p class="text-center text-gray-600">No hay productos destacados disponibles.</p>';
+            return;
+        }
 
-        // Apply the maximum height as min-height to all cards
-        productCards.forEach(card => {
-            card.style.minHeight = `${maxHeight}px`;
-        });
-    }
-
-
-    // Función para renderizar los productos en el carrusel de index.html
-    function renderProductsCarousel(products) {
-        const swiperWrapper = document.querySelector('.mySwiper .swiper-wrapper');
-        if (!swiperWrapper) return;
-
-        swiperWrapper.innerHTML = ''; // Limpiar productos estáticos existentes
-
-        products.forEach(product => {
+        productsToShow.forEach(product => {
             const productCardHtml = `
-                <div class="swiper-slide product-card">
+                <div class="product-card">
                     <div class="image-container">
                         <img src="${product.images && product.images.length > 0 ? product.images[0] : 'https://placehold.co/150x150/cccccc/333333?text=No+Image'}" alt="Neumático ${product.name}" class="product-image-zoom">
                     </div>
@@ -99,55 +80,31 @@ document.addEventListener('DOMContentLoaded', () => {
                         <p class="model">${product.name}</p>
                         <p class="price">${product.price}</p>
                         <p class="price-local">(${product.pricelocal && product.pricelocal.split(' / ')[0] ? product.pricelocal.split(' / ')[0] : 'N/A'})</p>
-                        </div>
+                    </div>
                 </div>
             `;
-            swiperWrapper.insertAdjacentHTML('beforeend', productCardHtml);
+            featuredProductsGrid.insertAdjacentHTML('beforeend', productCardHtml);
         });
 
-        // Re-inicializar Swiper o actualizar la instancia existente
-        if (mySwiperInstance) {
-            mySwiperInstance.destroy(true, true); // Destruir para recrear limpiamente
-        }
-        mySwiperInstance = new Swiper(".mySwiper", {
-            slidesPerView: 1, // Default for mobile
-            spaceBetween: 20, // Adjusted space for better visual separation with centeredSlides
-            loop: true,
-            pagination: { el: ".swiper-pagination", clickable: true },
-            // Removed navigation for no arrows
-            autoplay: {
-                delay: 3000, // Move every 3 seconds
-                disableOnInteraction: false, // Continue autoplay even after user interaction
-            },
-            // Added to make pagination points represent groups of 2 slides
-            slidesPerGroup: 2,
-            centeredSlides: true, // Added to center the active slide
-            breakpoints: {
-                640: { slidesPerView: 2, spaceBetween: 10, slidesPerGroup: 2 }, // Reduced space
-                768: { slidesPerView: 3, spaceBetween: 15 }, // Reduced space
-                1024: { slidesPerView: 4, spaceBetween: 15, slidesPerGroup: 2 }, // Reduced space
-            },
-            on: {
-                // Adjuntar listeners de zoom después de que Swiper inicialice o actualice
-                init: () => {
-                    setupMagnifyingGlassListeners();
-                    equalizeProductCardHeights('.mySwiper'); // Equalize heights on init
-                },
-                update: () => {
-                    setupMagnifyingGlassListeners();
-                    equalizeProductCardHeights('.mySwiper'); // Equalize heights on update
-                },
-                slideChangeTransitionEnd: () => {
-                    setupMagnifyingGlassListeners();
-                    equalizeProductCardHeights('.mySwiper'); // Equalize heights after slide change
+        // Ajustar altura de las tarjetas para que sean uniformes (opcional, si se desea)
+        const productCards = featuredProductsGrid.querySelectorAll('.product-card');
+        if (productCards.length > 0) {
+            let maxHeight = 0;
+            productCards.forEach(card => {
+                card.style.minHeight = 'auto'; // Resetear para recalcular
+            });
+            productCards.forEach(card => {
+                if (card.offsetHeight > maxHeight) {
+                    maxHeight = card.offsetHeight;
                 }
-            }
-        });
+            });
+            productCards.forEach(card => {
+                card.style.minHeight = `${maxHeight}px`;
+            });
+        }
 
-        // Adjuntar listeners de zoom al inicio
+        // Adjuntar listeners de lupa a las nuevas imágenes
         setupMagnifyingGlassListeners();
-        // Equalize heights after initial render if Swiper is not yet fully initialized by its `on` events
-        equalizeProductCardHeights('.mySwiper');
     }
 
     // Función para obtener todos los productos para la página principal
@@ -159,13 +116,13 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             const products = await response.json();
             console.log('Productos obtenidos del backend:', products);
-            renderProductsCarousel(products);
+            renderFeaturedProductsGrid(products); // Llamar a la nueva función de renderizado
             return products;
         } catch (error) {
             console.error('Error fetching all products:', error);
-            const carouselContainer = document.querySelector('.mySwiper .swiper-wrapper');
-            if (carouselContainer) {
-                carouselContainer.innerHTML = '<p style="text-align:center; color: red;">Error al cargar los productos. Por favor, intente de nuevo más tarde.</p>';
+            const featuredProductsGrid = document.getElementById('featuredProductsGrid');
+            if (featuredProductsGrid) {
+                featuredProductsGrid.innerHTML = '<p style="text-align:center; color: red;">Error al cargar los productos. Por favor, intente de nuevo más tarde.</p>';
             }
             return [];
         }
@@ -206,7 +163,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (relatedProductsSection) relatedProductsSection.style.display = 'none';
         }
     } else {
-        // En la página principal, cargar todos los productos para el carrusel
+        // En la página principal, cargar todos los productos para la sección "Más destacados"
         fetchAllProducts();
     }
 
@@ -362,7 +319,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const productDetailContainer = document.querySelector('.product-detail-container');
             if (productDetailContainer) {
                 productDetailContainer.innerHTML = `
-                    <h2 class="text-2xl font-bold text-center text-red-600 mb-4">Página de Detalle de Producto No Disponible.</h2>
+                    <h2 class="text-2xl font-bold text-center text-red-600 mb-4">Producto no encontrado</h2>
                     <p class="text-center text-gray-600">Lo sentimos, el producto que buscas no está disponible.</p>
                     <a href="index.html" class="block text-center mt-4 text-red-600 hover:underline">Volver a la página principal</a>
                 `;
@@ -419,7 +376,8 @@ document.addEventListener('DOMContentLoaded', () => {
                             <p class="model text-lg font-semibold text-gray-800 mb-1">${product.name}</p>
                             <p class="price text-xl font-bold text-red-600 mb-1">${product.price}</p>
                             <p class="price-local text-sm text-gray-600">(${product.pricelocal && product.pricelocal.split(' / ')[0] ? product.pricelocal.split(' / ')[0] : 'N/A'})</p>
-                            </div>
+                            <!-- BOTÓN "Ver producto" ELIMINADO: <a href="product-detail.html?product=${product.id}" class="btn-view-product mt-3 block text-center bg-red-500 text-white py-2 px-4 rounded-md hover:bg-red-600 transition-colors">Ver producto</a> -->
+                        </div>
                     </div>
                 `;
                 relatedProductsContainer.insertAdjacentHTML('beforeend', productCard);
@@ -485,8 +443,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     let lens = null; // La lupa
-    const zoomFactor = 1; // Factor de ampliación
-    const offset = 150; // Desplazamiento de la lupa desde el cursor (en píxeles)
+    const zoomFactor = 1; // Factor de ampliación (1 = tamaño real de la imagen en la lupa)
+    const offset = 20; // Desplazamiento de la lupa desde el cursor (en píxeles)
 
     function handleMouseEnter(e) {
         const img = e.currentTarget.querySelector('.product-image-zoom');

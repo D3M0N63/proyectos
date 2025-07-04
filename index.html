@@ -5,8 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NEUPAR Cubiertas - Tu Tienda de Neumáticos en Paraguay</title>
     <link rel="stylesheet" href="./css/style.css">
-    <!-- Swiper CSS -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
     <!-- Iconos de Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
@@ -162,19 +160,12 @@
             <p id="no-search-results" style="display: none; color: gray; margin-top: 20px;">No se encontraron neumáticos con las medidas seleccionadas.</p>
         </section>
 
-        <!-- Sección Más Destacados - Implementado con Swiper.js -->
+        <!-- Sección Más Destacados - Ahora como una lista de productos -->
         <section class="featured-products">
             <h2>Más destacados</h2>
-            <div class="swiper mySwiper">
-                <div class="swiper-wrapper">
-                    {/* Productos se llenarán dinámicamente por script.js */}
-                </div>
-                <!-- Paginación (los puntos de abajo) -->
-                <div class="swiper-pagination"></div>
-
-                <!-- Navegación (las flechas) -->
-                <div class="swiper-button-next"></div>
-                <div class="swiper-button-prev"></div>
+            <div id="featuredProductsGrid" class="products-grid">
+                <!-- Los productos destacados se cargarán aquí dinámicamente -->
+                <p class="text-center text-gray-600">Cargando productos destacados...</p>
             </div>
         </section>
 
@@ -192,7 +183,7 @@
                         </button>
                         <div class="accordion-content">
                             <p>Un montaje correcto de las cubiertas es un aspecto fundamental de cara a garantizar un nivel óptimo de seguridad en la circulación de cualquier tipo de vehículo.</p>
-                            <p>En SALTO PNEUS contamos con un equipo de profesionales altamente capacitados que se especializan en el montaje y desmontaje de cubiertas, garantizamos su seguridad y satisfacción con un servicio profesional.</p>
+                            <p>En NEUPAR CUBIERTAS contamos con un equipo de profesionales altamente capacitados que se especializan en el montaje y desmontaje de cubiertas, garantizamos su seguridad y satisfacción con un servicio profesional.</p>
                         </div>
                     </div>
 
@@ -210,7 +201,7 @@
                             Balanceo <i class="fas fa-chevron-down"></i>
                         </button>
                         <div class="accordion-content">
-                            <p>El balanceo de los neumáticos es esencial para una conducción suave y segura. Los neumáticos desequilibrados pueden causar vibraciones en el volante o el asiento, lo que no solo es incómodo sino que también puede acelerar el desgaste de los neumáticos, la suspensión y los componentes de dirección. En SALTO PNEUS, realizamos el balanceo dinámico de sus neumáticos, distribuyendo el peso de manera uniforme alrededor de la rueda y el conjunto del neumático. Esto no solo mejora el confort de conducción, sino que también contribuye a la longevidad de sus neumáticos y a la seguridad general del vehículo.</p>
+                            <p>El balanceo de los neumáticos es esencial para una conducción suave y segura. Los neumáticos desequilibrados pueden causar vibraciones en el volante o el asiento, lo que no solo es incómodo sino que también puede acelerar el desgaste de los neumáticos, la suspensión y los componentes de dirección. En NEUPAR CUBIERTAS, realizamos el balanceo dinámico de sus neumáticos, distribuyendo el peso de manera uniforme alrededor de la rueda y el conjunto del neumático. Esto no solo mejora el confort de conducción, sino que también contribuye a la longevidad de sus neumáticos y a la seguridad general del vehículo.</p>
                         </div>
                     </div>
                 </div>
@@ -221,16 +212,15 @@
     <footer class="main-footer">
         <div class="footer-attention">
             <i class="fas fa-exclamation-triangle"></i>
-            <p>ATENCIÓN: HACEMOS ENVIOS A TODO EL PAIS</p>
-       
+            <p>ATENCIÓN: Precios exclusivos para el sitio web. Retiro en cualquiera de nuestras sucursales, no hacemos envíos por transportadora.</p>
+        </div>
+        <div class="footer-content">
+            <div class="footer-section footer-newsletter" style="flex: 1 1 100%; text-align: center;">
+                <p style="margin-top: 0;">Hecho por Tobias Torales</p>
             </div>
         </div>
         <div class="footer-disclaimer">
             <p>Precios y condiciones de pago exclusivos para tienda online. Ventas sujetas a análisis y confirmación de datos. Valores, informaciones y stock con posibilidad de alteración sin previo aviso. Imágenes meramente ilustrativas.</p>
-
-
-             <p>Hecho por Tobias Torales</p>
-
         </div>
     </footer>
 
@@ -238,9 +228,18 @@
         <i class="fab fa-whatsapp"></i>
     </a>
 
- 
-    <!-- Swiper JS -->
-    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+    <div id="newsletter-popup" class="newsletter-popup">
+        <div class="popup-content">
+            <span class="close-btn">&times;</span>
+            <h3>Recibe las mejores ofertas en Cubiertas, ¡suscríbete ahora!</h3>
+            <form>
+                <input type="email" placeholder="Correo electrónico" required>
+                <button type="submit" class="btn-subscribe">SUSCRIBIRSE</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Swiper JS REMOVED -->
     <script src="./js/script.js"></script>
     
 </body>

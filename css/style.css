@@ -6,7 +6,6 @@ body {
     box-sizing: border-box;
     background-color: #f4f4f4;
     color: #333;
-    overflow-x: hidden; /* Added to prevent horizontal scrolling */
 }
 
 a {
@@ -278,8 +277,6 @@ img {
 .featured-products {
     padding: 40px 20px;
     text-align: center;
-    background-color: #fff; /* Added: White background */
-    box-shadow: 0 -2px 5px rgba(0,0,0,0.05); /* Added: Subtle shadow */
 }
 
 .featured-products h2 {
@@ -288,26 +285,26 @@ img {
     margin-bottom: 30px;
 }
 
+/* Ajuste para el grid de productos (tanto destacados como resultados de búsqueda) */
 .products-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); /* Ajustado para mejor responsividad */
     gap: 30px;
-    justify-content: center;
+    justify-items: center; /* Centra los items dentro de las celdas del grid */
+    max-width: 1200px; /* Opcional: limita el ancho máximo del grid */
+    margin: 0 auto; /* Centra el grid mismo */
 }
 
 .product-card {
-    box-sizing: border-box; /* Added to ensure consistent box model */
     background-color: #fff;
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0,0,0,0.1);
     padding: 20px;
     text-align: center;
     transition: transform 0.2s ease;
-}
-.product-card .image-container,
-.product-card .product-info {
-    box-sizing: border-box; /* Added to ensure consistent box model for children */
-    min-width: 0; /* Added to ensure flex items can shrink */
+    width: 100%; /* Asegura que la tarjeta ocupe el espacio disponible en su celda */
+    max-width: 300px; /* Limita el ancho máximo de la tarjeta */
+    margin: 0; /* Elimina márgenes automáticos que puedan interferir con justify-items */
 }
 
 .product-card:hover {
@@ -359,34 +356,12 @@ img {
     background-color: #c82333; /* Rojo más oscuro en hover */
 }
 
-/* Swiper Overrides (for featured products carousel) */
-.swiper-container {
-    width: 100%;
-    height: auto;
-    margin: 0 auto; /* Added to center the entire carousel container */
-    max-width: 1024px; /* Optional: Adjust max-width as needed for larger screens */
-}
+/* Swiper Overrides (REMOVIDOS) */
+/* .swiper-container { ... } */
+/* .swiper-slide { ... } */
+/* .swiper-pagination-bullet-active { ... } */
+/* .swiper-button-next, .swiper-button-prev { ... } */
 
-.swiper-slide {
-    display: flex;
-    justify-content: center; /* Centra el contenido horizontalmente */
-    align-items: center;     /* Centra el contenido verticalmente */
-    /* Removed the conflicting width declaration */
-}
-
-/* Added to center the group of slides within the carousel container */
-.mySwiper .swiper-wrapper {
-    justify-content: center;
-}
-
-.swiper-pagination-bullet-active {
-    background-color: #dc3545; /* Rojo para el bullet activo */
-}
-
-.swiper-button-next,
-.swiper-button-prev {
-    color: #dc3545; /* Rojo para las flechas */
-}
 
 /* Services Section */
 .services-section {
@@ -764,26 +739,6 @@ img {
         font-size: 25px;
     }
 }
-
-/* New media query for mobile devices (less than 640px) */
-@media (max-width: 639px) {
-    .featured-products {
-        padding-left: 10px; /* Adjust horizontal padding to give more room if needed */
-        padding-right: 10px; /* Adjust horizontal padding to give more room if needed */
-    }
-    .swiper-container {
-        max-width: 100%; /* Ensure the carousel container fits within the screen */
-    }
-    .swiper-slide { /* Ensure the slide itself takes 100% of wrapper's width */
-        width: 100%; /* Added */
-    }
-    .product-card {
-        width: 100%; /* Force product card to take full available width on mobile */
-        /* You can adjust padding here if the 20px padding is too much for very small screens */
-        /* padding: 15px; */
-    }
-}
-
 
 /* Product Detail Page Specific Styles */
 .product-detail-container {
