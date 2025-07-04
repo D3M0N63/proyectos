@@ -111,7 +111,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         mySwiperInstance = new Swiper(".mySwiper", {
             slidesPerView: 1, // Default for mobile
-            spaceBetween: 0, // Reduced space for mobile
+            spaceBetween: 10, // Adjusted space for better visual separation with centeredSlides
             loop: true,
             pagination: { el: ".swiper-pagination", clickable: true },
             // Removed navigation for no arrows
@@ -121,6 +121,7 @@ document.addEventListener('DOMContentLoaded', () => {
             },
             // Added to make pagination points represent groups of 2 slides
             slidesPerGroup: 2,
+            centeredSlides: true, // Added to center the active slide
             breakpoints: {
                 640: { slidesPerView: 2, spaceBetween: 10, slidesPerGroup: 2 }, // Reduced space
                 768: { slidesPerView: 3, spaceBetween: 15 }, // Reduced space
@@ -472,7 +473,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let lens = null; // La lupa
     const zoomFactor = 1; // Factor de ampliación
-    const offset = 20; // Desplazamiento de la lupa desde el cursor (en píxeles)
+    const offset = 350; // Desplazamiento de la lupa desde el cursor (en píxeles)
 
     function handleMouseEnter(e) {
         const img = e.currentTarget.querySelector('.product-image-zoom');
