@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // --- Código de Newsletter Popup (ELIMINADO) ---
-    // NOTA: El HTML asociado a newsletter-popup en index.html también debe ser eliminado.
+    // --- CÓDIGO RELACIONADO A NEWSLETTER POPUP ELIMINADO ---
+    // No hay referencias a newsletterPopup ni closeBtn aquí.
 
     const searchButton = document.querySelector('.tire-search-by-size .btn-search');
     if (searchButton) {
@@ -56,7 +56,8 @@ document.addEventListener('DOMContentLoaded', () => {
         productsToShow.forEach(product => {
             const productCardHtml = `
                 <div class="product-card">
-                    <img src="${product.images && product.images.length > 0 ? product.images[0] : './imagenes/no-image.jpg'}" alt="Neumático ${product.name}" class="product-image-zoom product-image-clickable">
+                    <div class="image-container">
+                        <img src="${product.images && product.images.length > 0 ? product.images[0] : 'https://placehold.co/150x150/cccccc/333333?text=No+Image'}" alt="Neumático ${product.name}" class="product-image-zoom product-image-clickable">
                     </div>
                     <div class="product-info">
                         <p class="brand">${product.quickspecs && product.quickspecs.brand ? product.quickspecs.brand : 'N/A'}</p>
@@ -257,7 +258,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const images = product.images || [];
             const mainProductImage = document.getElementById('main-product-image');
             if (mainProductImage) {
-                mainProductImage.src = images.length > 0 ? images[0] : './imagenes/no-image.jpg';
+                mainProductImage.src = images.length > 0 ? images[0] : 'https://placehold.co/400x400/cccccc/333333?text=No+Image';
             }
 
             const thumbnailGalleryDiv = document.querySelector('.thumbnail-gallery');
@@ -355,8 +356,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             <p class="model text-lg font-semibold text-gray-800 mb-1">${product.name}</p>
                             <p class="price text-xl font-bold text-red-600 mb-1">${product.price}</p>
                             <p class="price-local text-sm text-gray-600">(${product.pricelocal && product.pricelocal.split(' / ')[0] ? product.pricelocal.split(' / ')[0] : 'N/A'})</p>
-                            <!-- BOTÓN "Ver producto" ELIMINADO: <a href="product-detail.html?product=${product.id}" class="btn-view-product mt-3 block text-center bg-red-500 text-white py-2 px-4 rounded-md hover:bg-red-600 transition-colors">Ver producto</a> -->
-                        </div>
+                            </div>
                     </div>
                 `;
                 relatedProductsContainer.insertAdjacentHTML('beforeend', productCard);
