@@ -1,248 +1,288 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SALTO PNEUS</title>
-    <!-- Incluye Tailwind CSS para estilos básicos y responsividad -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Enlace a tu archivo de estilos principal para consistencia -->
-    <link rel="stylesheet" href="./css/style.css">
-    <!-- Iconos de Font Awesome (para consistencia con index.html) -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <style>
-        /* Estilos generales para consistencia con index.html */
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #f3f4f6; /* Fondo gris claro, similar al de tu sitio */
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
+document.addEventListener('DOMContentLoaded', async () => {
+    const searchResultsContainer = document.getElementById('searchResultsContainer');
+    const paginationControls = document.getElementById('paginationControls');
+    const urlParams = new URLSearchParams(window.location.search);
+    const ancho = urlParams.get('ancho');
+    const perfil = urlParams.get('perfil');
+    const aro = urlParams.get('aro');
+    const category = urlParams.get('category');
+
+    let allProducts = [];
+    const productsPerPage = 8;
+    let currentPage = 1;
+
+    // Mostrar los parámetros de búsqueda en el título o en algún lugar visible
+    const searchTitle = document.querySelector('h1');
+    if (searchTitle) {
+        let titleText = 'Resultados de Búsqueda';
+        const paramsArray = [];
+        if (ancho && ancho !== 'todos') paramsArray.push(`Ancho: ${ancho}`);
+        if (perfil && perfil !== 'todos') paramsArray.push(`Perfil: ${perfil}`);
+        if (aro && aro !== 'todos') paramsArray.push(`Aro: ${aro}`);
+        if (category && category !== 'todos') paramsArray.push(`Categoría: ${category}`);
+
+        if (paramsArray.length > 0) {
+            titleText += ` para ${paramsArray.join(', ')}`;
         }
-        .container {
-            max-width: 960px; /* Ancho máximo para los resultados */
-            padding: 1.5rem; /* Espaciado general */
+        searchTitle.textContent = titleText;
+    }
+
+    // Si no hay ningún criterio de búsqueda significativo, mostrar mensaje
+    if ((!ancho || ancho === 'todos') && (!perfil || perfil === 'todos') && (!aro || aro === 'todos') && (!category || category === 'todos')) {
+        searchResultsContainer.innerHTML = `
+            <p class="no-results">Por favor, ingrese al menos un criterio de búsqueda (ancho, perfil, aro o categoría) diferente de "Todos".</p>
+            <a href="index.html" class="text-red-600 hover:underline mt-4">Volver a la página principal</a>
+        `;
+        return;
+    }
+
+    try {
+        // Construir la URL de la función de Netlify con los parámetros de búsqueda
+        const queryParams = new URLSearchParams();
+        if (ancho) queryParams.append('ancho', ancho);
+        if (perfil) queryParams.append('perfil', perfil);
+        if (aro) queryParams.append('aro', aro);
+        if (category) queryParams.append('category', category);
+
+        const response = await fetch(`/.netlify/functions/searchProducts?${queryParams.toString()}`);
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
         }
 
-        /* Estilo para el título de la página de resultados */
-        h1 {
-            color: #1f2937; /* Color de texto oscuro, similar a tus encabezados */
-            margin-bottom: 2rem;
+        allProducts = await response.json();
+
+        if (allProducts.length === 0) {
+            searchResultsContainer.innerHTML = `
+                <p class="no-results">No se encontraron neumáticos que coincidan con los criterios de búsqueda.</p>
+                <a href="index.html" class="text-red-600 hover:underline mt-4">Volver a la página principal</a>
+            `;
+            paginationControls.classList.add('hidden');
+        } else {
+            renderProducts(currentPage);
+        }
+    } catch (error) {
+        console.error('Error al cargar los resultados de búsqueda:', error);
+        searchResultsContainer.innerHTML = `
+            <p class="no-results text-red-600">Error al cargar los resultados. Por favor, intente de nuevo más tarde.</p>
+            <a href="index.html" class="text-red-600 hover:underline mt-4">Volver a la página principal</a>
+        `;
+        paginationControls.classList.add('hidden');
+    }
+
+    function renderProducts(page) {
+        searchResultsContainer.innerHTML = '';
+        const startIndex = (page - 1) * productsPerPage;
+        const endIndex = startIndex + productsPerPage;
+        const productsToDisplay = allProducts.slice(startIndex, endIndex);
+
+        productsToDisplay.forEach(product => {
+            const productNameForWhatsapp = product.name || 'un neumático';
+            const whatsappMessage = encodeURIComponent(`Hola! Me interesa el neumático ${productNameForWhatsapp} que vi en su web. ID: ${product.id}`);
+            const whatsappLink = `https://wa.me/595983068998?text=${whatsappMessage}`;
+
+            const productCardHtml = `
+                <div class="product-result-card w-full">
+                    <div class="image-container">
+                        <img src="${product.images && product.images.length > 0 ? product.images[0] : './imagenes/no-image.jpg'}" alt="Neumático ${product.name}" class="product-image-zoom product-image-clickable">
+                    </div>
+                    <div class="product-info-left flex-grow">
+                        <p class="name">${product.name || 'Neumático sin nombre'}</p>
+                        <p class="price">${product.price || 'N/A'}</p>
+                        <p class="price-details">${product.pricelocal || 'N/A'}</p>
+                        <a href="#" class="details-link"> + Ver Detalles</a>
+                    </div>
+                    <a href="${whatsappLink}" target="_blank" class="buy-button bg-green-500 text-white py-2 px-4 rounded-md font-semibold hover:bg-green-600 transition-colors duration-300 shadow-md">CONTACTO</a>
+                </div>
+            `;
+            searchResultsContainer.insertAdjacentHTML('beforeend', productCardHtml);
+        });
+
+        setupMagnifyingGlassListeners(); // Adjuntar listeners de lupa
+        attachZoomModalListeners(); // Adjuntar listeners de ampliación
+        renderPaginationControls();
+    }
+
+    function renderPaginationControls() {
+        paginationControls.innerHTML = '';
+        const totalPages = Math.ceil(allProducts.length / productsPerPage);
+
+        if (totalPages <= 1) {
+            paginationControls.classList.add('hidden');
+            return;
         }
 
-        /* Estilo de la tarjeta de resultado de producto, similar a product-card en index.html */
-        .product-result-card {
-            background-color: #ffffff;
-            border-radius: 0.75rem; /* Bordes redondeados */
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); /* Sombra más pronunciada, similar a tu sitio */
-            padding: 1.5rem;
-            margin-bottom: 1.5rem;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
-        }
-        .product-result-card:hover {
-            transform: translateY(-5px); /* Pequeño levantamiento al pasar el ratón */
-        }
+        paginationControls.classList.remove('hidden');
 
-        @media (min-width: 768px) {
-            .product-result-card {
-                flex-direction: row;
-                text-align: left;
-                align-items: center; /* Centrar verticalmente en desktop */
+        const prevButton = document.createElement('button');
+        prevButton.textContent = 'Anterior';
+        prevButton.classList.add('pagination-button');
+        prevButton.disabled = currentPage === 1;
+        prevButton.addEventListener('click', () => {
+            currentPage--;
+            renderProducts(currentPage);
+            window.scrollTo(0, 0);
+        });
+        paginationControls.appendChild(prevButton);
+
+        for (let i = 1; i <= totalPages; i++) {
+            const pageButton = document.createElement('button');
+            pageButton.textContent = i;
+            pageButton.classList.add('pagination-button');
+            if (i === currentPage) {
+                pageButton.classList.add('active');
             }
+            pageButton.addEventListener('click', () => {
+                currentPage = i;
+                renderProducts(currentPage);
+                window.scrollTo(0, 0);
+            });
+            paginationControls.appendChild(pageButton);
         }
-        .product-result-card img {
-            width: 120px; /* Tamaño fijo para la imagen del neumático */
-            height: 120px;
-            object-fit: contain; /* Asegura que la imagen se vea completa */
-            margin-bottom: 1rem;
-        }
-        @media (min-width: 768px) {
-            .product-result-card img {
-                margin-right: 1.5rem;
-                margin-bottom: 0;
+
+        const nextButton = document.createElement('button');
+        nextButton.textContent = 'Siguiente';
+        nextButton.classList.add('pagination-button');
+        nextButton.disabled = currentPage === totalPages;
+        nextButton.addEventListener('click', () => {
+            currentPage++;
+            renderProducts(currentPage);
+            window.scrollTo(0, 0);
+        });
+        paginationControls.appendChild(nextButton);
+    }
+
+    const categoryLinks = document.querySelectorAll('.categories-nav a[data-category]');
+    categoryLinks.forEach(link => {
+        link.addEventListener('click', (event) => {
+            event.preventDefault();
+            const selectedCategory = event.target.dataset.category;
+            if (selectedCategory) {
+                window.location.href = `search-results.html?category=${selectedCategory}`;
             }
+        });
+    });
+
+    const mobileMenuButton = document.getElementById('mobile-menu-button');
+    const mobileCategoriesNav = document.getElementById('mobile-categories-nav');
+
+    if (mobileMenuButton && mobileCategoriesNav) {
+        mobileMenuButton.addEventListener('click', () => {
+            mobileCategoriesNav.classList.toggle('active');
+        });
+    }
+
+    // --- Lógica para el Efecto de Lupa ---
+    let lens = null;
+    const zoomFactor = 1.25; // Factor de ampliación
+    const offset = 20; // Desplazamiento de la lupa desde el cursor (en píxeles)
+
+    function setupMagnifyingGlassListeners() {
+        const zoomableImages = document.querySelectorAll('.product-image-zoom');
+
+        zoomableImages.forEach(img => {
+            img.removeEventListener('mouseenter', handleMouseEnter);
+            img.removeEventListener('mouseleave', handleMouseLeave);
+            img.removeEventListener('mousemove', handleMouseMove);
+
+            img.addEventListener('mouseenter', handleMouseEnter);
+            img.addEventListener('mouseleave', handleMouseLeave);
+            img.addEventListener('mousemove', handleMouseMove);
+        });
+    }
+
+    function handleMouseEnter(e) {
+        const img = e.currentTarget;
+        if (!img || !img.src) return;
+
+        if (img.naturalWidth === 0 || img.naturalHeight === 0) {
+            img.onload = () => {
+                handleMouseEnter(e);
+            };
+            return;
         }
-        .product-info-left {
-            flex-grow: 1;
+
+        if (!lens) {
+            lens = document.createElement('div');
+            lens.classList.add('magnifying-lens');
+            document.body.appendChild(lens);
         }
-        .product-info-left .name {
-            font-size: 1.25rem; /* text-xl */
-            font-weight: 600; /* font-semibold */
-            color: #1f2937; /* text-gray-900 */
-            margin-bottom: 0.5rem;
+
+        lens.style.backgroundImage = `url('${img.src}')`;
+        lens.style.backgroundSize = `${img.naturalWidth * zoomFactor}px ${img.naturalHeight * zoomFactor}px`;
+        lens.style.display = 'block';
+    }
+
+    function handleMouseMove(e) {
+        if (!lens || lens.style.display === 'none') return;
+
+        const img = e.currentTarget;
+        if (!img || img.naturalWidth === 0 || img.naturalHeight === 0) {
+            lens.style.display = 'none';
+            return;
         }
-        .product-info-left .price {
-            font-size: 1.5rem; /* text-2xl */
-            font-weight: 700; /* font-bold */
-            color: #dc3545; /* Rojo que usas para precios */
-            margin-bottom: 0.25rem;
+
+        const mouseX = e.clientX;
+        const mouseY = e.clientY;
+
+        const imgRect = img.getBoundingClientRect();
+        const xInImage = mouseX - imgRect.left;
+        const yInImage = mouseY - imgRect.top;
+
+        const ratioX = img.naturalWidth / imgRect.width;
+        const ratioY = img.naturalHeight / imgRect.height;
+
+        const bgPosX = -xInImage * zoomFactor * ratioX + (lens.offsetWidth / 2);
+        const bgPosY = -yInImage * zoomFactor * ratioY + (lens.offsetHeight / 2);
+
+        lens.style.backgroundPosition = `${bgPosX}px ${bgPosY}px`;
+
+        lens.style.left = `${mouseX + offset}px`;
+        lens.style.top = `${mouseY + offset}px`;
+    }
+
+    function handleMouseLeave() {
+        if (lens) {
+            lens.style.display = 'none';
         }
-        .product-info-left .price-details {
-            font-size: 0.875rem; /* text-sm */
-            color: #6b7280; /* text-gray-600 */
-            margin-bottom: 0.75rem;
-        }
-        .product-info-left .details-link {
-            font-size: 0.875rem; /* text-sm */
-            color: #dc3545; /* Rojo */
-            text-decoration: none;
-            transition: color 0.2s ease-in-out;
-        }
-        .product-info-left .details-link:hover {
-            color: #c82333; /* Rojo más oscuro */
-        }
-        .product-brand-logo {
-            width: 80px; /* Tamaño del logo de la marca */
-            height: auto;
-            margin-top: 1rem;
-            margin-bottom: 1rem;
-        }
-        @media (min-width: 768px) {
-            .product-brand-logo {
-                margin-left: auto; /* Mover a la derecha */
-                margin-right: 1.5rem;
-                margin-top: 0;
-                margin-bottom: 0;
+    }
+    // --- FIN Lógica para el Efecto de Lupa ---
+
+    // --- Lógica para el Modal de Ampliación de Imagen ---
+    const imageZoomModal = document.getElementById('imageZoomModal');
+    const zoomedImage = document.getElementById('zoomedImage');
+    const closeZoomBtn = document.querySelector('.close-zoom-btn');
+
+    function attachZoomModalListeners() {
+        const clickableImages = document.querySelectorAll('.product-image-clickable');
+
+        clickableImages.forEach(img => {
+            img.removeEventListener('click', openZoomModal);
+            img.addEventListener('click', openZoomModal);
+        });
+    }
+
+    function openZoomModal(event) {
+        const clickedImageSrc = event.target.src;
+        zoomedImage.src = clickedImageSrc;
+        imageZoomModal.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+    }
+
+    if (closeZoomBtn) {
+        closeZoomBtn.addEventListener('click', closeZoomModal);
+    }
+    if (imageZoomModal) {
+        imageZoomModal.addEventListener('click', (event) => {
+            if (event.target === imageZoomModal) {
+                closeZoomModal();
             }
-        }
-        /* Estilo del botón "COMPRAR", similar a btn-subscribe o btn-search */
-        .buy-button {
-            background-color: #dc3545; /* Rojo */
-            color: white;
-            padding: 0.75rem 1.5rem;
-            border-radius: 0.5rem;
-            font-weight: 600;
-            transition: background-color 0.2s ease-in-out, transform 0.1s ease-in-out;
-            width: 100%; /* Ocupa todo el ancho en móvil */
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Sombra para el botón */
-        }
-        .buy-button:hover {
-            background-color: #c82333; /* Rojo más oscuro al pasar el ratón */
-            transform: translateY(-2px); /* Pequeño levantamiento al pasar el ratón */
-        }
-        .buy-button:active {
-            transform: translateY(0); /* Vuelve a su posición original al hacer clic */
-        }
-        @media (min-width: 768px) {
-            .buy-button {
-                width: auto; /* Ancho automático en desktop */
-                min-width: 120px; /* Ancho mínimo para el botón */
-                margin-left: 1.5rem;
-            }
-        }
+        });
+    }
 
-        .no-results {
-            text-align: center;
-            color: #6b7280;
-            font-size: 1.125rem;
-            margin-top: 2rem;
-        }
-        /* Estilos para la paginación */
-        .pagination-controls {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 10px;
-            margin-top: 2rem;
-            flex-wrap: wrap; /* Permite que los botones se envuelvan en pantallas pequeñas */
-        }
-        .pagination-button {
-            background-color: #f0f0f0;
-            color: #333;
-            padding: 8px 12px;
-            border: 1px solid #ddd;
-            border-radius: 0.375rem; /* rounded-md */
-            cursor: pointer;
-            transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
-            font-weight: 500;
-        }
-        .pagination-button:hover:not(:disabled) {
-            background-color: #e0e0e0;
-            color: #1f2937;
-        }
-        .pagination-button.active {
-            background-color: #dc3545; /* Rojo */
-            color: white;
-            border-color: #dc3545;
-        }
-        .pagination-button:disabled {
-            cursor: not-allowed;
-            opacity: 0.6;
-        }
-    </style>
-</head>
-<body class="p-4">
-    <!-- HEADER COPIADO DE index.html -->
-    <header class="main-header">
-        <div class="top-bar">
-            <div class="social-media">
-                <a href="#" target="_blank"><i class="fab fa-facebook-f"></i></a>
-                <a href="#" target="_blank"><i class="fab fa-instagram"></i></a>
-            </div>
-            <div class="logo">
-                <a href="index.html"><img src="./imagenes/logo.jpg" alt="Logo NEUPAR Cubiertas"></a>
-            </div>
-            <div class="header-right-nav">
-                <button id="mobile-menu-button" class="mobile-menu-button hidden">
-                    <i class="fas fa-bars"></i>
-                </button>
-                <nav class="user-nav">
-                    <ul>
-                        <!-- Puedes añadir elementos de navegación de usuario si los necesitas aquí -->
-                    </ul>
-                </nav>
-            </div>
-        </div>
-        
-        <nav id="mobile-categories-nav" class="categories-nav">
-            <ul>
-                <li><a href="#" data-category="Autos">Autos</a></li>
-                <li><a href="#" data-category="Pickup-Suv">Pickup-Suv</a></li> 
-                <li><a href="#" data-category="Camiones">Camiones</a></li> 
-                <li><a href="#" data-category="Agrícolas">Agrícolas</a></li> 
-                <li><a href="#" data-category="Llantas">Llantas</a></li> 
-            </ul>
-        </nav>
-    </header>
-    <!-- FIN DEL HEADER -->
-
-    <div class="container mx-auto mt-8 mb-8 flex-grow">
-        <h1 class="text-3xl font-bold text-center text-gray-800 mb-8">Resultados de Búsqueda</h1>
-        <div id="searchResultsContainer" class="flex flex-col items-center">
-            <!-- Los resultados de la búsqueda se cargarán aquí -->
-            <p class="text-center text-gray-600">Cargando resultados...</p>
-        </div>
-        <div id="paginationControls" class="pagination-controls hidden">
-            <!-- Los controles de paginación se cargarán aquí -->
-        </div>
-    </div>
-
-    <!-- FOOTER SIMPLIFICADO -->
-    <footer class="main-footer">
-        <div class="footer-attention">
-            <i class="fas fa-exclamation-triangle"></i>
-            <p>Envíos a todo el país</p>
-        </div>
-        <div class="footer-disclaimer">
-            <p>Precios y condiciones de pago exclusivos para tienda online. Ventas sujetas a análisis y confirmación de datos. Valores, informaciones y stock con posibilidad de alteración sin previo aviso. Imágenes meramente ilustrativas.</p>
-            <p>Hecho por Tobias Torales</p>
-        </div>
-    </footer>
-    <!-- FIN DEL FOOTER SIMPLIFICADO -->
-
-    <a href="https://wa.me/595983068998" class="whatsapp-float" target="_blank">
-        <i class="fab fa-whatsapp"></i>
-    </a>
-    
-    <!-- Modal para Ampliación de Imagen -->
-    <div id="imageZoomModal" class="image-zoom-overlay">
-        <span class="close-zoom-btn">&times;</span>
-        <img id="zoomedImage" src="" alt="Imagen Ampliada" class="image-zoom-content">
-    </div>
-
-    <script src="js/search-results-script.js"></script>
-</body>
-</html>
+    function closeZoomModal() {
+        imageZoomModal.style.display = 'none';
+        document.body.style.overflow = '';
+    }
+    // --- FIN Lógica para el Modal de Ampliación de Imagen ---
+});
