@@ -352,10 +352,11 @@ img {
 }
 
 .product-card .image-container {
-    width: 100%; /* Ocupa el ancho completo de la tarjeta */
-    height: 180px; /* Altura fija para el contenedor de imagen */
     overflow: hidden;
     position: relative;
+    cursor: zoom-in; /* Cursor para el clic (abre modal) */
+    width: 100%;
+    height: 180px; /* Altura fija para el contenedor de imagen en tarjetas */
     display: flex;
     justify-content: center;
     align-items: center;
@@ -367,8 +368,7 @@ img {
     max-height: 100%;
     max-width: 100%;
     object-fit: contain;
-    margin: 0; /* Eliminar márgenes automáticos */
-    /* cursor: zoom-in;  Cursor para indicar que es clickeable para zoom */ /* Se maneja en JS */
+    /* Las imágenes de las tarjetas YA NO tienen 'product-image-zoom' */
 }
 
 .product-info {
@@ -613,10 +613,35 @@ img {
 }
 
 /* Estilos para el efecto de lupa (al pasar el cursor) */
-.image-container {
+/* Este estilo se aplica a la imagen *dentro* del modal (#zoomedImage) */
+.product-image-zoom-modal { /* Nueva clase para la imagen dentro del modal */
+    width: 100%; /* Asegura que la imagen dentro de la lupa use todo el espacio del contenedor */
+    height: 100%;
+    object-fit: contain;
+    cursor: crosshair; /* Cursor para la lupa cuando está activa en el modal */
+}
+
+.magnifying-lens {
+    position: fixed;
+    border: 2px solid var(--primary-red);
+    border-radius: 8px; /* Cuadrado con esquinas redondeadas */
+    cursor: none;
+    width: 220px; /* Tamaño de la lupa */
+    height: 220px;
+    background-repeat: no-repeat;
+    background-color: rgba(255, 255, 255, 0.95);
+    box-shadow: var(--shadow-medium);
+    display: none; /* Oculto por defecto */
+    pointer-events: none; /* Permite que los eventos del mouse pasen a la imagen subyacente */
+    transform: translate(-50%, -50%);
+    z-index: 9999;
+}
+
+/* Estilos para las imágenes de las tarjetas de producto (solo clic, no lupa aquí) */
+.product-card .image-container {
     overflow: hidden;
     position: relative;
-    cursor: crosshair; /* Cursor para la lupa */
+    cursor: zoom-in; /* Cursor para indicar que es clickeable para abrir modal */
     width: 100%;
     height: 180px; /* Altura fija para el contenedor de imagen en tarjetas */
     display: flex;
@@ -624,7 +649,6 @@ img {
     align-items: center;
     border-radius: 0.5rem; /* Bordes redondeados para el contenedor */
 }
-
 /* Ajuste para product-result-card para que el contenedor de imagen sea fijo */
 .product-result-card .image-container {
     width: 120px;
@@ -638,27 +662,14 @@ img {
     }
 }
 
-.product-image-zoom {
-    width: 100%;
-    height: 100%;
+/* La imagen dentro de la tarjeta, solo para el clic */
+.product-image-clickable {
+    max-height: 100%;
+    max-width: 100%;
     object-fit: contain;
+    margin: 0;
 }
 
-.magnifying-lens {
-    position: fixed;
-    border: 2px solid var(--primary-red);
-    border-radius: 8px; /* Cuadrado con esquinas redondeadas */
-    cursor: none;
-    width: 220px; /* Tamaño de la lupa */
-    height: 220px;
-    background-repeat: no-repeat;
-    background-color: rgba(255, 255, 255, 0.95);
-    box-shadow: var(--shadow-medium);
-    display: none;
-    pointer-events: none;
-    transform: translate(-50%, -50%);
-    z-index: 9999;
-}
 
 /* Responsive adjustments */
 @media (max-width: 768px) {

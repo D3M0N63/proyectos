@@ -54,7 +54,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const productCardHtml = `
                 <div class="product-card">
                     <div class="image-container">
-                        <img src="${product.images && product.images.length > 0 ? product.images[0] : 'https://placehold.co/150x150/cccccc/333333?text=No+Image'}" alt="Neumático ${product.name}" class="product-image-zoom product-image-clickable">
+                        <img src="${product.images && product.images.length > 0 ? product.images[0] : 'https://placehold.co/150x150/cccccc/333333?text=No+Image'}" alt="Neumático ${product.name}" class="product-image-clickable">
                     </div>
                     <div class="product-info">
                         <p class="brand">${product.quickspecs && product.quickspecs.brand ? product.quickspecs.brand : 'N/A'}</p>
@@ -83,7 +83,7 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
 
-        setupMagnifyingGlassListeners();
+        // Solo adjuntar listeners de clic para el modal a las imágenes de las tarjetas
         attachZoomModalListeners();
     }
 
@@ -101,7 +101,7 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error('Error fetching all products:', error);
             const featuredProductsGrid = document.getElementById('featuredProductsGrid');
             if (featuredProductsGrid) {
-                featuredProductsGrid.innerHTML = '<p style="text-align:center; color: red;">Error al cargar los productos. Por favor, intente de nuevo más tarde.</p>';
+                featuredProductsGrid.innerHTML = '<p class="text-center text-gray-600">Error al cargar los productos. Por favor, intente de nuevo más tarde.</p>';
             }
             return [];
         }
@@ -282,7 +282,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (whatsappBtn) {
                 const productNameForWhatsapp = product.name || 'un neumático';
                 const whatsappMessage = encodeURIComponent(`Hola! Me interesa el neumático ${productNameForWhatsapp} que vi en su web. ID: ${product.id}`);
-                whatsappBtn.href = `https://wa.me/595XXXXXXXXX?text=${whatsappMessage}`;
+                whatsappBtn.href = `https://wa.me/595983068998?text=${whatsappMessage}`;
             }
 
             loadRelatedProducts(id);
@@ -339,13 +339,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 const productCard = `
                     <div class="product-card bg-white rounded-lg shadow-md overflow-hidden transform transition-transform hover:scale-105 duration-300">
                         <div class="image-container">
-                            <img src="${product.images && product.images.length > 0 ? product.images[0] : 'https://placehold.co/200x200/cccccc/333333?text=No+Image'}" alt="Neumático ${product.name}" class="product-image-zoom product-image-clickable">
+                            <img src="${product.images && product.images.length > 0 ? product.images[0] : 'https://placehold.co/200x200/cccccc/333333?text=No+Image'}" alt="Neumático ${product.name}" class="product-image-clickable">
                         </div>
                         <div class="p-4">
-                            <p class="brand text-sm text-gray-500">${product.quickspecs && product.quickspecs.brand ? product.quickspecs.brand : 'N/A'}</p>
-                            <p class="model text-lg font-semibold text-gray-800 mb-1">${product.name}</p>
-                            <p class="price text-xl font-bold text-red-600 mb-1">${product.price}</p>
-                            <p class="price-local text-sm text-gray-600">(${product.pricelocal && product.pricelocal.split(' / ')[0] ? product.pricelocal.split(' / ')[0] : 'N/A'})</p>
+                            <p class="brand">${product.quickspecs && product.quickspecs.brand ? product.quickspecs.brand : 'N/A'}</p>
+                            <p class="model">${product.name}</p>
+                            <p class="price">${product.price}</p>
+                            <p class="price-local">(${product.pricelocal && product.pricelocal.split(' / ')[0] ? product.pricelocal.split(' / ')[0] : 'N/A'})</p>
                             <!-- BOTÓN "Ver producto" ELIMINADO: <a href="product-detail.html?product=${product.id}" class="btn-view-product mt-3 block text-center bg-red-500 text-white py-2 px-4 rounded-md hover:bg-red-600 transition-colors">Ver producto</a> -->
                         </div>
                     </div>
@@ -400,8 +400,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const offset = 20; // Desplazamiento de la lupa desde el cursor (en píxeles)
 
     function setupMagnifyingGlassListeners() {
-        // Seleccionar todas las imágenes con la clase 'product-image-zoom'
-        const zoomableImages = document.querySelectorAll('.product-image-zoom');
+        // Seleccionar solo la imagen dentro del modal para la lupa
+        const zoomableImages = document.querySelectorAll('#zoomedImage.product-image-zoom-modal'); // Selector ajustado para la imagen dentro del modal
 
         zoomableImages.forEach(img => {
             // Remover cualquier listener previo para evitar duplicados
@@ -420,7 +420,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const img = e.currentTarget; // La imagen es el target directo aquí
         if (!img || !img.src) return;
 
-        // Si la imagen aún no ha cargado sus dimensiones naturales, esperar
         if (img.naturalWidth === 0 || img.naturalHeight === 0) {
             img.onload = () => {
                 // Una vez que la imagen cargue, re-ejecutar handleMouseEnter
@@ -429,7 +428,6 @@ document.addEventListener('DOMContentLoaded', () => {
             return; // Salir, la función se volverá a llamar cuando la imagen cargue
         }
 
-        // Crea la lupa si no existe
         if (!lens) {
             lens = document.createElement('div');
             lens.classList.add('magnifying-lens');
@@ -488,7 +486,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Lógica para el Modal de Ampliación de Imagen ---
     const imageZoomModal = document.getElementById('imageZoomModal');
     const zoomedImage = document.getElementById('zoomedImage');
-    const closeZoomBtn = documentSelector('.close-zoom-btn'); // FIX: Corrected typo here
+    const closeZoomBtn = document.querySelector('.close-zoom-btn');
 
     function attachZoomModalListeners() {
         const clickableImages = document.querySelectorAll('.product-image-clickable');
@@ -502,8 +500,13 @@ document.addEventListener('DOMContentLoaded', () => {
     function openZoomModal(event) {
         const clickedImageSrc = event.target.src;
         zoomedImage.src = clickedImageSrc;
-        imageZoomModal.style.display = 'flex';
+        imageZoomModal.classList.add('active'); // Usar clase para mostrar con transición
         document.body.style.overflow = 'hidden';
+
+        // Una vez que la imagen del modal esté visible y cargada, adjuntar listeners de lupa a ELLA
+        // Asegurarse de que la imagen ampliada tenga la clase para la lupa
+        zoomedImage.classList.add('product-image-zoom-modal'); // Añade la clase para que la lupa la detecte
+        setupMagnifyingGlassListeners(); // Llama para adjuntar listeners a la imagen del modal
     }
 
     if (closeZoomBtn) {
@@ -518,9 +521,17 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function closeZoomModal() {
-        imageZoomModal.style.display = 'none';
+        imageZoomModal.classList.remove('active'); // Remover clase 'active'
         document.body.style.overflow = '';
+
+        if (lens) {
+            lens.style.display = 'none';
+        }
+        // Limpiar la clase de la imagen del modal y remover sus listeners de lupa
+        zoomedImage.classList.remove('product-image-zoom-modal');
+        zoomedImage.removeEventListener('mouseenter', handleMouseEnter);
+        zoomedImage.removeEventListener('mouseleave', handleMouseLeave);
+        zoomedImage.removeEventListener('mousemove', handleMouseMove);
     }
     // --- FIN Lógica para el Modal de Ampliación de Imagen ---
 });
-```
