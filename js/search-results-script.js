@@ -79,7 +79,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         productsToDisplay.forEach(product => {
             const productNameForWhatsapp = product.name || 'un neumático';
             const whatsappMessage = encodeURIComponent(`Hola! Me interesa el neumático ${productNameForWhatsapp} que vi en su web. ID: ${product.id}`);
-            const whatsappLink = `https://wa.me/595XXXXXXXXX?text=${whatsappMessage}`;
+            const whatsappLink = `https://wa.me/595983068998?text=${whatsappMessage}`;
 
             const productCardHtml = `
                 <div class="product-result-card w-full">
