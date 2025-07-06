@@ -173,8 +173,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // --- Lógica para el Efecto de Lupa ---
     let lens = null;
-    const zoomFactor = 1.25; // Factor de ampliación
-    const offset = 20; // Desplazamiento de la lupa desde el cursor (en píxeles)
+    const zoomFactor = 1; // Factor de ampliación
+    const offset = 250; // Desplazamiento de la lupa desde el cursor (en píxeles)
 
     // Esta función ahora solo es llamada por openZoomModal para la imagen ampliada
     function setupMagnifyingGlassListeners(imgToAttachTo) {
