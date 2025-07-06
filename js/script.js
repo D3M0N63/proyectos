@@ -528,13 +528,11 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     // --- FIN Lógica para el Modal de Ampliación de Imagen ---
 });
-```
----
-
-### 5. `js/search-results-script.js` (Versión Final y Corregida)
 
 
-```javascript
+.js/search-results-script.js
+
+javascript
 document.addEventListener('DOMContentLoaded', async () => {
     const searchResultsContainer = document.getElementById('searchResultsContainer');
     const paginationControls = document.getElementById('paginationControls');
