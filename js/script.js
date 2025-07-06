@@ -488,16 +488,13 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Lógica para el Modal de Ampliación de Imagen ---
     const imageZoomModal = document.getElementById('imageZoomModal');
     const zoomedImage = document.getElementById('zoomedImage');
-    const closeZoomBtn = document.querySelector('.close-zoom-btn');
+    const closeZoomBtn = documentSelector('.close-zoom-btn'); // FIX: Corrected typo here
 
     function attachZoomModalListeners() {
-        // Seleccionar todas las imágenes con la clase 'product-image-clickable'
         const clickableImages = document.querySelectorAll('.product-image-clickable');
 
         clickableImages.forEach(img => {
-            // Remover cualquier listener previo para evitar duplicados
             img.removeEventListener('click', openZoomModal);
-            // Añadir el listener de clic
             img.addEventListener('click', openZoomModal);
         });
     }
@@ -505,17 +502,15 @@ document.addEventListener('DOMContentLoaded', () => {
     function openZoomModal(event) {
         const clickedImageSrc = event.target.src;
         zoomedImage.src = clickedImageSrc;
-        imageZoomModal.style.display = 'flex'; // Mostrar el modal
-        document.body.style.overflow = 'hidden'; // Evitar scroll en el body
+        imageZoomModal.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
     }
 
-    // Cerrar el modal al hacer clic en el botón de cerrar o en el overlay
     if (closeZoomBtn) {
         closeZoomBtn.addEventListener('click', closeZoomModal);
     }
     if (imageZoomModal) {
         imageZoomModal.addEventListener('click', (event) => {
-            // Cerrar solo si se hace clic directamente en el overlay, no en la imagen
             if (event.target === imageZoomModal) {
                 closeZoomModal();
             }
@@ -523,10 +518,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function closeZoomModal() {
-        imageZoomModal.style.display = 'none'; // Ocultar el modal
-        document.body.style.overflow = ''; // Restaurar scroll en el body
+        imageZoomModal.style.display = 'none';
+        document.body.style.overflow = '';
     }
     // --- FIN Lógica para el Modal de Ampliación de Imagen ---
 });
-
-
+```
