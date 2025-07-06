@@ -83,8 +83,7 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
 
-        // Adjuntar listeners de clic para el modal a las imágenes de las tarjetas
-        attachZoomModalListeners();
+        attachZoomModalListeners(); // Adjuntar listeners de clic para el modal a las imágenes de las tarjetas
     }
 
     async function fetchAllProducts() {
@@ -101,7 +100,7 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error('Error fetching all products:', error);
             const featuredProductsGrid = document.getElementById('featuredProductsGrid');
             if (featuredProductsGrid) {
-                featuredProductsGrid.innerHTML = '<p style="text-align:center; color: red;">Error al cargar los productos. Por favor, intente de nuevo más tarde.</p>';
+                featuredProductsGrid.innerHTML = '<p class="text-center text-gray-600">Error al cargar los productos. Por favor, intente de nuevo más tarde.</p>';
             }
             return [];
         }
@@ -342,12 +341,11 @@ document.addEventListener('DOMContentLoaded', () => {
                             <img src="${product.images && product.images.length > 0 ? product.images[0] : 'https://placehold.co/200x200/cccccc/333333?text=No+Image'}" alt="Neumático ${product.name}" class="product-image-clickable">
                         </div>
                         <div class="p-4">
-                            <p class="brand text-sm text-gray-500">${product.quickspecs && product.quickspecs.brand ? product.quickspecs.brand : 'N/A'}</p>
-                            <p class="model text-lg font-semibold text-gray-800 mb-1">${product.name}</p>
+                            <p class="brand">${product.quickspecs && product.quickspecs.brand ? product.quickspecs.brand : 'N/A'}</p>
+                            <p class="model">${product.name}</p>
                             <p class="price">${product.price}</p>
                             <p class="price-local">(${product.pricelocal && product.pricelocal.split(' / ')[0] ? product.pricelocal.split(' / ')[0] : 'N/A'})</p>
-                            <!-- BOTÓN "Ver producto" ELIMINADO: <a href="product-detail.html?product=${product.id}" class="btn-view-product mt-3 block text-center bg-red-500 text-white py-2 px-4 rounded-md hover:bg-red-600 transition-colors">Ver producto</a> -->
-                        </div>
+                            </div>
                     </div>
                 `;
                 relatedProductsContainer.insertAdjacentHTML('beforeend', productCard);
@@ -399,27 +397,26 @@ document.addEventListener('DOMContentLoaded', () => {
     const zoomFactor = 1.25; // Factor de ampliación
     const offset = 20; // Desplazamiento de la lupa desde el cursor (en píxeles)
 
-    function setupMagnifyingGlassListeners() {
-        // Seleccionar solo la imagen dentro del modal para la lupa
-        const zoomableImages = document.querySelectorAll('#zoomedImage.product-image-zoom-modal'); // Selector ajustado para la imagen dentro del modal
+    // Esta función ahora solo es llamada por openZoomModal para la imagen ampliada
+    function setupMagnifyingGlassListeners(imgToAttachTo) {
+        if (!imgToAttachTo) return;
 
-        zoomableImages.forEach(img => {
-            // Remover cualquier listener previo para evitar duplicados
-            img.removeEventListener('mouseenter', handleMouseEnter);
-            img.removeEventListener('mouseleave', handleMouseLeave);
-            img.removeEventListener('mousemove', handleMouseMove);
+        // Remover cualquier listener previo para evitar duplicados en esta imagen específica
+        imgToAttachTo.removeEventListener('mouseenter', handleMouseEnter);
+        imgToAttachTo.removeEventListener('mouseleave', handleMouseLeave);
+        imgToAttachTo.removeEventListener('mousemove', handleMouseMove);
 
-            // Añadir los nuevos listeners
-            img.addEventListener('mouseenter', handleMouseEnter);
-            img.addEventListener('mouseleave', handleMouseLeave);
-            img.addEventListener('mousemove', handleMouseMove);
-        });
+        // Añadir los nuevos listeners a la imagen proporcionada (la ampliada en el modal)
+        imgToAttachTo.addEventListener('mouseenter', handleMouseEnter);
+        imgToAttachTo.addEventListener('mouseleave', handleMouseLeave);
+        imgToAttachTo.addEventListener('mousemove', handleMouseMove);
     }
 
     function handleMouseEnter(e) {
-        const img = e.currentTarget; // La imagen es el target directo aquí
+        const img = e.currentTarget; // La imagen es el target directo aquí (será #zoomedImage)
         if (!img || !img.src) return;
 
+        // Si la imagen aún no ha cargado sus dimensiones naturales, esperar
         if (img.naturalWidth === 0 || img.naturalHeight === 0) {
             img.onload = () => {
                 // Una vez que la imagen cargue, re-ejecutar handleMouseEnter
@@ -428,6 +425,7 @@ document.addEventListener('DOMContentLoaded', () => {
             return; // Salir, la función se volverá a llamar cuando la imagen cargue
         }
 
+        // Crea la lupa si no existe
         if (!lens) {
             lens = document.createElement('div');
             lens.classList.add('magnifying-lens');
@@ -478,7 +476,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function handleMouseLeave() {
         if (lens) {
-            lens.style.display = 'none';
+            lens.style.display = 'none'; // Ocultar la lupa
         }
     }
     // --- FIN Lógica para el Efecto de Lupa ---
@@ -489,10 +487,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const closeZoomBtn = document.querySelector('.close-zoom-btn');
 
     function attachZoomModalListeners() {
+        // Seleccionar todas las imágenes con la clase 'product-image-clickable'
         const clickableImages = document.querySelectorAll('.product-image-clickable');
 
         clickableImages.forEach(img => {
-            img.removeEventListener('click', openZoomModal);
+            img.removeEventListener('click', openZoomModal); // Remover cualquier listener previo para evitar duplicados
             img.addEventListener('click', openZoomModal);
         });
     }
@@ -506,7 +505,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Una vez que la imagen del modal esté visible y cargada, adjuntar listeners de lupa a ELLA
         // Asegurarse de que la imagen ampliada tenga la clase para la lupa
         zoomedImage.classList.add('product-image-zoom-modal'); // Añade la clase para que la lupa la detecte
-        setupMagnifyingGlassListeners(); // Llama para adjuntar listeners a la imagen del modal
+        setupMagnifyingGlassListeners(zoomedImage); // Llama a setupMagnifyingGlassListeners pasándole la imagen del modal
     }
 
     if (closeZoomBtn) {
@@ -522,16 +521,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function closeZoomModal() {
         imageZoomModal.classList.remove('active'); // Remover clase 'active'
-        document.body.style.overflow = '';
+        // Esperar a que termine la transición de opacidad antes de ocultar completamente
+        imageZoomModal.addEventListener('transitionend', function handler() {
+            if (!imageZoomModal.classList.contains('active')) {
+                imageZoomModal.style.display = 'none';
+                document.body.style.overflow = '';
+                imageZoomModal.removeEventListener('transitionend', handler);
+            }
+        });
 
         if (lens) {
             lens.style.display = 'none';
         }
         // Limpiar la clase de la imagen del modal y remover sus listeners de lupa
         zoomedImage.classList.remove('product-image-zoom-modal');
-        zoomedImage.removeEventListener('mouseenter', handleMouseEnter);
-        zoomedImage.removeEventListener('mouseleave', handleMouseLeave);
-        zoomedImage.removeEventListener('mousemove', handleMouseMove);
+        // Los listeners se adjuntan solo cuando la imagen está en el modal, así que no es necesario removerlos aquí globalmente
+        // pero sí es buena práctica si setupMagnifyingGlassListeners los agrega a #zoomedImage cada vez.
     }
     // --- FIN Lógica para el Modal de Ampliación de Imagen ---
 });

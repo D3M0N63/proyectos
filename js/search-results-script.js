@@ -37,7 +37,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     try {
-        // Construir la URL de la función de Netlify con los parámetros de búsqueda
         const queryParams = new URLSearchParams();
         if (ancho) queryParams.append('ancho', ancho);
         if (perfil) queryParams.append('perfil', perfil);
@@ -79,12 +78,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         productsToDisplay.forEach(product => {
             const productNameForWhatsapp = product.name || 'un neumático';
             const whatsappMessage = encodeURIComponent(`Hola! Me interesa el neumático ${productNameForWhatsapp} que vi en su web. ID: ${product.id}`);
-            const whatsappLink = `https://wa.me/595983068998?text=${whatsappMessage}`;
+            const whatsappLink = `https://wa.me/595XXXXXXXXX?text=${whatsappMessage}`;
 
             const productCardHtml = `
                 <div class="product-result-card w-full">
                     <div class="image-container">
-                        <img src="${product.images && product.images.length > 0 ? product.images[0] : './imagenes/no-image.jpg'}" alt="Neumático ${product.name}" class="product-image-zoom product-image-clickable">
+                        <img src="${product.images && product.images.length > 0 ? product.images[0] : 'https://placehold.co/120x120/cccccc/333333?text=Neumatico'}" alt="Neumático ${product.name}" class="product-image-clickable">
                     </div>
                     <div class="product-info-left flex-grow">
                         <p class="name">${product.name || 'Neumático sin nombre'}</p>
@@ -177,18 +176,19 @@ document.addEventListener('DOMContentLoaded', async () => {
     const zoomFactor = 1.25; // Factor de ampliación
     const offset = 20; // Desplazamiento de la lupa desde el cursor (en píxeles)
 
-    function setupMagnifyingGlassListeners() {
-        const zoomableImages = document.querySelectorAll('.product-image-zoom');
+    // Esta función ahora solo es llamada por openZoomModal para la imagen ampliada
+    function setupMagnifyingGlassListeners(imgToAttachTo) {
+        if (!imgToAttachTo) return;
 
-        zoomableImages.forEach(img => {
-            img.removeEventListener('mouseenter', handleMouseEnter);
-            img.removeEventListener('mouseleave', handleMouseLeave);
-            img.removeEventListener('mousemove', handleMouseMove);
+        // Remover cualquier listener previo para evitar duplicados en esta imagen específica
+        imgToAttachTo.removeEventListener('mouseenter', handleMouseEnter);
+        imgToAttachTo.removeEventListener('mouseleave', handleMouseLeave);
+        imgToAttachTo.removeEventListener('mousemove', handleMouseMove);
 
-            img.addEventListener('mouseenter', handleMouseEnter);
-            img.addEventListener('mouseleave', handleMouseLeave);
-            img.addEventListener('mousemove', handleMouseMove);
-        });
+        // Añadir los nuevos listeners
+        imgToAttachTo.addEventListener('mouseenter', handleMouseEnter);
+        imgToAttachTo.addEventListener('mouseleave', handleMouseLeave);
+        imgToAttachTo.addEventListener('mousemove', handleMouseMove);
     }
 
     function handleMouseEnter(e) {
@@ -265,8 +265,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     function openZoomModal(event) {
         const clickedImageSrc = event.target.src;
         zoomedImage.src = clickedImageSrc;
-        imageZoomModal.style.display = 'flex';
+        imageZoomModal.classList.add('active'); // Usar clase para mostrar con transición
         document.body.style.overflow = 'hidden';
+
+        zoomedImage.classList.add('product-image-zoom-modal'); // Añade la clase para que la lupa la detecte
+        setupMagnifyingGlassListeners(zoomedImage); // Llama a setupMagnifyingGlassListeners pasándole la imagen del modal
     }
 
     if (closeZoomBtn) {
@@ -281,8 +284,23 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     function closeZoomModal() {
-        imageZoomModal.style.display = 'none';
-        document.body.style.overflow = '';
+        imageZoomModal.classList.remove('active');
+        // Esperar a que termine la transición de opacidad antes de ocultar completamente
+        imageZoomModal.addEventListener('transitionend', function handler() {
+            if (!imageZoomModal.classList.contains('active')) {
+                imageZoomModal.style.display = 'none';
+                document.body.style.overflow = '';
+                imageZoomModal.removeEventListener('transitionend', handler);
+            }
+        });
+
+        if (lens) {
+            lens.style.display = 'none';
+        }
+        zoomedImage.classList.remove('product-image-zoom-modal');
+        zoomedImage.removeEventListener('mouseenter', handleMouseEnter);
+        zoomedImage.removeEventListener('mouseleave', handleMouseLeave);
+        zoomedImage.removeEventListener('mousemove', handleMouseMove);
     }
     // --- FIN Lógica para el Modal de Ampliación de Imagen ---
 });
