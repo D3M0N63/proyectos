@@ -83,7 +83,7 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
 
-        // Solo adjuntar listeners de clic para el modal a las imágenes de las tarjetas
+        // Adjuntar listeners de clic para el modal a las imágenes de las tarjetas
         attachZoomModalListeners();
     }
 
@@ -101,7 +101,7 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error('Error fetching all products:', error);
             const featuredProductsGrid = document.getElementById('featuredProductsGrid');
             if (featuredProductsGrid) {
-                featuredProductsGrid.innerHTML = '<p class="text-center text-gray-600">Error al cargar los productos. Por favor, intente de nuevo más tarde.</p>';
+                featuredProductsGrid.innerHTML = '<p style="text-align:center; color: red;">Error al cargar los productos. Por favor, intente de nuevo más tarde.</p>';
             }
             return [];
         }
@@ -282,7 +282,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (whatsappBtn) {
                 const productNameForWhatsapp = product.name || 'un neumático';
                 const whatsappMessage = encodeURIComponent(`Hola! Me interesa el neumático ${productNameForWhatsapp} que vi en su web. ID: ${product.id}`);
-                whatsappBtn.href = `https://wa.me/595983068998?text=${whatsappMessage}`;
+                whatsappBtn.href = `https://wa.me/595XXXXXXXXX?text=${whatsappMessage}`;
             }
 
             loadRelatedProducts(id);
@@ -342,8 +342,8 @@ document.addEventListener('DOMContentLoaded', () => {
                             <img src="${product.images && product.images.length > 0 ? product.images[0] : 'https://placehold.co/200x200/cccccc/333333?text=No+Image'}" alt="Neumático ${product.name}" class="product-image-clickable">
                         </div>
                         <div class="p-4">
-                            <p class="brand">${product.quickspecs && product.quickspecs.brand ? product.quickspecs.brand : 'N/A'}</p>
-                            <p class="model">${product.name}</p>
+                            <p class="brand text-sm text-gray-500">${product.quickspecs && product.quickspecs.brand ? product.quickspecs.brand : 'N/A'}</p>
+                            <p class="model text-lg font-semibold text-gray-800 mb-1">${product.name}</p>
                             <p class="price">${product.price}</p>
                             <p class="price-local">(${product.pricelocal && product.pricelocal.split(' / ')[0] ? product.pricelocal.split(' / ')[0] : 'N/A'})</p>
                             <!-- BOTÓN "Ver producto" ELIMINADO: <a href="product-detail.html?product=${product.id}" class="btn-view-product mt-3 block text-center bg-red-500 text-white py-2 px-4 rounded-md hover:bg-red-600 transition-colors">Ver producto</a> -->
@@ -478,7 +478,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function handleMouseLeave() {
         if (lens) {
-            lens.style.display = 'none'; // Ocultar la lupa
+            lens.style.display = 'none';
         }
     }
     // --- FIN Lógica para el Efecto de Lupa ---
