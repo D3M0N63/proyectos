@@ -286,7 +286,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     function closeZoomModal() {
-        imageZoomModal.classList.remove('active'); // Remover clase 'active'
+        imageZoomModal.classList.remove('active');
         // Esperar a que termine la transición de opacidad antes de ocultar completamente
         imageZoomModal.addEventListener('transitionend', function handler() {
             if (!imageZoomModal.classList.contains('active')) {

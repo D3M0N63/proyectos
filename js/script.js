@@ -434,7 +434,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         lens.style.backgroundImage = `url('${img.src}')`;
-        // Calcula el tamaño del fondo de la lupa usando las dimensiones naturales de la imagen y el factor de zoom
         lens.style.backgroundSize = `${img.naturalWidth * zoomFactor}px ${img.naturalHeight * zoomFactor}px`;
         lens.style.display = 'block';
     }

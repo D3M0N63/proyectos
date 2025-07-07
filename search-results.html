@@ -4,8 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SALTO PNEUS</title>
+    <!-- Incluye Tailwind CSS para estilos básicos y responsividad -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Enlace a tu archivo de estilos principal para consistencia -->
     <link rel="stylesheet" href="./css/style.css">
+    <!-- Iconos de Font Awesome (para consistencia con index.html) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
         /* Estilos generales para consistencia con index.html */
@@ -172,6 +175,7 @@
     </style>
 </head>
 <body>
+    <!-- HEADER COPIADO DE index.html -->
     <header class="main-header">
         <div class="top-bar">
             <div class="social-media">
@@ -187,7 +191,8 @@
                 </button>
                 <nav class="user-nav">
                     <ul>
-                        </ul>
+                        <!-- Puedes añadir elementos de navegación de usuario si los necesitas aquí -->
+                    </ul>
                 </nav>
             </div>
         </div>
@@ -202,15 +207,20 @@
             </ul>
         </nav>
     </header>
+    <!-- FIN DEL HEADER -->
+
     <div class="container mx-auto mt-8 mb-8 flex-grow">
         <h1 class="text-3xl font-bold text-center text-gray-800 mb-8">Resultados de Búsqueda</h1>
         <div id="searchResultsContainer" class="flex flex-col items-center">
+            <!-- Los resultados de la búsqueda se cargarán aquí -->
             <p class="text-center text-gray-600">Cargando resultados...</p>
         </div>
         <div id="paginationControls" class="pagination-controls hidden">
-            </div>
+            <!-- Los controles de paginación se cargarán aquí -->
+        </div>
     </div>
 
+    <!-- FOOTER SIMPLIFICADO -->
     <footer class="main-footer">
         <div class="footer-attention">
             <i class="fas fa-exclamation-triangle"></i>
@@ -221,10 +231,13 @@
             <p>Hecho por Tobias Torales</p>
         </div>
     </footer>
+    <!-- FIN DEL FOOTER SIMPLIFICADO -->
+
     <a href="https://wa.me/595983068998" class="whatsapp-float" target="_blank">
         <i class="fab fa-whatsapp"></i>
     </a>
     
+    <!-- Modal para Ampliación de Imagen -->
     <div id="imageZoomModal" class="image-zoom-overlay">
         <span class="close-zoom-btn">&times;</span>
         <img id="zoomedImage" src="" alt="Imagen Ampliada" class="image-zoom-content">
