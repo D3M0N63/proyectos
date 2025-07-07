@@ -194,6 +194,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         const img = e.currentTarget; // La imagen es el target directo aquí (será #zoomedImage)
         if (!img || !img.src) return;
 
+        // Si la imagen aún no ha cargado sus dimensiones naturales, esperar
         if (img.naturalWidth === 0 || img.naturalHeight === 0) {
             img.onload = () => {
                 // Una vez que la imagen cargue, re-ejecutar handleMouseEnter
