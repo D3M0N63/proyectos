@@ -78,7 +78,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         productsToDisplay.forEach(product => {
             const productNameForWhatsapp = product.name || 'un neumático';
             const whatsappMessage = encodeURIComponent(`Hola! Me interesa el neumático ${productNameForWhatsapp} que vi en su web. ID: ${product.id}`);
-            const whatsappLink = `https://wa.me/595983068998?text=${whatsappMessage}`;
+            const whatsappLink = `https://wa.me/595XXXXXXXXX?text=${whatsappMessage}`;
 
             const productCardHtml = `
                 <div class="product-result-card w-full">
@@ -173,22 +173,22 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // --- Lógica para el Efecto de Lupa ---
     let lens = null;
-    const zoomFactor = 1; // Factor de ampliación
-    const offset = 200; // Desplazamiento de la lupa desde el cursor (en píxeles)
+    const zoomFactor = 1.25; // Factor de ampliación
+    const offset = 20; // Desplazamiento de la lupa desde el cursor (en píxeles)
 
-    // Esta función ahora solo es llamada por openZoomModal para la imagen ampliada
-    function setupMagnifyingGlassListeners(imgToAttachTo) {
-        if (!imgToAttachTo) return;
+    function setupMagnifyingGlassListeners() {
+        // Seleccionar solo la imagen dentro del modal para la lupa
+        const zoomableImageInModal = document.querySelector('#zoomedImage.product-image-zoom-modal'); // Selector ajustado
 
-        // Remover cualquier listener previo para evitar duplicados en esta imagen específica
-        imgToAttachTo.removeEventListener('mouseenter', handleMouseEnter);
-        imgToAttachTo.removeEventListener('mouseleave', handleMouseLeave);
-        imgToAttachTo.removeEventListener('mousemove', handleMouseMove);
+        if (zoomableImageInModal) {
+            zoomableImageInModal.removeEventListener('mouseenter', handleMouseEnter);
+            zoomableImageInModal.removeEventListener('mouseleave', handleMouseLeave);
+            zoomableImageInModal.removeEventListener('mousemove', handleMouseMove);
 
-        // Añadir los nuevos listeners
-        imgToAttachTo.addEventListener('mouseenter', handleMouseEnter);
-        imgToAttachTo.addEventListener('mouseleave', handleMouseLeave);
-        imgToAttachTo.addEventListener('mousemove', handleMouseMove);
+            zoomableImageInModal.addEventListener('mouseenter', handleMouseEnter);
+            zoomableImageInModal.addEventListener('mouseleave', handleMouseLeave);
+            zoomableImageInModal.addEventListener('mousemove', handleMouseMove);
+        }
     }
 
     function handleMouseEnter(e) {

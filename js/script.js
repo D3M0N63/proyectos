@@ -394,8 +394,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Lógica para el Efecto de Lupa ---
     let lens = null; // La lupa
-    const zoomFactor = 1; // Factor de ampliación
-    const offset = 200; // Desplazamiento de la lupa desde el cursor (en píxeles)
+    const zoomFactor = 1.25; // Factor de ampliación
+    const offset = 20; // Desplazamiento de la lupa desde el cursor (en píxeles)
 
     // Esta función ahora solo es llamada por openZoomModal para la imagen ampliada
     function setupMagnifyingGlassListeners(imgToAttachTo) {
@@ -406,7 +406,7 @@ document.addEventListener('DOMContentLoaded', () => {
         imgToAttachTo.removeEventListener('mouseleave', handleMouseLeave);
         imgToAttachTo.removeEventListener('mousemove', handleMouseMove);
 
-        // Añadir los nuevos listeners a la imagen proporcionada (la ampliada en el modal)
+        // Añadir los nuevos listeners
         imgToAttachTo.addEventListener('mouseenter', handleMouseEnter);
         imgToAttachTo.addEventListener('mouseleave', handleMouseLeave);
         imgToAttachTo.addEventListener('mousemove', handleMouseMove);
@@ -476,7 +476,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function handleMouseLeave() {
         if (lens) {
-            lens.style.display = 'none'; // Ocultar la lupa
+            lens.style.display = 'none';
         }
     }
     // --- FIN Lógica para el Efecto de Lupa ---
@@ -487,11 +487,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const closeZoomBtn = document.querySelector('.close-zoom-btn');
 
     function attachZoomModalListeners() {
-        // Seleccionar todas las imágenes con la clase 'product-image-clickable'
         const clickableImages = document.querySelectorAll('.product-image-clickable');
 
         clickableImages.forEach(img => {
-            img.removeEventListener('click', openZoomModal); // Remover cualquier listener previo para evitar duplicados
+            img.removeEventListener('click', openZoomModal);
             img.addEventListener('click', openZoomModal);
         });
     }
