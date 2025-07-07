@@ -376,7 +376,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Lógica para el Efecto de Lupa ---
     let lens = null; // La lupa (ahora se creará y destruirá con el modal)
     const zoomFactor = 1.25; // Factor de ampliación
-    const offset = 20; // Desplazamiento de la lupa desde el cursor (en píxeles)
+    const offset = 150; // Desplazamiento de la lupa desde el cursor (en píxeles)
 
     // Estas funciones se mantendrán puras y no necesitarán ser declaradas dentro de setup/teardown
     function handleMouseEnter(e) {
