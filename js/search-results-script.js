@@ -179,7 +179,14 @@ document.addEventListener('DOMContentLoaded', async () => {
     function setupMagnifyingGlassListeners(imgToAttachTo) {
         if (!imgToAttachTo) return;
 
-        // Remover cualquier listener previo para evitar duplicados en esta imagen específica
+        // Ensure lens is created if it doesn't exist
+        if (!lens) {
+            lens = document.createElement('div');
+            lens.classList.add('magnifying-lens');
+            document.body.appendChild(lens);
+        }
+
+        // Always remove previous listeners to prevent duplicates, even if only one instance of lens
         imgToAttachTo.removeEventListener('mouseenter', handleMouseEnter);
         imgToAttachTo.removeEventListener('mouseleave', handleMouseLeave);
         imgToAttachTo.removeEventListener('mousemove', handleMouseMove);
@@ -191,23 +198,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     function handleMouseEnter(e) {
-        const img = e.currentTarget; // La imagen es el target directo aquí (será #zoomedImage)
-        if (!img || !img.src) return;
-
-        // Si la imagen aún no ha cargado sus dimensiones naturales, esperar
-        if (img.naturalWidth === 0 || img.naturalHeight === 0) {
-            img.onload = () => {
-                // Una vez que la imagen cargue, re-ejecutar handleMouseEnter
-                handleMouseEnter(e);
-            };
-            return; // Salir, la función se volverá a llamar cuando la imagen cargue
-        }
-
-        // Crea la lupa si no existe
-        if (!lens) {
-            lens = document.createElement('div');
-            lens.classList.add('magnifying-lens');
-            document.body.appendChild(lens);
+        const img = e.currentTarget;
+        if (!img || !img.src || img.naturalWidth === 0 || img.naturalHeight === 0) {
+            // If image not loaded or invalid, hide lens and return
+            if (lens) lens.style.display = 'none';
+            return;
         }
 
         lens.style.backgroundImage = `url('${img.src}')`;
@@ -218,7 +213,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     function handleMouseMove(e) {
         if (!lens || lens.style.display === 'none') return;
 
-        const img = e.currentTarget; // La imagen es el target directo aquí
+        const img = e.currentTarget;
         if (!img || img.naturalWidth === 0 || img.naturalHeight === 0) {
             lens.style.display = 'none';
             return;
@@ -239,8 +234,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         lens.style.backgroundPosition = `${bgPosX}px ${bgPosY}px`;
 
-        lens.style.left = `${mouseX + offset}px`; // Ligeramente a la derecha
-        lens.style.top = `${mouseY + offset}px`;  // Ligeramente hacia abajo
+        lens.style.left = `${mouseX + offset}px`;
+        lens.style.top = `${mouseY + offset}px`;
     }
 
     function handleMouseLeave() {
@@ -267,11 +262,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     function openZoomModal(event) {
         const clickedImageSrc = event.target.src;
         zoomedImage.src = clickedImageSrc;
-        imageZoomModal.classList.add('active'); // Usar clase para mostrar con transición
+        imageZoomModal.classList.add('active');
         document.body.style.overflow = 'hidden';
 
-        zoomedImage.classList.add('product-image-zoom-modal'); // Añade la clase para que la lupa la detecte
-        setupMagnifyingGlassListeners(zoomedImage); // Llama a setupMagnifyingGlassListeners pasándole la imagen del modal
+        zoomedImage.classList.add('product-image-zoom-modal');
+        setupMagnifyingGlassListeners(zoomedImage); // Call setupMagnifyingGlassListeners, passing the modal image
     }
 
     if (closeZoomBtn) {
@@ -287,23 +282,23 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     function closeZoomModal() {
         imageZoomModal.classList.remove('active');
-        // Esperar a que termine la transición de opacidad antes de ocultar completamente
         imageZoomModal.addEventListener('transitionend', function handler() {
             if (!imageZoomModal.classList.contains('active')) {
                 imageZoomModal.style.display = 'none';
                 document.body.style.overflow = '';
                 imageZoomModal.removeEventListener('transitionend', handler);
             }
-        });
+        }, { once: true }); // Use { once: true } to automatically remove this listener
 
-        if (lens) {
-            lens.style.display = 'none';
-        }
-        // Limpiar la clase de la imagen del modal y remover sus listeners de lupa
-        zoomedImage.classList.remove('product-image-zoom-modal');
+        // IMPORTANT: Detach magnifying glass listeners from zoomedImage
         zoomedImage.removeEventListener('mouseenter', handleMouseEnter);
         zoomedImage.removeEventListener('mouseleave', handleMouseLeave);
         zoomedImage.removeEventListener('mousemove', handleMouseMove);
+
+        if (lens) {
+            lens.style.display = 'none'; // Hide the lens
+        }
+        zoomedImage.classList.remove('product-image-zoom-modal');
     }
     // --- FIN Lógica para el Modal de Ampliación de Imagen ---
 });
