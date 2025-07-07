@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
     // --- CÓDIGO RELACIONADO A NEWSLETTER POPUP ELIMINADO ---
-    // ANTERIORMENTE: Aquí estaba el bloque de código que referenciaba newsletterPopup.
-    // Ha sido completamente eliminado para resolver el TypeError.
+    // Este bloque de código ha sido ELIMINADO completamente para evitar el TypeError.
+    // No hay referencias a newsletterPopup ni closeBtn aquí.
 
     const searchButton = document.querySelector('.tire-search-by-size .btn-search');
     if (searchButton) {
@@ -447,29 +447,21 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        // Obtener la posición del cursor relativa al viewport
         const mouseX = e.clientX;
         const mouseY = e.clientY;
 
-        // Obtener la posición y dimensiones REALES de la imagen renderizada
         const imgRect = img.getBoundingClientRect();
-
-        // Calcular la posición del cursor *dentro* de la imagen renderizada
         const xInImage = mouseX - imgRect.left;
         const yInImage = mouseY - imgRect.top;
 
-        // Calcular la relación entre el tamaño natural y el tamaño renderizado de la imagen
         const ratioX = img.naturalWidth / imgRect.width;
         const ratioY = img.naturalHeight / imgRect.height;
 
-        // Calcular la posición del fondo de la lupa
-        // Multiplicamos por ratioX/Y para que el movimiento de la lupa coincida con la imagen natural
         const bgPosX = -xInImage * zoomFactor * ratioX + (lens.offsetWidth / 2);
         const bgPosY = -yInImage * zoomFactor * ratioY + (lens.offsetHeight / 2);
 
         lens.style.backgroundPosition = `${bgPosX}px ${bgPosY}px`;
 
-        // Posicionar la lupa con un offset
         lens.style.left = `${mouseX + offset}px`; // Ligeramente a la derecha
         lens.style.top = `${mouseY + offset}px`;  // Ligeramente hacia abajo
     }
@@ -501,6 +493,8 @@ document.addEventListener('DOMContentLoaded', () => {
         imageZoomModal.classList.add('active'); // Usar clase para mostrar con transición
         document.body.style.overflow = 'hidden';
 
+        // Una vez que la imagen del modal esté visible y cargada, adjuntar listeners de lupa a ELLA
+        // Asegurarse de que la imagen ampliada tenga la clase para la lupa
         zoomedImage.classList.add('product-image-zoom-modal'); // Añade la clase para que la lupa la detecte
         setupMagnifyingGlassListeners(zoomedImage); // Llama a setupMagnifyingGlassListeners pasándole la imagen del modal
     }
