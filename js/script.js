@@ -64,22 +64,6 @@ document.addEventListener('DOMContentLoaded', () => {
             featuredProductsGrid.insertAdjacentHTML('beforeend', productCardHtml);
         });
 
-        const productCards = featuredProductsGrid.querySelectorAll('.product-card');
-        if (productCards.length > 0) {
-            let maxHeight = 0;
-            productCards.forEach(card => {
-                card.style.minHeight = 'auto';
-            });
-            productCards.forEach(card => {
-                if (card.offsetHeight > maxHeight) {
-                    maxHeight = card.offsetHeight;
-                }
-            });
-            productCards.forEach(card => {
-                card.style.minHeight = `${maxHeight}px`;
-            });
-        }
-
         attachZoomModalListeners();
     }
 
@@ -488,10 +472,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function closeZoomModal() {
         imageZoomModal.classList.remove('active');
+        // IMPORTANT: Move document.body.style.overflow = ''; to execute immediately
+        document.body.style.overflow = ''; // RE-ENABLE SCROLLING HERE IMMEDIATELY
+
         imageZoomModal.addEventListener('transitionend', function handler() {
+            // Only set display to none AFTER transition, but overflow is already handled
             if (!imageZoomModal.classList.contains('active')) {
                 imageZoomModal.style.display = 'none';
-                document.body.style.overflow = '';
                 imageZoomModal.removeEventListener('transitionend', handler);
             }
         }, { once: true });
