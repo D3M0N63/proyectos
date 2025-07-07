@@ -9,6 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const perfil = document.getElementById('perfil') ? document.getElementById('perfil').value : '';
             const aro = document.getElementById('aro') ? document.getElementById('aro').value : '';
 
+            // Redirige a la nueva página de resultados con los parámetros de búsqueda
             window.location.href = `search-results.html?ancho=${ancho}&perfil=${perfil}&aro=${aro}`;
         });
     }
@@ -34,6 +35,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
+    // Función para renderizar los productos en la sección "Más destacados"
     function renderFeaturedProductsGrid(products) {
         const featuredProductsGrid = document.getElementById('featuredProductsGrid');
         if (!featuredProductsGrid) return;
@@ -43,7 +45,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const productsToShuffle = [...products];
         productsToShuffle.sort(() => 0.5 - Math.random());
 
-        const productsToShow = productsToShuffle.slice(0, 12);
+        const productsToShow = productsToShuffle.slice(0, 12); // Selecciona hasta 12 productos
 
         if (productsToShow.length === 0) {
             featuredProductsGrid.innerHTML = '<p class="text-center text-gray-600">No hay productos destacados disponibles.</p>';
@@ -345,7 +347,8 @@ document.addEventListener('DOMContentLoaded', () => {
                             <p class="model">${product.name}</p>
                             <p class="price">${product.price}</p>
                             <p class="price-local">(${product.pricelocal && product.pricelocal.split(' / ')[0] ? product.pricelocal.split(' / ')[0] : 'N/A'})</p>
-                            </div>
+                            <!-- BOTÓN "Ver producto" ELIMINADO: <a href="product-detail.html?product=${product.id}" class="btn-view-product mt-3 block text-center bg-red-500 text-white py-2 px-4 rounded-md hover:bg-red-600 transition-colors">Ver producto</a> -->
+                        </div>
                     </div>
                 `;
                 relatedProductsContainer.insertAdjacentHTML('beforeend', productCard);
@@ -416,16 +419,13 @@ document.addEventListener('DOMContentLoaded', () => {
         const img = e.currentTarget; // La imagen es el target directo aquí (será #zoomedImage)
         if (!img || !img.src) return;
 
-        // Si la imagen aún no ha cargado sus dimensiones naturales, esperar
         if (img.naturalWidth === 0 || img.naturalHeight === 0) {
             img.onload = () => {
-                // Una vez que la imagen cargue, re-ejecutar handleMouseEnter
                 handleMouseEnter(e);
             };
             return; // Salir, la función se volverá a llamar cuando la imagen cargue
         }
 
-        // Crea la lupa si no existe
         if (!lens) {
             lens = document.createElement('div');
             lens.classList.add('magnifying-lens');
@@ -433,9 +433,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         lens.style.backgroundImage = `url('${img.src}')`;
-        // Calcula el tamaño del fondo de la lupa usando las dimensiones naturales de la imagen y el factor de zoom
         lens.style.backgroundSize = `${img.naturalWidth * zoomFactor}px ${img.naturalHeight * zoomFactor}px`;
-        lens.style.display = 'block'; // Mostrar la lupa
+        lens.style.display = 'block';
     }
 
     function handleMouseMove(e) {
@@ -443,33 +442,25 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const img = e.currentTarget; // La imagen es el target directo aquí
         if (!img || img.naturalWidth === 0 || img.naturalHeight === 0) {
-            lens.style.display = 'none'; // Si la imagen no está lista durante el movimiento, ocultar la lupa
+            lens.style.display = 'none';
             return;
         }
 
-        // Obtener la posición del cursor relativa al viewport
         const mouseX = e.clientX;
         const mouseY = e.clientY;
 
-        // Obtener la posición y dimensiones REALES de la imagen renderizada
         const imgRect = img.getBoundingClientRect();
-
-        // Calcular la posición del cursor *dentro* de la imagen renderizada
         const xInImage = mouseX - imgRect.left;
         const yInImage = mouseY - imgRect.top;
 
-        // Calcular la relación entre el tamaño natural y el tamaño renderizado de la imagen
         const ratioX = img.naturalWidth / imgRect.width;
         const ratioY = img.naturalHeight / imgRect.height;
 
-        // Calcular la posición del fondo de la lupa
-        // Multiplicamos por ratioX/Y para que el movimiento de la lupa coincida con la imagen natural
         const bgPosX = -xInImage * zoomFactor * ratioX + (lens.offsetWidth / 2);
         const bgPosY = -yInImage * zoomFactor * ratioY + (lens.offsetHeight / 2);
 
         lens.style.backgroundPosition = `${bgPosX}px ${bgPosY}px`;
 
-        // Posicionar la lupa con un offset
         lens.style.left = `${mouseX + offset}px`; // Ligeramente a la derecha
         lens.style.top = `${mouseY + offset}px`;  // Ligeramente hacia abajo
     }
@@ -490,7 +481,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const clickableImages = document.querySelectorAll('.product-image-clickable');
 
         clickableImages.forEach(img => {
-            img.removeEventListener('click', openZoomModal);
+            img.removeEventListener('click', openZoomModal); // Remover cualquier listener previo para evitar duplicados
             img.addEventListener('click', openZoomModal);
         });
     }
@@ -534,8 +525,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         // Limpiar la clase de la imagen del modal y remover sus listeners de lupa
         zoomedImage.classList.remove('product-image-zoom-modal');
-        // Los listeners se adjuntan solo cuando la imagen está en el modal, así que no es necesario removerlos aquí globalmente
-        // pero sí es buena práctica si setupMagnifyingGlassListeners los agrega a #zoomedImage cada vez.
+        zoomedImage.removeEventListener('mouseenter', handleMouseEnter);
+        zoomedImage.removeEventListener('mouseleave', handleMouseLeave);
+        zoomedImage.removeEventListener('mousemove', handleMouseMove);
     }
     // --- FIN Lógica para el Modal de Ampliación de Imagen ---
 });
