@@ -1,6 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
     // --- CÓDIGO RELACIONADO A NEWSLETTER POPUP ELIMINADO ---
-    // No hay referencias a newsletterPopup ni closeBtn aquí.
+    // ANTERIORMENTE: Aquí estaba el bloque de código que referenciaba newsletterPopup.
+    // Ha sido completamente eliminado para resolver el TypeError.
 
     const searchButton = document.querySelector('.tire-search-by-size .btn-search');
     if (searchButton) {
@@ -433,9 +434,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         lens.style.backgroundImage = `url('${img.src}')`;
-        // Calcula el tamaño del fondo de la lupa usando las dimensiones naturales de la imagen y el factor de zoom
         lens.style.backgroundSize = `${img.naturalWidth * zoomFactor}px ${img.naturalHeight * zoomFactor}px`;
-        lens.style.display = 'block'; // Mostrar la lupa
+        lens.style.display = 'block';
     }
 
     function handleMouseMove(e) {
@@ -443,7 +443,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const img = e.currentTarget; // La imagen es el target directo aquí
         if (!img || img.naturalWidth === 0 || img.naturalHeight === 0) {
-            lens.style.display = 'none'; // Si la imagen no está lista durante el movimiento, ocultar la lupa
+            lens.style.display = 'none';
             return;
         }
 
@@ -490,7 +490,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const clickableImages = document.querySelectorAll('.product-image-clickable');
 
         clickableImages.forEach(img => {
-            img.removeEventListener('click', openZoomModal);
+            img.removeEventListener('click', openZoomModal); // Remover cualquier listener previo para evitar duplicados
             img.addEventListener('click', openZoomModal);
         });
     }
@@ -517,7 +517,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function closeZoomModal() {
-        imageZoomModal.classList.remove('active');
+        imageZoomModal.classList.remove('active'); // Remover clase 'active'
         // Esperar a que termine la transición de opacidad antes de ocultar completamente
         imageZoomModal.addEventListener('transitionend', function handler() {
             if (!imageZoomModal.classList.contains('active')) {
