@@ -97,7 +97,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             searchResultsContainer.insertAdjacentHTML('beforeend', productCardHtml);
         });
 
-        attachZoomModalListeners(); // Adjuntar listeners de ampliación a las imágenes de las tarjetas
+        attachZoomModalListeners();
         renderPaginationControls();
     }
 
@@ -171,36 +171,14 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     // --- Lógica para el Efecto de Lupa ---
-    let lens = null; // La lupa (compartida para todo el documento)
+    let lens = null; // La lupa (ahora se creará y destruirá con el modal)
     const zoomFactor = 1.25; // Factor de ampliación
     const offset = 20; // Desplazamiento de la lupa desde el cursor (en píxeles)
 
-    // Esta función ahora solo es llamada por openZoomModal para la imagen ampliada
-    function setupMagnifyingGlassListeners(imgToAttachTo) {
-        if (!imgToAttachTo) return;
-
-        // Ensure lens is created if it doesn't exist
-        if (!lens) {
-            lens = document.createElement('div');
-            lens.classList.add('magnifying-lens');
-            document.body.appendChild(lens);
-        }
-
-        // Always remove previous listeners to prevent duplicates, even if only one instance of lens
-        imgToAttachTo.removeEventListener('mouseenter', handleMouseEnter);
-        imgToAttachTo.removeEventListener('mouseleave', handleMouseLeave);
-        imgToAttachTo.removeEventListener('mousemove', handleMouseMove);
-
-        // Añadir los nuevos listeners
-        imgToAttachTo.addEventListener('mouseenter', handleMouseEnter);
-        imgToAttachTo.addEventListener('mouseleave', handleMouseLeave);
-        imgToAttachTo.addEventListener('mousemove', handleMouseMove);
-    }
-
+    // Estas funciones se mantendrán puras y no necesitarán ser declaradas dentro de setup/teardown
     function handleMouseEnter(e) {
         const img = e.currentTarget;
         if (!img || !img.src || img.naturalWidth === 0 || img.naturalHeight === 0) {
-            // If image not loaded or invalid, hide lens and return
             if (lens) lens.style.display = 'none';
             return;
         }
@@ -243,7 +221,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             lens.style.display = 'none';
         }
     }
-    // --- FIN Lógica para el Efecto de Lupa ---
 
     // --- Lógica para el Modal de Ampliación de Imagen ---
     const imageZoomModal = document.getElementById('imageZoomModal');
@@ -254,7 +231,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         const clickableImages = document.querySelectorAll('.product-image-clickable');
 
         clickableImages.forEach(img => {
-            img.removeEventListener('click', openZoomModal); // Remover cualquier listener previo para evitar duplicados
+            img.removeEventListener('click', openZoomModal);
             img.addEventListener('click', openZoomModal);
         });
     }
@@ -265,8 +242,18 @@ document.addEventListener('DOMContentLoaded', async () => {
         imageZoomModal.classList.add('active');
         document.body.style.overflow = 'hidden';
 
+        // CREAR y adjuntar la lupa solo cuando se abre el modal
+        if (!lens) {
+            lens = document.createElement('div');
+            lens.classList.add('magnifying-lens');
+            document.body.appendChild(lens);
+        }
+
         zoomedImage.classList.add('product-image-zoom-modal');
-        setupMagnifyingGlassListeners(zoomedImage); // Call setupMagnifyingGlassListeners, passing the modal image
+        // Adjuntar listeners de la lupa a la imagen ampliada
+        zoomedImage.addEventListener('mouseenter', handleMouseEnter);
+        zoomedImage.addEventListener('mouseleave', handleMouseLeave);
+        zoomedImage.addEventListener('mousemove', handleMouseMove);
     }
 
     if (closeZoomBtn) {
@@ -288,15 +275,15 @@ document.addEventListener('DOMContentLoaded', async () => {
                 document.body.style.overflow = '';
                 imageZoomModal.removeEventListener('transitionend', handler);
             }
-        }, { once: true }); // Use { once: true } to automatically remove this listener
+        }, { once: true });
 
-        // IMPORTANT: Detach magnifying glass listeners from zoomedImage
-        zoomedImage.removeEventListener('mouseenter', handleMouseEnter);
-        zoomedImage.removeEventListener('mouseleave', handleMouseLeave);
-        zoomedImage.removeEventListener('mousemove', handleMouseMove);
-
+        // DESMONTAR la lupa y remover sus listeners cuando se cierra el modal
         if (lens) {
-            lens.style.display = 'none'; // Hide the lens
+            zoomedImage.removeEventListener('mouseenter', handleMouseEnter);
+            zoomedImage.removeEventListener('mouseleave', handleMouseLeave);
+            zoomedImage.removeEventListener('mousemove', handleMouseMove);
+            lens.remove(); // Eliminar el elemento de la lupa del DOM
+            lens = null; // Reiniciar la referencia a null
         }
         zoomedImage.classList.remove('product-image-zoom-modal');
     }
