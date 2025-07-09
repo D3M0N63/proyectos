@@ -1,6 +1,7 @@
 document.addEventListener('DOMContentLoaded', async () => {
     const searchResultsContainer = document.getElementById('searchResultsContainer');
     const paginationControls = document.getElementById('paginationControls');
+    const loadingIndicator = document.getElementById('loadingIndicator'); // Get reference to loading indicator
     const urlParams = new URLSearchParams(window.location.search);
     const ancho = urlParams.get('ancho');
     const perfil = urlParams.get('perfil');
@@ -33,8 +34,14 @@ document.addEventListener('DOMContentLoaded', async () => {
             <p class="no-results">Por favor, ingrese al menos un criterio de búsqueda (ancho, perfil, aro o categoría) diferente de "Todos".</p>
             <a href="index.html" class="text-red-600 hover:underline mt-4">Volver a la página principal</a>
         `;
+        // Hide loading indicator if no search criteria
+        if (loadingIndicator) loadingIndicator.style.display = 'none';
         return;
     }
+
+    // Show loading indicator before fetching products
+    if (loadingIndicator) loadingIndicator.style.display = 'block';
+    if (searchResultsContainer) searchResultsContainer.innerHTML = ''; // Clear previous results
 
     try {
         const queryParams = new URLSearchParams();
@@ -67,10 +74,13 @@ document.addEventListener('DOMContentLoaded', async () => {
             <a href="index.html" class="text-red-600 hover:underline mt-4">Volver a la página principal</a>
         `;
         paginationControls.classList.add('hidden');
+    } finally {
+        // Hide loading indicator after fetch completes (success or error)
+        if (loadingIndicator) loadingIndicator.style.display = 'none';
     }
 
     function renderProducts(page) {
-        searchResultsContainer.innerHTML = '';
+        searchResultsContainer.innerHTML = ''; // Clear previous results here too
         const startIndex = (page - 1) * productsPerPage;
         const endIndex = startIndex + productsPerPage;
         const productsToDisplay = allProducts.slice(startIndex, endIndex);
@@ -79,6 +89,19 @@ document.addEventListener('DOMContentLoaded', async () => {
             const productNameForWhatsapp = product.name || 'un neumático';
             const whatsappMessage = encodeURIComponent(`Hola! Me interesa el neumático ${productNameForWhatsapp} que vi en su web. ID: ${product.id}`);
             const whatsappLink = `https://wa.me/595983068998?text=${whatsappMessage}`;
+
+            // Determine stock status class
+            let stockStatusClass = '';
+            let stockStatusText = product.stockstatus || 'N/A';
+            if (product.stockstatus === 'En stock') {
+                stockStatusClass = 'text-green-600 font-semibold'; // Example green color
+            } else if (product.stockstatus === 'Últimas unidades') {
+                stockStatusClass = 'text-orange-500 font-semibold'; // Example orange color
+            } else if (product.stockstatus === 'Agotado') {
+                stockStatusClass = 'text-red-600 font-semibold'; // Example red color
+            } else {
+                stockStatusClass = 'text-gray-500';
+            }
 
             const productCardHtml = `
                 <div class="product-result-card w-full">
@@ -89,8 +112,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                         <p class="name">${product.name || 'Neumático sin nombre'}</p>
                         <p class="price">${product.price || 'N/A'}</p>
                         <p class="price-details">${product.pricelocal || 'N/A'}</p>
-                        <a href="#" class="details-link"> + Ver Detalles</a>
-                    </div>
+                        <p class="stock-status-display ${stockStatusClass}">${stockStatusText}</p> </div>
                     <a href="${whatsappLink}" target="_blank" class="buy-button bg-green-500 text-white py-2 px-4 rounded-md font-semibold hover:bg-green-600 transition-colors duration-300 shadow-md">CONTACTO</a>
                 </div>
             `;
@@ -173,7 +195,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     // --- Lógica para el Efecto de Lupa ---
     let lens = null; // La lupa (ahora se creará y destruirá con el modal)
     const zoomFactor = 1.25; // Factor de ampliación
-    const offset = 150; // Desplazamiento de la lupa desde el cursor (en píxeles)
+    const offset = 20; // Desplazamiento de la lupa desde el cursor (en píxeles)
 
     // Estas funciones se mantendrán puras y no necesitarán ser declaradas dentro de setup/teardown
     function handleMouseEnter(e) {
@@ -269,26 +291,22 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     function closeZoomModal() {
         imageZoomModal.classList.remove('active');
-        // IMPORTANT: Move document.body.style.overflow = ''; to execute immediately
-        document.body.style.overflow = ''; // RE-ENABLE SCROLLING HERE IMMEDIATELY
+        document.body.style.overflow = ''; // RE-ENABLE SCROLLING IMMEDIATELY
 
         imageZoomModal.addEventListener('transitionend', function handler() {
-            // Only set display to none AFTER transition, but overflow is already handled
             if (!imageZoomModal.classList.contains('active')) {
                 imageZoomModal.style.display = 'none';
                 imageZoomModal.removeEventListener('transitionend', handler);
             }
         }, { once: true });
 
-        // DESMONTAR la lupa y remover sus listeners cuando se cierra el modal
         if (lens) {
             zoomedImage.removeEventListener('mouseenter', handleMouseEnter);
             zoomedImage.removeEventListener('mouseleave', handleMouseLeave);
             zoomedImage.removeEventListener('mousemove', handleMouseMove);
-            lens.remove(); // Eliminar el elemento de la lupa del DOM
-            lens = null; // Reiniciar la referencia a null
+            lens.remove();
+            lens = null;
         }
         zoomedImage.classList.remove('product-image-zoom-modal');
     }
-    // --- FIN Lógica para el Modal de Ampliación de Imagen ---
 });
